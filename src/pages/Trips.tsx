@@ -1,5 +1,7 @@
 export default function TripsPage() {
     return (
-        <p>Trips Page</p>
+        <div className="w-screen h-screen bg-gray-200 text-black flex items-center justify-center">
+            Trips Page
+        </div>
     );
 }
