@@ -1,0 +1,28 @@
+{
+    "trips": [
+        {
+            "id": "1",
+            "name": "Hiking in the Alps",
+            "destination": "Switzerland",
+            "date": "2024-05-15",
+            "description": "A beautiful trip to the Swiss Alps for hiking and adventure.",
+            "image": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b"
+        },
+        {
+            "id": "2",
+            "name": "Beach Paradise",
+            "destination": "Maldives",
+            "date": "2024-06-10",
+            "description": "Enjoy crystal-clear waters and white sandy beaches.",
+            "image": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e"
+        },
+        {
+            "id": "3",
+            "name": "City Tour in Tokyo",
+            "destination": "Japan",
+            "date": "2024-07-20",
+            "description": "Experience the vibrant city life and rich culture of Tokyo.",
+            "image": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf"
+        }
+    ]
+}
