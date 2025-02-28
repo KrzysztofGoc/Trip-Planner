@@ -11,7 +11,7 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <Navigate to="trips" replace /> },
       { path: 'trips', element: <TripsPage /> },
-      { path: 'trips/:tripsId', element: <TripPage /> },
+      { path: 'trips/:tripId', element: <TripPage /> },
       { path: 'profile', element: <ProfilePage />}
 
     ]
