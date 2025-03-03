@@ -5,11 +5,11 @@ import { NavLink, Link } from "react-router-dom";
 export default function MainNavigation() {
 
     const navButtonStyle = (isActive: boolean) =>
-        `flex flex-col items-center justify-end w-3/4 h-14.5 ${isActive ? "text-red-400" : ""}`;
+        `flex flex-col items-center justify-end w-3/4 h-14.5 transition-[color] ${isActive ? "text-red-400 stroke" : ""}`;
 
     return (
         /* Mobile Navigation */
-        <div className="fixed bottom-0 left-0 w-full bg-gray-50 text-gray-500 grid grid-cols-3 justify-items-center items-center px-3 pb-4 border-t-1 border-t-gray-300">
+        <div className="fixed bottom-0 left-0 w-full bg-white text-gray-500 grid grid-cols-3 justify-items-center items-center px-3 pb-4 border-t-1 border-t-gray-300">
 
             {/* Trips Button */}
             <NavLink to="/trips" className={({ isActive }) => navButtonStyle(isActive)}>
