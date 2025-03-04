@@ -5,9 +5,9 @@ import { Search } from 'lucide-react';
 
 export default function SearchBar() {
     return (
-        <div className="h-auto w-auto ">
+        <div className="h-auto w-screen border-b-2 border-gray-100">
             <div
-                className="w-auto h-16 bg-white border-1 border-gray-300 mx-6 mt-3 px-3 rounded-full shadow-lg focus-within:border-ring focus-within:ring-ring/50 focus-within:ring-[3px] transition-[color,box-shadow]"
+                className="w-auto h-16 bg-white border-1 border-gray-300 mx-6 mb-5 mt-3 px-3 rounded-full shadow-lg focus-within:border-ring focus-within:ring-ring/50 focus-within:ring-[3px] transition-[color,box-shadow]"
             >
                 <Form>
                     <form className="flex size-full items-center gap-3">

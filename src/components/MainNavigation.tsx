@@ -9,7 +9,7 @@ export default function MainNavigation() {
 
     return (
         /* Mobile Navigation */
-        <div className="fixed bottom-0 left-0 w-full bg-white text-gray-500 grid grid-cols-3 justify-items-center items-center px-3 pb-4 border-t-1 border-t-gray-300">
+        <div className="fixed bottom-0 left-0 w-full bg-white text-gray-500 grid grid-cols-3 justify-items-center items-center px-3 pb-4 border-t-1 border-t-gray-100">
 
             {/* Trips Button */}
             <NavLink to="/trips" className={({ isActive }) => navButtonStyle(isActive)}>
