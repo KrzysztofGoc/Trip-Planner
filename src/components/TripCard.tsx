@@ -7,6 +7,7 @@ import {
     CardTitle,
 } from "@/components/ui/card"
 import { Trip } from "@/api/trips";
+import dayjs from "dayjs";
 
 interface TripCardProps {
     trip: Trip;
