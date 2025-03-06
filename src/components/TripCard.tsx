@@ -2,20 +2,26 @@ import {
     Card,
     CardContent,
     CardDescription,
-    CardFooter,
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
 import { Trip } from "@/api/trips";
 import dayjs from "dayjs";
+import { useNavigate } from "react-router-dom";
 
 interface TripCardProps {
     trip: Trip;
 }
 
 export default function TripCard({ trip }: TripCardProps) {
+    const navigate = useNavigate();
+
+    function handleCardClick() {
+        navigate(`/trips/${trip.id}`)
+    }
+
     return (
-        <Card className="border-none shadow-none p-0 cursor-pointer gap-4">
+        <Card onClick={handleCardClick} className="border-none shadow-none p-0 cursor-pointer gap-4">
             <CardHeader className="p-0">
                 <img className="rounded-xl aspect-square object-cover" src={trip.image} />
             </CardHeader>
