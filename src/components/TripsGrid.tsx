@@ -12,12 +12,12 @@ export default function TripsGrid() {
         <>
             {isError && <p>{error.message}</p>}
             {isLoading && <p>Loading trips...</p>}
-            {(!isError && !isLoading && trips) && (
+            {trips && (
                 <div className="w-auto h-auto mt-6 px-6">
-                    <div className="w-auto h-screen grid grid-cols-1 gap-6">
+                    <div className="w-auto min-h-screen grid grid-cols-1 gap-6">
                         {/* Trip Cards go there */}
                         {trips.map((trip) => (
-                            <TripCard trip={trip} />
+                            <TripCard key={trip.id} trip={trip} />
                         ))}
 
                     </div>
