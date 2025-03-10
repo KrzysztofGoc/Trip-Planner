@@ -3,8 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchTrip } from "@/api/trips";
 import dayjs from 'dayjs';
 import { MoveRight } from 'lucide-react';
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import ParticipantsList from "@/components/ParticipantsList";
+import TripTimeline from "@/components/TripTimeline";
 
 const participants = [
     { id: 1, name: "Alice", image: "https://github.com/shadcn.png" },
@@ -38,14 +38,14 @@ export default function TripPage() {
     return (
         <>
             {tripData && (
-                <div className="w-auto h-auto flex flex-col">
+                <div className="size-auto flex flex-col">
                     {/* Image Container */}
                     <div className="w-auto h-1/3">
                         <img className="object-cover size-full" src={tripData.image} />
                     </div>
 
                     {/* Trip Data Container */}
-                    <div className="w-auto h-2/3 flex flex-col px-6 pt-6 gap-6">
+                    <div className="size-auto h-2/3 flex flex-col px-6 pt-6 gap-6">
 
                         {/* Trip Header */}
                         <div className="size-auto">
@@ -58,7 +58,7 @@ export default function TripPage() {
                         </div>
 
                         {/* Date Range */}
-                        <div className="flex items-center justify-center border-1 border-gray-200 gap-4 p-6 rounded-xl w-auto">
+                        <div className="size-auto flex items-center justify-center border-1 border-gray-200 gap-4 p-6 rounded-xl shadow-md">
 
                             <div className="flex flex-col items-center">
                                 <span className="text-xs uppercase tracking-wider text-gray-500">
@@ -82,8 +82,13 @@ export default function TripPage() {
                         </div>
 
                         {/* Participants */}
-                        <div className="w-auto h-auto border-b-2 border-gray-200">
+                        <div className="size-auto border-b-2 border-gray-200 pb-6">
                             <ParticipantsList participants={participants} />
+                        </div>
+
+                        {/* Trip Timeline */}
+                        <div className="size-auto border-b-2 border-gray-200 pb-6">
+                            <TripTimeline />
                         </div>
 
                         {/* Spacer (only for development) */}
