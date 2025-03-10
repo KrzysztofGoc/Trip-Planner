@@ -6,7 +6,7 @@ export default function ParticipantsList({ participants }) {
     const extraCount = participants.length - maxVisible;
 
     return (
-        <div className="w-auto flex flex-col gap-8 pb-6">
+        <div className="w-auto flex flex-col gap-8">
             {/* Hosted By Section */}
             <div className="flex items-center gap-4">
                 {/* Host Avatar */}
@@ -27,7 +27,7 @@ export default function ParticipantsList({ participants }) {
             </div>
 
             {/* Participants Section */}
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-4">
                 {/* Header */}
                 <div className="flex items-center gap-4">
                     <Users className="size-6 w-15.5" />
@@ -49,7 +49,7 @@ export default function ParticipantsList({ participants }) {
                     {/* Show "+X" if there are more participants */}
                     {extraCount > 0 && (
                         <div
-                            className="size-12 flex items-center justify-center bg-gray-300 text-gray-700 text-sm font-semibold rounded-full border-2 border-gray-300 shadow-md"
+                            className="size-12 aspect-square flex items-center justify-center bg-gray-300 text-gray-700 text-sm font-semibold rounded-full border-2 border-gray-300 shadow-md"
                         >
                             +{extraCount}
                         </div>
