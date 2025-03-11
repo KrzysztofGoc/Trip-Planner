@@ -4,7 +4,8 @@ import { fetchTrip } from "@/api/trips";
 import dayjs from 'dayjs';
 import { MoveRight } from 'lucide-react';
 import ParticipantsList from "@/components/ParticipantsList";
-import TripTimeline from "@/components/TripTimeline";
+import TripTimeline from "@/components/Timeline/TripTimeline";
+import TripNavigation from "@/components/TripNavigation";
 
 const participants = [
     { id: 1, name: "Alice", image: "https://github.com/shadcn.png" },
@@ -39,6 +40,9 @@ export default function TripPage() {
         <>
             {tripData && (
                 <div className="size-auto flex flex-col">
+                    {/* Trip Top Navigation */}
+                    <TripNavigation />
+
                     {/* Image Container */}
                     <div className="w-auto h-1/3">
                         <img className="object-cover size-full" src={tripData.image} />

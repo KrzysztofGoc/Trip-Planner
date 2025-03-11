@@ -1,6 +1,6 @@
-import TimelineContent from "./Timeline/TimelineContent";
-import TimelineDay from "./Timeline/TimelineDay";
-import TimelineHeader from "./Timeline/TimelineHeader";
+import TimelineContent from "./TimelineContent";
+import TimelineDay from "./TimelineDay";
+import TimelineHeader from "./TimelineHeader";
 
 const DAY_ONE_EVENTS = [
     { id: "1", from: "11:00", to: "12:00", destination: "Hyotan Sakura Park" },
