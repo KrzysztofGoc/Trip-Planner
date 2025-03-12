@@ -1,4 +1,5 @@
 import { Triangle } from "lucide-react";
+import TimelineAddEventButton from "./TimelineAddEventButton";
 
 interface Event {
     id: string;
@@ -44,6 +45,8 @@ export default function TimelineContent({ events }: TimelineContentProps) {
                     </div>
                 ))
             )}
+
+            <TimelineAddEventButton />
         </div>
     );
 }
