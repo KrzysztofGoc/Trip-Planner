@@ -9,7 +9,7 @@ const DAY_ONE_EVENTS = [
 
 export default function TripTimeline() {
     return (
-        <div className="flex flex-col gap-8">
+        <div className="flex flex-col gap-16">
             {/* Day 1 */}
             <TimelineDay>
                 <TimelineHeader dayNumber={1} dayDate="Jul 20" />

@@ -15,12 +15,12 @@ export default function TripNavigation() {
 
             {/* Share and Menu Buttons */}
             <div className="flex gap-2 w-fit">
-                <Button className="size-12 flex justify-center items-center bg-transparent">
+                <Button className="size-12 flex justify-center items-center bg-transparent shadow-none">
                     <div className="size-10 aspect-square flex justify-center items-center backdrop-blur-md rounded-full">
                         <SquareArrowOutUpRight className="size-6 text-white" />
                     </div>
                 </Button>
-                <Button className="size-12 flex justify-center items-center bg-transparent">
+                <Button className="size-12 flex justify-center items-center bg-transparent shadow-none">
                     <div className="size-10 aspect-square flex justify-center items-center backdrop-blur-md rounded-full">
                         <Ellipsis className="size-6 text-white" />
                     </div>
