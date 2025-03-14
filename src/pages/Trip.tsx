@@ -2,7 +2,6 @@ import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { fetchTrip } from "@/api/trips";
 import dayjs from 'dayjs';
-import { MoveRight } from 'lucide-react';
 import ParticipantsList from "@/components/ParticipantsList";
 import TripTimeline from "@/components/Timeline/TripTimeline";
 import TripNavigation from "@/components/TripNavigation";

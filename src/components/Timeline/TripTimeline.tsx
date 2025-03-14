@@ -14,12 +14,12 @@ export default function TripTimeline() {
                 {/* Day 1 */}
                 <TimelineDay>
                     <TimelineHeader dayNumber={1} dayDate="Jul 20" />
-                    <TimelineContent events={DAY_ONE_EVENTS} />
+                    <TimelineContent events={DAY_ONE_EVENTS} dayNumber={1}/>
                 </TimelineDay>
-                {/* Day 1 */}
+                {/* Day 2 */}
                 <TimelineDay>
                     <TimelineHeader dayNumber={2} dayDate="Jul 21" />
-                    <TimelineContent events={DAY_ONE_EVENTS} />
+                    <TimelineContent events={DAY_ONE_EVENTS} dayNumber={2}/>
                 </TimelineDay>
             </div>
         </div>
