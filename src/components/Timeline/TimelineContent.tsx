@@ -11,18 +11,21 @@ interface Event {
 
 interface TimelineContentProps {
     events: Event[];
+    dayNumber: number,
 }
 
-export default function TimelineContent({ events }: TimelineContentProps) {
+export default function TimelineContent({ events, dayNumber }: TimelineContentProps) {
     return (
         <div className="flex flex-col gap-2 pr-4">
             {!events || events.length === 0 ? (
                 <p className="text-gray-500 italic">No events planned for this day.</p>
             ) : (
-                events.map((event) => <TimelineEvent key={event.id} event={event} />)
+                events.map((event) => (
+                    <TimelineEvent key={event.id} event={event} />
+                ))
             )}
 
-            <TimelineAddEventButton />
+            <TimelineAddEventButton dayId={dayNumber} />
         </div>
     );
 }

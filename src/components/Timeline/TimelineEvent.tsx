@@ -1,4 +1,5 @@
 import { Triangle } from "lucide-react";
+import EventCard from "../EventCard";
 
 interface TimelineEventProps {
     event: {
@@ -21,17 +22,7 @@ export default function TimelineEvent({ event }: TimelineEventProps) {
             </div>
 
             {/* Event Details */}
-            <div key={event.id} className="border-l-4 border-red-400 bg-gray-50 flex shadow-md rounded-lg">
-                <img src={event.img} className="size-32 aspect-square object-cover rounded-l-sm" />
-                <div className="flex flex-col p-4 justify-center grow">
-                    <p className="text-lg font-bold">
-                        {event.destination}
-                    </p>
-                    <p className="text-gray-500 text-sm">
-                        Park
-                    </p>
-                </div>
-            </div>
+            <EventCard event={event} />
 
             {/* End Time Handle with Horizontal Line */}
             <div className="flex items-center gap-2">

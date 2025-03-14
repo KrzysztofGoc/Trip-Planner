@@ -6,7 +6,9 @@ export default function TripsPage() {
 
     return (
         <div className="w-screen min-h-screen bg-white text-black flex flex-col">
-            <SearchBar />
+            <div className="h-auto w-screen border-b-2 border-gray-100">
+                <SearchBar />
+            </div>
             <TripsGrid />
         </div>
     );
