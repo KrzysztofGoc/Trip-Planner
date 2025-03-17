@@ -1,11 +1,11 @@
-import EventCategoryItem from "./EventCategoryItem";
+import PlaceCategoryItem from "./PlaceCategoryItem";
 import { EVENT_CATEGORIES } from "@/constants/eventCategories";
 
-export default function EventCategoryFilter() {
+export default function PlaceCategoryFilter() {
     return (
         <div className="size-auto flex justify-stretch gap-2">
             {EVENT_CATEGORIES.map((category) => (
-                <EventCategoryItem key={category.id} category={category} />
+                <PlaceCategoryItem key={category.id} category={category} />
             ))}
         </div>
     );

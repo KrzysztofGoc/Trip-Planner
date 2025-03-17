@@ -5,7 +5,7 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
-import { Trip } from "@/api/trips";
+import { Trip } from "@/types/trip";
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
 
@@ -30,7 +30,7 @@ export default function TripCard({ trip }: TripCardProps) {
                     {trip.destination}
                 </CardTitle>
                 <CardDescription className="flex flex-col gap-3">
-                    {dayjs(trip.date).format("MMMM D, YYYY")}
+                    {dayjs(trip.startDate).format("MMMM D, YYYY")}
                     <p>{trip.name}</p>
                 </CardDescription>
             </CardContent>
