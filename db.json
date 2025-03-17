@@ -4,25 +4,125 @@
             "id": "1",
             "name": "Hiking in the Alps",
             "destination": "Switzerland",
-            "date": "2024-05-15",
+            "startDate": "2024-05-15",
+            "endDate": "2024-05-20",
             "description": "A beautiful trip to the Swiss Alps for hiking and adventure.",
-            "image": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b"
+            "image": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b",
+            "participants": [
+                { "id": "1", "name": "Alice", "image": "https://github.com/shadcn.png" },
+                { "id": "2", "name": "Bob", "image": "https://github.com/shadcn.png" },
+                { "id": "3", "name": "Charlie", "image": "https://github.com/shadcn.png" },
+                { "id": "4", "name": "David", "image": "https://github.com/shadcn.png" },
+                { "id": "5", "name": "Eve", "image": "https://github.com/shadcn.png" }
+            ],
+            "events": [
+                {
+                    "id": "1",
+                    "dayNumber": 1,
+                    "from": "11:00",
+                    "to": "12:00",
+                    "name": "Hyotan Sakura Park",
+                    "category": "Park",
+                    "img": "https://images.unsplash.com/photo-1624756628458-cc3e61bd1133",
+                    "address": "Tokyo, Japan"
+                },
+                {
+                    "id": "2",
+                    "dayNumber": 1,
+                    "from": "12:00",
+                    "to": "13:00",
+                    "name": "Lake Kawaguchi",
+                    "category": "Lake",
+                    "img": "https://images.unsplash.com/photo-1519051990279-4071d755e440",
+                    "address": "Fujikawaguchiko, Japan"
+                },
+                {
+                    "id": "3",
+                    "dayNumber": 2,
+                    "from": "09:00",
+                    "to": "10:30",
+                    "name": "Ichiran Ramen",
+                    "category": "Restaurant",
+                    "img": "https://images.unsplash.com/photo-1541592106381-b31e9677c0e5",
+                    "address": "Shibuya, Tokyo, Japan"
+                }
+            ]
         },
         {
             "id": "2",
             "name": "Beach Paradise",
             "destination": "Maldives",
-            "date": "2024-06-10",
+            "startDate": "2024-06-10",
+            "endDate": "2024-06-15",
             "description": "Enjoy crystal-clear waters and white sandy beaches.",
-            "image": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e"
+            "image": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e",
+            "participants": [
+                { "id": "1", "name": "Alice", "image": "https://github.com/shadcn.png" },
+                { "id": "2", "name": "Bob", "image": "https://github.com/shadcn.png" },
+                { "id": "3", "name": "Charlie", "image": "https://github.com/shadcn.png" },
+                { "id": "4", "name": "David", "image": "https://github.com/shadcn.png" },
+                { "id": "5", "name": "Eve", "image": "https://github.com/shadcn.png" }
+            ],
+            "events": [
+                {
+                    "id": "4",
+                    "dayNumber": 1,
+                    "from": "10:00",
+                    "to": "12:00",
+                    "name": "Sunset Beach Walk",
+                    "category": "Beach",
+                    "img": "https://images.unsplash.com/photo-1573455491267-02cc95599f92",
+                    "address": "Malé, Maldives"
+                },
+                {
+                    "id": "5",
+                    "dayNumber": 2,
+                    "from": "13:00",
+                    "to": "15:00",
+                    "name": "Snorkeling Adventure",
+                    "category": "Water Activity",
+                    "img": "https://images.unsplash.com/photo-1558978054-df2a4eff8a5b",
+                    "address": "Maldives Coral Reefs"
+                }
+            ]
         },
         {
             "id": "3",
             "name": "City Tour in Tokyo",
             "destination": "Japan",
-            "date": "2024-07-20",
+            "startDate": "2024-07-20",
+            "endDate": "2024-07-25",
             "description": "Experience the vibrant city life and rich culture of Tokyo.",
-            "image": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf"
+            "image": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf",
+            "participants": [
+                { "id": "1", "name": "Alice", "image": "https://github.com/shadcn.png" },
+                { "id": "2", "name": "Bob", "image": "https://github.com/shadcn.png" },
+                { "id": "3", "name": "Charlie", "image": "https://github.com/shadcn.png" },
+                { "id": "4", "name": "David", "image": "https://github.com/shadcn.png" },
+                { "id": "5", "name": "Eve", "image": "https://github.com/shadcn.png" }
+            ],
+            "events": [
+                {
+                    "id": "6",
+                    "dayNumber": 1,
+                    "from": "08:00",
+                    "to": "10:00",
+                    "name": "Shibuya Crossing",
+                    "category": "Landmark",
+                    "img": "https://images.unsplash.com/photo-1564608909988-b678124c55d6",
+                    "address": "Shibuya, Tokyo"
+                },
+                {
+                    "id": "7",
+                    "dayNumber": 2,
+                    "from": "14:00",
+                    "to": "16:00",
+                    "name": "Tokyo Tower",
+                    "category": "Observation Deck",
+                    "img": "https://images.unsplash.com/photo-1513407030348-c983a97b98d8",
+                    "address": "Minato, Tokyo"
+                }
+            ]
         }
     ],
     "places": [
@@ -46,6 +146,20 @@
             "category": "Restaurant",
             "img": "https://images.unsplash.com/photo-1541592106381-b31e9677c0e5",
             "address": "Shibuya, Tokyo, Japan"
+        },
+        {
+            "id": "4",
+            "name": "Shibuya Crossing",
+            "category": "Landmark",
+            "img": "https://images.unsplash.com/photo-1564608909988-b678124c55d6",
+            "address": "Shibuya, Tokyo"
+        },
+        {
+            "id": "5",
+            "name": "Tokyo Tower",
+            "category": "Observation Deck",
+            "img": "https://images.unsplash.com/photo-1513407030348-c983a97b98d8",
+            "address": "Minato, Tokyo"
         }
     ]
 }

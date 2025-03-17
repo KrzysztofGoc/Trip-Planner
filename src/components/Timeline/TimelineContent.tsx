@@ -1,16 +1,9 @@
 import TimelineEvent from "./TimelineEvent";
 import TimelineAddEventButton from "./TimelineAddEventButton";
-
-interface Event {
-    id: string;
-    from: string;
-    to: string;
-    destination: string;
-    img: string,
-}
+import { TripEvent } from "@/types/tripEvent";
 
 interface TimelineContentProps {
-    events: Event[];
+    events: TripEvent[];
     dayNumber: number,
 }
 

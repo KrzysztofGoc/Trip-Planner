@@ -1,10 +1,10 @@
 import { EventCategory } from "@/types/eventCategory";
 
-interface EventCategoryItemProps {
+interface PlaceCategoryItemProps {
     category: EventCategory;
 }
 
-export default function EventCategoryItem({ category }: EventCategoryItemProps) {
+export default function PlaceCategoryItem({ category }: PlaceCategoryItemProps) {
     const Icon = category.icon;
 
     return (

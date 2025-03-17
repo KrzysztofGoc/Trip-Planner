@@ -1,26 +1,42 @@
+import { TripEvent } from "@/types/tripEvent";
 import TimelineContent from "./TimelineContent";
 import TimelineDay from "./TimelineDay";
 import TimelineHeader from "./TimelineHeader";
+import dayjs from "dayjs";
 
-const DAY_ONE_EVENTS = [
-    { id: "1", from: "11:00", to: "12:00", destination: "Hyotan Sakura Park", img: "https://images.unsplash.com/photo-1624756628458-cc3e61bd1133" },
-    { id: "2", from: "12:00", to: "13:00", destination: "Lake Kawaguchi", img: "https://images.unsplash.com/photo-1519051990279-4071d755e440" }
-]
+interface TrimTimelineProps {
+    events: TripEvent[],
+    startDate: string,
+    endDate: string,
+}
 
-export default function TripTimeline() {
+export default function TripTimeline({ events, startDate, endDate }: TrimTimelineProps) {
+
+    const numberOfDays = dayjs(endDate).diff(startDate, "days") + 1;
+
+    if (numberOfDays === 0) {
+        return <p className="text-gray-500 italic">No events planned for this trip.</p>;
+    }
+
+    const timelineDays = [];
+
+    for (let i = 0; i < numberOfDays; i++) {
+        const dayNumber = i + 1;
+        const dayEvents = events.filter(event => event.dayNumber === dayNumber);
+        const dayDate = dayjs(startDate).add(i, "days").format("MMM D");
+
+        timelineDays.push(
+            <TimelineDay key={dayNumber}>
+                <TimelineHeader dayNumber={dayNumber} dayDate={dayDate} />
+                <TimelineContent dayNumber={dayNumber} events={dayEvents} />
+            </TimelineDay>
+        );
+    }
+
     return (
         <div className="size-auto border-b-2 border-gray-200 pb-6">
             <div className="flex flex-col gap-16">
-                {/* Day 1 */}
-                <TimelineDay>
-                    <TimelineHeader dayNumber={1} dayDate="Jul 20" />
-                    <TimelineContent events={DAY_ONE_EVENTS} dayNumber={1}/>
-                </TimelineDay>
-                {/* Day 2 */}
-                <TimelineDay>
-                    <TimelineHeader dayNumber={2} dayDate="Jul 21" />
-                    <TimelineContent events={DAY_ONE_EVENTS} dayNumber={2}/>
-                </TimelineDay>
+                {timelineDays}
             </div>
         </div>
     );
