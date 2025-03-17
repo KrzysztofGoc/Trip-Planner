@@ -2,25 +2,17 @@ import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { fetchTrip } from "@/api/trips";
 import dayjs from 'dayjs';
-import ParticipantsList from "@/components/ParticipantsList";
+import TripParticipantsList from "@/components/Trip/TripParticipantsList";
 import TripTimeline from "@/components/Timeline/TripTimeline";
-import TripNavigation from "@/components/TripNavigation";
-import TripImage from "@/components/TripImage";
-import TripHeader from "@/components/TripHeader";
-import TripDateRange from "@/components/TripDateRange";
-
-const participants = [
-    { id: 1, name: "Alice", image: "https://github.com/shadcn.png" },
-    { id: 2, name: "Bob", image: "https://github.com/shadcn.png" },
-    { id: 3, name: "Charlie", image: "https://github.com/shadcn.png" },
-    { id: 4, name: "David", image: "https://github.com/shadcn.png" },
-    { id: 5, name: "Eve", image: "https://github.com/shadcn.png" }
-];
+import TripNavigation from "@/components/Trip/TripNavigation";
+import TripImage from "@/components/Trip/TripImage";
+import TripHeader from "@/components/Trip/TripHeader";
+import TripDateRange from "@/components/Trip/TripDateRange";
 
 export default function TripPage() {
     const { tripId } = useParams();
     const { data: tripData, isLoading, isError, error } = useQuery({
-        queryFn: () => fetchTrip(tripId),
+        queryFn: ({ signal }) => fetchTrip({ signal, tripId }),
         queryKey: ["trips", { tripId: tripId }],
     });
 
@@ -32,8 +24,9 @@ export default function TripPage() {
         return (<p>Loading trip...</p>);
     }
 
-    const startDate = dayjs(tripData?.date).format("MMM D, YYYY");
-    const endDate = dayjs(tripData?.date).add(7, "days").format("MMM D, YYYY");
+    const startDate = dayjs(tripData?.startDate).format("MMM D, YYYY");
+    const endDate = dayjs(tripData?.endDate).format("MMM D, YYYY");
+
 
     return (
         <>
@@ -59,10 +52,10 @@ export default function TripPage() {
                         <TripDateRange startDate={startDate} endDate={endDate} />
 
                         {/* Participants and Hosted By */}
-                        <ParticipantsList participants={participants} />
+                        <TripParticipantsList participants={tripData.participants} />
 
                         {/* Trip Timeline */}
-                        <TripTimeline />
+                        <TripTimeline startDate={startDate} endDate={endDate} events={tripData.events} />
                     </div>
                 </div>
             )}

@@ -1,14 +1,9 @@
 import { Triangle } from "lucide-react";
-import EventCard from "../EventCard";
+import PlaceCard from "../PlaceCard";
+import { TripEvent } from "@/types/tripEvent";
 
 interface TimelineEventProps {
-    event: {
-        id: string;
-        from: string;
-        to: string;
-        destination: string;
-        img: string,
-    };
+    event: TripEvent
 }
 
 export default function TimelineEvent({ event }: TimelineEventProps) {
@@ -22,7 +17,7 @@ export default function TimelineEvent({ event }: TimelineEventProps) {
             </div>
 
             {/* Event Details */}
-            <EventCard event={event} />
+            <PlaceCard event={event} />
 
             {/* End Time Handle with Horizontal Line */}
             <div className="flex items-center gap-2">

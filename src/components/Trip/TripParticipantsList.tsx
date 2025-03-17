@@ -1,7 +1,12 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Participant } from "@/types/participant";
 import { Users } from "lucide-react";
 
-export default function ParticipantsList({ participants }) {
+interface TripParticipantsListProps {
+    participants: Participant[]
+}
+
+export default function TripParticipantsList({ participants }: TripParticipantsListProps) {
     const maxVisible = 4; // Show up to 4 participants
     const extraCount = participants.length - maxVisible;
 

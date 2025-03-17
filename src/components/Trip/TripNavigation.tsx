@@ -1,5 +1,5 @@
 import { ChevronLeft, Ellipsis, SquareArrowOutUpRight } from 'lucide-react';
-import { Button } from './ui/button';
+import { Button } from '../ui/button';
 import { Link } from 'react-router-dom';
 
 export default function TripNavigation() {
