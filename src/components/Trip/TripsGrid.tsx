@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { fetchTrips } from "@/api/trips";
-import TripCard from "./Trip/TripCard";
+import TripCard from "./TripCard";
 
 export default function TripsGrid() {
     const { data: trips, isLoading, isError, error } = useQuery({

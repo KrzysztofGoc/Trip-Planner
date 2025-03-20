@@ -1,6 +1,6 @@
 
 import SearchBar from "@/components/SearchBar";
-import TripsGrid from "@/components/TripsGrid";
+import TripsGrid from "@/components/Trip/TripsGrid";
 
 export default function TripsPage() {
 
