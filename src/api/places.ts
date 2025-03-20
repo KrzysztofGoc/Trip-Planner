@@ -9,7 +9,7 @@ export const fetchPlaces = async (): Promise<Place[]> => {
 };
 
 // Fetch place by ID
-export const fetchPlaceById = async (placeId: string | undefined): Promise<Place> => {
+export const fetchPlace = async (placeId: string | undefined): Promise<Place> => {
     if (!placeId) throw new Error("Place ID is missing");
 
     const response = await fetch(`${API_URL}/places/${placeId}`);
