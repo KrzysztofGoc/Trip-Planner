@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { fetchPlaceById } from "@/api/places";
+import { fetchPlace } from "@/api/places";
 
 export default function AddEventPage() {
     const { tripId, dayId, placeId } = useParams();
@@ -8,7 +8,7 @@ export default function AddEventPage() {
     // Fetch details of the selected place
     const { data: placeData, isLoading, isError } = useQuery({
         queryKey: ["places", placeId],
-        queryFn: () => fetchPlaceById(placeId),
+        queryFn: () => fetchPlace(placeId),
     });
 
     return (
