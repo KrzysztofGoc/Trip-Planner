@@ -9,6 +9,7 @@ import TripDateRange from "@/components/Trip/TripDateRange";
 import { Place } from "@/types/place";
 import { Trip } from "@/types/trip";
 import dayjs from "dayjs";
+import EventFormActionButton from "@/components/EventFormActionButton";
 
 function getTripDayDate(startDate: string, day: number) {
     return dayjs(startDate).add(day - 1, "day").format("MMM D");
@@ -89,6 +90,7 @@ export default function EventFormPage() {
                         startDate={`${formattedDate}, ${eventData.from}`}
                         endDate={`${formattedDate}, ${eventData.to}`}
                     />
+                    <EventFormActionButton onClick={() => null} label="Save"/>
                 </div>
             </div>
         );
@@ -122,6 +124,7 @@ export default function EventFormPage() {
                         startDate={`${formattedDate}, not selected`}
                         endDate={`${formattedDate}, not selected`}
                     />
+                    <EventFormActionButton onClick={() => null} label="Add"/>
                 </div>
             </div>
         );
