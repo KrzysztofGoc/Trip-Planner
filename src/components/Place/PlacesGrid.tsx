@@ -5,14 +5,14 @@ import { useParams, useNavigate } from "react-router-dom";
 
 export default function PlacesGrid() {
     const navigate = useNavigate();
-    const { tripId, dayId } = useParams();
+    const { tripId, dayNumber } = useParams();
     const { data: places, isLoading, isError, error } = useQuery({
         queryKey: ["places"],
         queryFn: fetchPlaces,
     });
 
     function handlePlaceClick(placeId: string) {
-        navigate(`/trips/${tripId}/${dayId}/add/${placeId}`)
+        navigate(`/trips/${tripId}/${dayNumber}/add/${placeId}`)
     }
 
     return (

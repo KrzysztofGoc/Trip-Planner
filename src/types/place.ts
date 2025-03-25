@@ -4,4 +4,6 @@ export interface Place {
     category: string;
     img: string;
     address: string;
+    lat: number,
+    lng: number,
 }
