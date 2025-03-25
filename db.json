@@ -131,7 +131,9 @@
             "name": "Hyotan Sakura Park",
             "category": "Park",
             "img": "https://images.unsplash.com/photo-1624756628458-cc3e61bd1133",
-            "address": "Tokyo, Japan"
+            "address": "Tokyo, Japan",
+            "lat": 35.6895,
+            "lng": 139.6917
         },
         {
             "id": "2",
