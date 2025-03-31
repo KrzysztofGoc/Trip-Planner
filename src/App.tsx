@@ -8,6 +8,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./api/queryClient";
 import EventFormPage from "./pages/EventFormPage";
 import FullMapPage from "./pages/FullMapPage";
+import { APIProvider } from '@vis.gl/react-google-maps';
 
 const router = createBrowserRouter([
   {
@@ -28,9 +29,11 @@ const router = createBrowserRouter([
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
-    </QueryClientProvider>
+    <APIProvider apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
+      <QueryClientProvider client={queryClient}>
+        <RouterProvider router={router} />
+      </QueryClientProvider>
+    </APIProvider>
   )
 }
 
