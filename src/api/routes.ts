@@ -20,10 +20,11 @@ export const fetchDayDirections = async (events: TripEvent[]): Promise<google.ma
     return new Promise((resolve, reject) => {
       service.route(
         {
-          origin,
-          destination,
-          waypoints,
+          origin: origin,
+          destination: destination,
+          waypoints: waypoints,
           travelMode: google.maps.TravelMode.DRIVING,
+          language: "en",
         },
         (result, status) => {
           if (status === google.maps.DirectionsStatus.OK && result) {
