@@ -1,13 +1,13 @@
 import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom"
 import RootLayout from "./pages/RootLayout";
-import TripsPage from './pages/Trips'
-import TripPage from "./pages/Trip";
+import TripsPage from './pages/TripsPage'
+import TripPage from "./pages/TripPage";
 import ProfilePage from "./pages/Profile";
 import PlacesListPage from "./pages/PlacesListPage";
-import { QueryClientProvider } from "@tanstack/react-query";
-import { queryClient } from "./api/queryClient";
 import EventFormPage from "./pages/EventFormPage";
 import FullMapPage from "./pages/FullMapPage";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "./api/queryClient";
 import { APIProvider } from '@vis.gl/react-google-maps';
 
 const router = createBrowserRouter([
