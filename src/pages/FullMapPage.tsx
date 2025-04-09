@@ -26,7 +26,7 @@ export default function FullMapPage() {
     }
 
     return (
-        <div className="size-auto flex flex-col">
+        <div className="w-screen h-screen flex flex-col">
             <TripNavigation />
             <Map
                 mode="route"

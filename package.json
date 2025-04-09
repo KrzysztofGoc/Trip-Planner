@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "db": "json-server --watch db.json --host 192.168.10.51 --port 5000",
+    "db": "json-server --watch db.json --host 192.168.10.50 --port 5000",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
