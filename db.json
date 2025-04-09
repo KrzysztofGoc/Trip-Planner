@@ -287,42 +287,50 @@
           }
     ],
     "places": [
-        {
-            "id": "1",
-            "name": "Hyotan Sakura Park",
-            "category": "Park",
-            "img": "https://images.unsplash.com/photo-1624756628458-cc3e61bd1133",
-            "address": "Tokyo, Japan",
-            "lat": 35.6895,
-            "lng": 139.6917
-        },
-        {
-            "id": "2",
-            "name": "Lake Kawaguchi",
-            "category": "Lake",
-            "img": "https://images.unsplash.com/photo-1519051990279-4071d755e440",
-            "address": "Fujikawaguchiko, Japan"
-        },
-        {
-            "id": "3",
-            "name": "Ichiran Ramen",
-            "category": "Restaurant",
-            "img": "https://images.unsplash.com/photo-1541592106381-b31e9677c0e5",
-            "address": "Shibuya, Tokyo, Japan"
-        },
-        {
-            "id": "4",
-            "name": "Shibuya Crossing",
-            "category": "Landmark",
-            "img": "https://images.unsplash.com/photo-1564608909988-b678124c55d6",
-            "address": "Shibuya, Tokyo"
-        },
-        {
-            "id": "5",
-            "name": "Tokyo Tower",
-            "category": "Observation Deck",
-            "img": "https://images.unsplash.com/photo-1513407030348-c983a97b98d8",
-            "address": "Minato, Tokyo"
-        }
-    ]
+    {
+        "id": "1",
+        "name": "Hyotan Sakura Park",
+        "category": "Park",
+        "img": "https://images.unsplash.com/photo-1624756628458-cc3e61bd1133",
+        "address": "Tokyo, Japan",
+        "lat": 35.6895,
+        "lng": 139.6917
+    },
+    {
+        "id": "2",
+        "name": "Lake Kawaguchi",
+        "category": "Lake",
+        "img": "https://images.unsplash.com/photo-1519051990279-4071d755e440",
+        "address": "Fujikawaguchiko, Japan",
+        "lat": 35.5167,
+        "lng": 138.7667
+    },
+    {
+        "id": "3",
+        "name": "Ichiran Ramen",
+        "category": "Restaurant",
+        "img": "https://images.unsplash.com/photo-1541592106381-b31e9677c0e5",
+        "address": "Shibuya, Tokyo, Japan",
+        "lat": 35.6595,
+        "lng": 139.7004
+    },
+    {
+        "id": "4",
+        "name": "Shibuya Crossing",
+        "category": "Landmark",
+        "img": "https://images.unsplash.com/photo-1564608909988-b678124c55d6",
+        "address": "Shibuya, Tokyo",
+        "lat": 35.6595,
+        "lng": 139.7005
+    },
+    {
+        "id": "5",
+        "name": "Tokyo Tower",
+        "category": "Observation Deck",
+        "img": "https://images.unsplash.com/photo-1513407030348-c983a97b98d8",
+        "address": "Minato, Tokyo",
+        "lat": 35.6586,
+        "lng": 139.7454
+    }
+]
 }
