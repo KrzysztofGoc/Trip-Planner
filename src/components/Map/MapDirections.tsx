@@ -24,9 +24,9 @@ export default function Directions({ events }: DirectionsProps) {
     if (!map) return;
 
     if (isDirectionsLoading || isDirectionsError) {
-      map.setOptions({ gestureHandling: "none" });
+      map.setOptions({ gestureHandling: "none", keyboardShortcuts: false });
     } else {
-      map.setOptions({ gestureHandling: "auto" });
+      map.setOptions({ gestureHandling: "auto", keyboardShortcuts: true });
     }
   }, [map, isDirectionsLoading, isDirectionsError]);
 

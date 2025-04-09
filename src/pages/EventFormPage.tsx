@@ -10,6 +10,7 @@ import { Place } from "@/types/place";
 import { Trip } from "@/types/trip";
 import dayjs from "dayjs";
 import EventFormActionButton from "@/components/EventFormActionButton";
+import MapWidget from "@/components/Map/MapWidget";
 
 function getTripDayDate(startDate: string, day: number) {
     return dayjs(startDate).add(day - 1, "day").format("MMM D");
@@ -110,7 +111,7 @@ export default function EventFormPage() {
         const formattedDayDate = `Day ${day}, ${formattedDate}`;
 
         return (
-            <div className="size-auto flex flex-col">
+            <div className="size-auto flex flex-col pb-84">
                 <TripNavigation />
                 <TripImage imageUrl={placeData.img} />
 
@@ -125,6 +126,7 @@ export default function EventFormPage() {
                         endDate={`${formattedDate}, not selected`}
                     />
                     <EventFormActionButton onClick={() => null} label="Add"/>
+                    <MapWidget place={placeData}/>
                 </div>
             </div>
         );
