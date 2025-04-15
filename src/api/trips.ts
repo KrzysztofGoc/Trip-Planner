@@ -1,5 +1,8 @@
 import { API_URL } from "@/constants/apiUrl";
 import { Trip } from "@/types/trip";
+import { db } from "@/firebase";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+
 
 // Fetch all trips
 export const fetchTrips = async (): Promise<Trip[]> => {
@@ -22,3 +25,27 @@ export const fetchTrip = async ({ signal, tripId }: FetchTripParams): Promise<Tr
 
   return response.json();
 };
+
+// Create a new trip with a Firestore-generated ID
+export async function createTrip(): Promise<Trip> {
+  const tripData = {
+    name: "",
+    destination: "",
+    startDate: "",
+    endDate: "",
+    description: "",
+    image: "",
+    participants: [],
+    events: [],
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+  };
+
+  
+  const docRef = await addDoc(collection(db, "trips"), tripData);
+
+  return {
+    id: docRef.id,
+    ...tripData,
+  } as Trip;
+}

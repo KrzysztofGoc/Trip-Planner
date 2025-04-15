@@ -1,8 +1,27 @@
-import { Plus, UserRound, Plane } from "lucide-react";
+import { Plus, UserRound, Plane, Loader2 } from "lucide-react";
 import { Button } from "./ui/button";
-import { NavLink, Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
+import { createTrip } from "@/api/trips";
 
 export default function MainNavigation() {
+    const navigate = useNavigate();
+
+    const { mutate: handleCreateTrip, isPending } = useMutation({
+        mutationFn: createTrip,
+        onSuccess: (trip) => {
+            navigate(`/trips/${trip.id}`);
+        },
+        onError: (err) => {
+            console.error("Failed to create trip:", err);
+            // Optional: Show toast or error message
+        }
+    });
+
+    function handleAddTrip() {
+        handleCreateTrip();
+    }
 
     const navButtonStyle = (isActive: boolean) =>
         `flex flex-col items-center justify-end w-3/4 h-14.5 transition-[color] ${isActive ? "text-red-400 stroke" : ""}`;
@@ -21,10 +40,16 @@ export default function MainNavigation() {
 
             <div className="relative flex justify-center size-full">
                 {/* Add Trip Button */}
-                <Button className="flex flex-col absolute -top-5 bg-red-400 rounded-full size-16 border-gray-50 border-0 shadow-2xl">
-                    <Link to="/trips/new">
-                        <Plus className="size-6" />
-                    </Link>
+                <Button
+                    onClick={handleAddTrip}
+                    disabled={isPending}
+                    className="flex flex-col items-center justify-center absolute -top-5 bg-red-400 rounded-full size-16 border-gray-50 border-0 shadow-2xl"
+                >
+                    {isPending ? (
+                        <Loader2 className="animate-spin size-6 text-white" />
+                    ) : (
+                        <Plus className="size-6 text-white" />
+                    )}
                 </Button>
             </div>
 
