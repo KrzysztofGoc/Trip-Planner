@@ -18,6 +18,7 @@ const router = createBrowserRouter([
       { index: true, element: <Navigate to="trips" replace /> },
       { path: 'trips', element: <TripsPage /> },
       { path: 'trips/:tripId', element: <TripPage /> },
+      { path: 'trips/new', element: <TripPage /> },
       { path: 'trips/:tripId/map', element: <FullMapPage /> },
       { path: 'trips/:tripId/:dayNumber/add', element: <PlacesListPage /> },
       { path: 'trips/:tripId/:dayNumber/add/:placeId', element: <EventFormPage /> },
