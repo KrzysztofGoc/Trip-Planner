@@ -1,21 +1,40 @@
 import { TripEvent } from "@/types/tripEvent";
-import { fetchTrip } from "./trips";
-
+import { db } from "@/firebase";
+import { collection, getDocs, doc, getDoc } from "firebase/firestore";
 interface FetchTripEventParams {
-    signal?: AbortSignal;
     tripId: string | undefined;
     eventId: string | undefined;
 }
 
-export const fetchTripEvent = async ({ signal, tripId, eventId }: FetchTripEventParams): Promise<TripEvent> => {
+interface FetchTripEventsParams {
+    tripId: string | undefined;
+}
+
+export const fetchTripEvent = async ({ tripId, eventId }: FetchTripEventParams): Promise<TripEvent> => {
     if (!tripId) throw new Error("Trip ID is missing");
     if (!eventId) throw new Error("Event ID is missing");
 
-    const tripData = await fetchTrip({ signal, tripId })
+    const eventRef = doc(db, "trips", tripId, "events", eventId);
+    const eventSnap = await getDoc(eventRef);
 
-    const event = tripData.events.find((event: TripEvent) => event.id === eventId);
+    if (!eventSnap.exists()) {
+        throw new Error(`Event with id ${eventId} not found`);
+    }
 
-    if (!event) throw new Error(`Event with id ${eventId} not found`);
+    return {
+        id: eventSnap.id,
+        ...eventSnap.data(),
+    } as TripEvent;
+};
 
-    return event;
+export const fetchTripEvents = async ({ tripId }: FetchTripEventsParams): Promise<TripEvent[]> => {
+    if (!tripId) throw new Error("Trip ID is missing");
+
+    const eventsRef = collection(db, "trips", tripId, "events");
+    const snapshot = await getDocs(eventsRef);
+
+    return snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+    })) as TripEvent[];
 };
