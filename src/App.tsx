@@ -9,6 +9,7 @@ import FullMapPage from "./pages/FullMapPage";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./api/queryClient";
 import { APIProvider } from '@vis.gl/react-google-maps';
+import { Toaster } from "sonner";
 
 const router = createBrowserRouter([
   {
@@ -33,6 +34,7 @@ function App() {
     <APIProvider apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
       <QueryClientProvider client={queryClient}>
         <RouterProvider router={router} />
+        <Toaster richColors position="top-center" swipeDirections={["right"]}/>
       </QueryClientProvider>
     </APIProvider>
   )

@@ -28,6 +28,7 @@ export const fetchTrip = async ({ signal, tripId }: FetchTripParams): Promise<Tr
 
 // Create a new trip with a Firestore-generated ID
 export async function createTrip(): Promise<Trip> {
+
   const tripData = {
     name: "",
     destination: "",
@@ -41,7 +42,7 @@ export async function createTrip(): Promise<Trip> {
     updatedAt: serverTimestamp(),
   };
 
-  
+
   const docRef = await addDoc(collection(db, "trips"), tripData);
 
   return {

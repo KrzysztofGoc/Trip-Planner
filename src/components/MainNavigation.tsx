@@ -1,21 +1,28 @@
-import { Plus, UserRound, Plane, Loader2 } from "lucide-react";
+import { Plus, UserRound, Plane } from "lucide-react";
 import { Button } from "./ui/button";
 import { NavLink } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { createTrip } from "@/api/trips";
+import { toast } from "sonner";
 
 export default function MainNavigation() {
     const navigate = useNavigate();
 
     const { mutate: handleCreateTrip, isPending } = useMutation({
         mutationFn: createTrip,
+        onMutate: () => {
+            toast.loading("Creating trip...", { id: "create-trip" });
+        },
         onSuccess: (trip) => {
+            toast.success("Trip created!", { id: "create-trip" });
             navigate(`/trips/${trip.id}`);
         },
         onError: (err) => {
-            console.error("Failed to create trip:", err);
-            // Optional: Show toast or error message
+            toast.error("Failed to create trip", {
+                description: err instanceof Error ? err.message : String(err),
+                id: "create-trip"
+            });
         }
     });
 
@@ -45,11 +52,7 @@ export default function MainNavigation() {
                     disabled={isPending}
                     className="flex flex-col items-center justify-center absolute -top-5 bg-red-400 rounded-full size-16 border-gray-50 border-0 shadow-2xl"
                 >
-                    {isPending ? (
-                        <Loader2 className="animate-spin size-6 text-white" />
-                    ) : (
-                        <Plus className="size-6 text-white" />
-                    )}
+                    <Plus className="size-6 text-white" />
                 </Button>
             </div>
 
