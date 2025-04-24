@@ -1,29 +1,37 @@
-import { API_URL } from "@/constants/apiUrl";
 import { Trip } from "@/types/trip";
 import { db } from "@/firebase";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { addDoc, getDoc, doc, collection, serverTimestamp, getDocs } from "firebase/firestore";
 
-
-// Fetch all trips
 export const fetchTrips = async (): Promise<Trip[]> => {
-  const response = await fetch(`${API_URL}/trips`);
-  if (!response.ok) throw new Error("Failed to fetch trips");
-  return response.json();
+  const tripsRef = collection(db, "trips");
+
+  const snapshot = await getDocs(tripsRef);
+
+  return snapshot.docs.map(doc => ({
+    id: doc.id,
+    ...doc.data(),
+  } as Trip));
 };
 
 interface FetchTripParams {
-  signal?: AbortSignal;
   tripId: string | undefined;
 }
 
 // Fetch trip with specific id
-export const fetchTrip = async ({ signal, tripId }: FetchTripParams): Promise<Trip> => {
+export const fetchTrip = async ({ tripId }: FetchTripParams): Promise<Trip> => {
   if (!tripId) throw new Error("Trip ID is missing");
 
-  const response = await fetch(`${API_URL}/trips/${tripId}`, { signal });
-  if (!response.ok) throw new Error(`Failed to fetch trip with id ${tripId}`);
+  const tripRef = doc(db, "trips", tripId);
+  const tripSnapshot = await getDoc(tripRef);
 
-  return response.json();
+  if (!tripSnapshot.exists()) {
+    throw new Error(`Trip with ID "${tripId}" not found.`);
+  }
+
+  return {
+    id: tripSnapshot.id,
+    ...tripSnapshot.data(),
+  } as Trip;
 };
 
 // Create a new trip with a Firestore-generated ID
