@@ -12,7 +12,7 @@ import TripDateRange from "@/components/Trip/TripDateRange";
 export default function TripPage() {
     const { tripId } = useParams();
     const { data: tripData, isLoading, isError, error } = useQuery({
-        queryFn: ({ signal }) => fetchTrip({ signal, tripId }),
+        queryFn: () => fetchTrip({ tripId }),
         queryKey: ["trips", { tripId: tripId }],
     });
 
@@ -55,7 +55,7 @@ export default function TripPage() {
                         <TripParticipantsList participants={tripData.participants} />
 
                         {/* Trip Timeline */}
-                        <TripTimeline startDate={startDate} endDate={endDate} events={tripData.events} />
+                        <TripTimeline startDate={startDate} endDate={endDate} tripId={tripId} />
                     </div>
                 </div>
             )}
