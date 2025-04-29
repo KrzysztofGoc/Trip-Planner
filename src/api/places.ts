@@ -1,19 +1,62 @@
-import { API_URL } from "@/constants/apiUrl";
 import { Place } from "@/types/place";
 
-export const fetchPlaces = async (): Promise<Place[]> => {
-    const response = await fetch(`${API_URL}/places`);
-    if (!response.ok) throw new Error("Failed to fetch places");
+export interface SearchPlacesParams {
+    query: string;
+    location: {
+        lat: number;
+        lng: number;
+    };
+}
 
-    return response.json();
-};
+export async function fetchPlaces({ query, location }: SearchPlacesParams): Promise<Place[]> {
+    await google.maps.importLibrary('places');
 
-// Fetch place by ID
+    const request = {
+        textQuery: query,
+        locationBias: location,
+        fields: ["id", "displayName", "location", "photos", "primaryTypeDisplayName", "formattedAddress"],
+        maxResultCount: 20,
+    };
+
+    const { places } = await google.maps.places.Place.searchByText(request);
+
+    if (!places) return [];
+
+    const returnedPlaces = places.map((place) => ({
+        id: place.id ?? "",
+        name: place.displayName ?? "Unknown Place",
+        category: place.primaryTypeDisplayName ?? "other",
+        img: place.photos?.[0]?.getURI() ?? "",
+        address: place.formattedAddress ?? "Unknown address",
+        lat: place.location?.lat ?? 0,
+        lng: place.location?.lng ?? 0,
+    })) as Place[];
+
+    return returnedPlaces;
+}
+
 export const fetchPlace = async (placeId: string | undefined): Promise<Place> => {
     if (!placeId) throw new Error("Place ID is missing");
 
-    const response = await fetch(`${API_URL}/places/${placeId}`);
-    if (!response.ok) throw new Error(`Failed to fetch place with id ${placeId}`);
+    await google.maps.importLibrary('places');
 
-    return response.json();
-}
+    const selectedPlace = new google.maps.places.Place({ id: placeId });
+
+    const { place } = await selectedPlace.fetchFields({
+        fields: ["id", "displayName", "location", "photos", "formattedAddress", "primaryTypeDisplayName"],
+    });
+
+    if (!place) {
+        throw new Error(`Failed to fetch place with id ${placeId}`);
+    }
+
+    return {
+        id: place.id ?? "",
+        name: place.displayName ?? "Unknown Place",
+        category: place.primaryTypeDisplayName ?? "other",
+        img: place.photos?.[0]?.getURI() ?? "",
+        address: place.formattedAddress ?? "Unknown address",
+        lat: place.location?.lat() ?? 0,
+        lng: place.location?.lng() ?? 0,
+    };
+};
