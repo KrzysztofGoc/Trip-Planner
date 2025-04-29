@@ -8,7 +8,7 @@ export default function PlacesGrid() {
     const { tripId, dayNumber } = useParams();
     const { data: places, isLoading, isError, error } = useQuery({
         queryKey: ["places"],
-        queryFn: fetchPlaces,
+        queryFn: () => fetchPlaces({query: "breakfast", location: { lat: 46.2044, lng: 6.1432 }}),
     });
 
     function handlePlaceClick(placeId: string) {

@@ -33,7 +33,7 @@ export default function EventFormPage() {
         error: tripError,
     } = useQuery<Trip>({
         queryKey: ["trip", tripId],
-        queryFn: ({ signal }) => fetchTrip({ signal, tripId }),
+        queryFn: () => fetchTrip({ tripId }),
     });
 
     const {
