@@ -1,6 +1,6 @@
 import { Trip } from "@/types/trip";
 import { db } from "@/firebase";
-import { addDoc, getDoc, doc, collection, serverTimestamp, getDocs } from "firebase/firestore";
+import { addDoc, getDoc, doc, collection, serverTimestamp, getDocs, updateDoc } from "firebase/firestore";
 
 export const fetchTrips = async (): Promise<Trip[]> => {
   const tripsRef = collection(db, "trips");
@@ -35,21 +35,19 @@ export const fetchTrip = async ({ tripId }: FetchTripParams): Promise<Trip> => {
 };
 
 // Create a new trip with a Firestore-generated ID
-export async function createTrip(): Promise<Trip> {
-
+export const createTrip = async (): Promise<Trip> => {
   const tripData = {
     name: "",
     destination: "",
     startDate: "",
     endDate: "",
     description: "",
-    image: "",
+    image: null,
     participants: [],
     events: [],
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   };
-
 
   const docRef = await addDoc(collection(db, "trips"), tripData);
 
@@ -57,4 +55,18 @@ export async function createTrip(): Promise<Trip> {
     id: docRef.id,
     ...tripData,
   } as Trip;
+}
+
+
+interface UpdateTripImageParams {
+  tripId: string | undefined;
+  imageUrl: string | null;
+}
+
+export async function updateTripImage({ tripId, imageUrl, }: UpdateTripImageParams): Promise<void> {
+  if (!tripId) throw new Error("Trip ID is missing");
+  if (!imageUrl) throw new Error("Image URL is missing");
+
+  const ref = doc(db, "trips", tripId);
+  await updateDoc(ref, { image: imageUrl });
 }
