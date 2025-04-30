@@ -8,7 +8,7 @@ export interface Trip {
     startDate: string;
     endDate: string;
     description: string;
-    image: string;
+    image: string | null;
     participants: Participant[],
     events: TripEvent[];
   }
