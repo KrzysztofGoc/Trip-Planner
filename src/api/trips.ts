@@ -70,3 +70,29 @@ export async function updateTripImage({ tripId, imageUrl, }: UpdateTripImagePara
   const ref = doc(db, "trips", tripId);
   await updateDoc(ref, { image: imageUrl });
 }
+
+export interface UpdateTripNameParams {
+  tripId: string | undefined;
+  name: string;
+}
+
+export async function updateTripName({ tripId, name, }: UpdateTripNameParams): Promise<void> {
+  if (!tripId) throw new Error("Trip ID is missing");
+  if (!name) throw new Error("Trip name is missing");
+
+  const ref = doc(db, "trips", tripId);
+  await updateDoc(ref, { name });
+}
+
+export interface UpdateTripDestinationParams {
+  tripId: string | undefined;
+  destination: string;
+}
+
+export async function updateTripDestination({ tripId, destination, }: UpdateTripDestinationParams): Promise<void> {
+  if (!tripId) throw new Error("Trip ID is missing");
+  if (!destination) throw new Error("Trip destination is missing");
+
+  const ref = doc(db, "trips", tripId);
+  await updateDoc(ref, { destination });
+}
