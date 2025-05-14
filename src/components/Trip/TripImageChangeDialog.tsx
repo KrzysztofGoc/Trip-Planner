@@ -18,9 +18,9 @@ export default function TripImageChangeDialog({ open, onClose, tripId }: TripIma
 
   const { mutate: updateImage, isPending } = useMutation({
     mutationFn: () => updateTripImage({ tripId, imageUrl: selectedUrl }),
-    onError: () => toast.error("Failed to update image"),
+    onError: () => toast.error("Failed to update image", { id: "update-trip-image" }),
     onSuccess: () => {
-      toast.success("Image updated");
+      toast.success("Image updated", { id: "update-trip-image" });
       queryClient.invalidateQueries({ queryKey: ["trips", { tripId: tripId }] });
       setSelectedUrl(null);
       onClose();
