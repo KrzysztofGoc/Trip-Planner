@@ -4,7 +4,7 @@ import { fetchTrip } from "@/api/trips";
 import { useQuery } from "@tanstack/react-query";
 import TripNavigation from "@/components/Trip/TripNavigation";
 import TripImage from "@/components/Trip/TripImage";
-import TripHeader from "@/components/Trip/TripHeader";
+import TripHeader from "@/components/Trip/TripHeader/TripHeader";
 import TripDateRange from "@/components/Trip/TripDateRange";
 import { Place } from "@/types/place";
 import { Trip } from "@/types/trip";

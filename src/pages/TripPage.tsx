@@ -6,7 +6,7 @@ import TripParticipantsList from "@/components/Trip/TripParticipantsList";
 import TripTimeline from "@/components/Timeline/TripTimeline";
 import TripNavigation from "@/components/Trip/TripNavigation";
 import TripImage from "@/components/Trip/TripImage";
-import TripHeader from "@/components/Trip/TripHeader";
+import TripHeader from "@/components/Trip/TripHeader/TripHeader";
 import TripDateRange from "@/components/Trip/TripDateRange";
 
 export default function TripPage() {
@@ -46,6 +46,7 @@ export default function TripPage() {
                             name={tripData.name}
                             destination={tripData.destination}
                             formattedDate={`${startDate} - ${endDate}`}
+                            tripId={tripId}
                         />
 
                         {/* Date Range */}
