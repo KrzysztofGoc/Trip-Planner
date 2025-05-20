@@ -60,3 +60,24 @@ export const fetchPlace = async (placeId: string | undefined): Promise<Place> =>
         lng: place.location?.lng() ?? 0,
     };
 };
+
+export const fetchPlaceSuggestions = async (query: string): Promise<string[]> => {
+    if (!query) return [];
+
+    const { AutocompleteSuggestion, AutocompleteSessionToken } =
+        (await google.maps.importLibrary("places")) as google.maps.PlacesLibrary;
+
+    const sessionToken = new AutocompleteSessionToken();
+
+    const request: google.maps.places.AutocompleteRequest = {
+        input: query,
+        includedPrimaryTypes: ["country", "locality"],
+        sessionToken: sessionToken,
+    };
+
+    const { suggestions } = await AutocompleteSuggestion.fetchAutocompleteSuggestions(request);
+
+    const mappedSuggestions = suggestions.map((s) => s.placePrediction?.text.text || "");
+
+    return mappedSuggestions;
+};
