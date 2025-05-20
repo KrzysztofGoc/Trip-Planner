@@ -47,7 +47,6 @@ export default function TripNameEditor({ name, tripId }: TripNameEditorProps) {
     },
 
     onError: (_error, _data, context) => {
-      // Show error feedback
       toast.error("Failed to update name", { id: "trip-name-update" });
 
       // Rollback trip name in cache
