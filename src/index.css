@@ -118,7 +118,20 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+}
+
+@import "react-day-picker/dist/style.css";
+
+.rdp-range_start .rdp-day_button,
+.rdp-range_end .rdp-day_button {
+  border-radius: 0.75rem;
+}
+
+.rdp-root {
+  --rdp-accent-color: oklch(70.4% 0.191 22.216);
+  --rdp-accent-background-color: oklch(97.1% 0.013 17.38);
 }
