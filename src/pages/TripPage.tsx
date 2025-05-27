@@ -1,13 +1,12 @@
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { fetchTrip } from "@/api/trips";
-import dayjs from 'dayjs';
 import TripParticipantsList from "@/components/Trip/TripParticipantsList";
 import TripTimeline from "@/components/Timeline/TripTimeline";
 import TripNavigation from "@/components/Trip/TripNavigation";
 import TripImage from "@/components/Trip/TripImage";
 import TripHeader from "@/components/Trip/TripHeader/TripHeader";
-import TripDateRange from "@/components/Trip/TripDateRange";
+import TripDateRange from "@/components/Trip/TripDateRange/TripDateRange";
 
 export default function TripPage() {
     const { tripId } = useParams();
@@ -23,10 +22,6 @@ export default function TripPage() {
     if (isLoading) {
         return (<p>Loading trip...</p>);
     }
-
-    const startDate = dayjs(tripData?.startDate).format("MMM D, YYYY");
-    const endDate = dayjs(tripData?.endDate).format("MMM D, YYYY");
-
 
     return (
         <>
@@ -45,18 +40,19 @@ export default function TripPage() {
                         <TripHeader
                             name={tripData.name}
                             destination={tripData.destination}
-                            formattedDate={`${startDate} - ${endDate}`}
+                            startDate={tripData.startDate}
+                            endDate={tripData.endDate}
                             tripId={tripId}
                         />
 
                         {/* Date Range */}
-                        <TripDateRange startDate={startDate} endDate={endDate} />
+                        <TripDateRange startDate={tripData.startDate} endDate={tripData.endDate} tripId={tripId} />
 
                         {/* Participants and Hosted By */}
                         <TripParticipantsList participants={tripData.participants} />
 
                         {/* Trip Timeline */}
-                        <TripTimeline startDate={startDate} endDate={endDate} tripId={tripId} />
+                        <TripTimeline startDate={tripData.startDate} endDate={tripData.endDate} tripId={tripId} />
                     </div>
                 </div>
             )}
