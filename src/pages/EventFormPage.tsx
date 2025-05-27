@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import TripNavigation from "@/components/Trip/TripNavigation";
 import TripImage from "@/components/Trip/TripImage";
 import TripHeader from "@/components/Trip/TripHeader/TripHeader";
-import TripDateRange from "@/components/Trip/TripDateRange";
+import TripDateRange from "@/components/Trip/TripDateRange/TripDateRange";
 import { Place } from "@/types/place";
 import { Trip } from "@/types/trip";
 import dayjs from "dayjs";

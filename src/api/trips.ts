@@ -1,16 +1,20 @@
 import { Trip } from "@/types/trip";
 import { db } from "@/firebase";
-import { addDoc, getDoc, doc, collection, serverTimestamp, getDocs, updateDoc } from "firebase/firestore";
+import { addDoc, getDoc, doc, collection, serverTimestamp, getDocs, updateDoc, Timestamp } from "firebase/firestore";
 
 export const fetchTrips = async (): Promise<Trip[]> => {
   const tripsRef = collection(db, "trips");
-
   const snapshot = await getDocs(tripsRef);
 
-  return snapshot.docs.map(doc => ({
-    id: doc.id,
-    ...doc.data(),
-  } as Trip));
+  return snapshot.docs.map(docSnap => {
+    const data = docSnap.data();
+    return {
+      id: docSnap.id,
+      ...data,
+      startDate: data.startDate instanceof Timestamp ? data.startDate.toDate() : data.startDate,
+      endDate: data.endDate instanceof Timestamp ? data.endDate.toDate() : data.endDate,
+    } as Trip;
+  });
 };
 
 interface FetchTripParams {
@@ -28,9 +32,13 @@ export const fetchTrip = async ({ tripId }: FetchTripParams): Promise<Trip> => {
     throw new Error(`Trip with ID "${tripId}" not found.`);
   }
 
+  const data = tripSnapshot.data();
+
   return {
     id: tripSnapshot.id,
-    ...tripSnapshot.data(),
+    ...data,
+    startDate: data.startDate instanceof Timestamp ? data.startDate.toDate() : data.startDate,
+    endDate: data.endDate instanceof Timestamp ? data.endDate.toDate() : data.endDate,
   } as Trip;
 };
 
@@ -39,8 +47,8 @@ export const createTrip = async (): Promise<Trip> => {
   const tripData = {
     name: "",
     destination: "",
-    startDate: "",
-    endDate: "",
+    startDate: null,
+    endDate: null,
     description: "",
     image: null,
     participants: [],
@@ -71,7 +79,7 @@ export async function updateTripImage({ tripId, imageUrl, }: UpdateTripImagePara
   await updateDoc(ref, { image: imageUrl });
 }
 
-export interface UpdateTripNameParams {
+interface UpdateTripNameParams {
   tripId: string | undefined;
   name: string;
 }
@@ -84,7 +92,7 @@ export async function updateTripName({ tripId, name, }: UpdateTripNameParams): P
   await updateDoc(ref, { name });
 }
 
-export interface UpdateTripDestinationParams {
+interface UpdateTripDestinationParams {
   tripId: string | undefined;
   destination: string;
 }
@@ -96,3 +104,22 @@ export async function updateTripDestination({ tripId, destination, }: UpdateTrip
   const ref = doc(db, "trips", tripId);
   await updateDoc(ref, { destination });
 }
+
+type UpdateTripDateRangeParams = {
+  tripId: string | undefined;
+  startDate: Date | undefined;
+  endDate: Date | undefined;
+}
+
+export const updateTripDateRange = async ({ tripId, startDate, endDate }: UpdateTripDateRangeParams) => {
+  if (!tripId) throw new Error("Trip ID is missing");
+  if (!startDate) throw new Error("Start date is missing");
+  if (!endDate) throw new Error("End date is missing");
+
+  const tripRef = doc(db, "trips", tripId);
+  await updateDoc(tripRef, {
+    startDate: Timestamp.fromDate(startDate),
+    endDate: Timestamp.fromDate(endDate),
+    updatedAt: new Date(),
+  });
+};

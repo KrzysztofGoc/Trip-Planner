@@ -8,8 +8,8 @@ import dayjs from "dayjs";
 
 interface TrimTimelineProps {
     tripId: string | undefined,
-    startDate: string,
-    endDate: string,
+    startDate: Date,
+    endDate: Date,
 }
 
 export default function TripTimeline({ tripId, startDate, endDate }: TrimTimelineProps) {
