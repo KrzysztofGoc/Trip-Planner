@@ -2,23 +2,47 @@ import TripDestinationEditor from "./TripDestinationEditor";
 import TripNameEditor from "./TripNameEditor";
 import dayjs from "dayjs";
 
-interface TripHeaderProps {
-  name: string;
-  destination: string;
-  startDate: Date | undefined;
-  endDate: Date | undefined;
-  tripId: string | undefined;
-}
+// Define a union type for props based on mode
+type TripHeaderProps =
+  | { mode: 'event'; name: string; destination: string; formattedDate: string }
+  | { mode: 'trip'; name: string; destination: string; startDate: Date; endDate: Date; tripId: string | undefined };
+// Editable mode requires tripId
 
-export default function TripHeader({ name, destination, startDate, endDate, tripId }: TripHeaderProps) {
-  const formattedDate = `${dayjs(startDate).format("MMM D, YYYY")} - ${dayjs(endDate).format("MMM D, YYYY")}`;
+export default function TripHeader(props: TripHeaderProps) {
+
+  const isTrip = props.mode === "trip";
+  const isEvent = props.mode === "event";
+  let formattedDate;
+
+  if (isTrip) {
+    formattedDate = `${dayjs(props.startDate).format("MMM D, YYYY")} - ${dayjs(props.endDate).format("MMM D, YYYY")}`;
+  }
+
+  if (isEvent) {
+    formattedDate = props.formattedDate;
+  }
+
 
   return (
     <div className="flex flex-col gap-1">
-      {formattedDate && (<p className="text-sm text-gray-400">{formattedDate}</p>)}
+      <p className="text-sm text-gray-400">{formattedDate}</p>
 
-      <TripNameEditor name={name} tripId={tripId} />
-      <TripDestinationEditor destination={destination} tripId={tripId} />
+      {isTrip && (
+        <>
+          {/* Editable mode - Name and Destination Editors */}
+          <TripNameEditor name={props.name} tripId={props.tripId} />
+          <TripDestinationEditor destination={props.destination} tripId={props.tripId} />
+        </>
+      )}
+      {isEvent && (
+        <>
+          {/* Display mode - Static Name and Destination */}
+          <h1 className="-ml-[3px] text-3xl font-bold py-1 border-1 border-transparent break-all">
+            {props.name}
+          </h1>
+          <p className="-ml-[1px] text-base text-gray-500 py-1">{props.destination}</p>
+        </>
+      )}
     </div>
   );
 }

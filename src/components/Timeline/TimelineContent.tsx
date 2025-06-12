@@ -2,7 +2,7 @@ import TimelineEvent from "./TimelineEvent";
 import TimelineAddEventButton from "./TimelineAddEventButton";
 import { TripEvent } from "@/types/tripEvent";
 
-interface TimelineContentProps {
+type TimelineContentProps = {
     events: TripEvent[];
     dayNumber: number,
 }
@@ -18,7 +18,7 @@ export default function TimelineContent({ events, dayNumber }: TimelineContentPr
                 ))
             )}
 
-            <TimelineAddEventButton dayId={dayNumber} />
+            <TimelineAddEventButton dayNumber={dayNumber} />
         </div>
     );
 }
