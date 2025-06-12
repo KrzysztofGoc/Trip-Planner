@@ -31,13 +31,14 @@ export default function TripPage() {
                     <TripNavigation />
 
                     {/* Image Container */}
-                    <TripImage imageUrl={tripData.image} tripId={tripId} />
+                    <TripImage mode="editable" imageUrl={tripData.image} tripId={tripId} />
 
                     {/* Trip Data Container */}
                     <div className="size-auto h-2/3 flex flex-col px-6 pt-6 gap-6">
 
                         {/* Trip Header */}
                         <TripHeader
+                            mode="trip"
                             name={tripData.name}
                             destination={tripData.destination}
                             startDate={tripData.startDate}

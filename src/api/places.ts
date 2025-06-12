@@ -23,7 +23,7 @@ export async function fetchPlaces({ query, location }: SearchPlacesParams): Prom
     if (!places) return [];
 
     const returnedPlaces = places.map((place) => ({
-        id: place.id ?? "",
+        id: place.id,
         name: place.displayName ?? "Unknown Place",
         category: place.primaryTypeDisplayName ?? "other",
         img: place.photos?.[0]?.getURI() ?? "",
@@ -51,7 +51,7 @@ export const fetchPlace = async (placeId: string | undefined): Promise<Place> =>
     }
 
     return {
-        id: place.id ?? "",
+        id: place.id,
         name: place.displayName ?? "Unknown Place",
         category: place.primaryTypeDisplayName ?? "other",
         img: place.photos?.[0]?.getURI() ?? "",
