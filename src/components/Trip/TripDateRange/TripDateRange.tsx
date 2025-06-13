@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import TripDateRangeEditor from "./TripDateRangeEditor";
 import TripDateRangePreview from "./TripDateRangePreview";
 import { ChevronDown } from "lucide-react";
@@ -18,6 +18,11 @@ export default function TripDateRange({ startDate, endDate, tripId }: TripDateRa
         to: endDate,
     });
 
+    useEffect(() => {
+        // Whenever startDate or endDate props change (i.e. after a rollback), update local state
+        setRange({ from: startDate, to: endDate });
+    }, [startDate, endDate]);
+
     // Formatted dates derived from range
     const formattedStartDate = range?.from ? dayjs(range.from).format("MMM D, YYYY") : "Not selected";
     const formattedEndDate = range?.to ? dayjs(range.to).format("MMM D, YYYY") : "Not selected";
@@ -25,7 +30,7 @@ export default function TripDateRange({ startDate, endDate, tripId }: TripDateRa
     return (
         <div className={`flex flex-col items-center justify-center border-1 border-gray-200 gap-2 px-6 pt-6 rounded-lg shadow-md ${editing && "pb-6"}`}>
 
-            <TripDateRangePreview startDate={formattedStartDate} endDate={formattedEndDate} />
+            <TripDateRangePreview formattedStart={formattedStartDate} formattedEnd={formattedEndDate} />
 
             {editing && (
                 <TripDateRangeEditor

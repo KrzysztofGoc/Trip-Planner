@@ -12,8 +12,6 @@ export default function TripImage(props: TripImageProps) {
 
   const isTrip = props.mode === "trip";
 
-  console.log(props.imageUrl);
-
   return (
     <div className="relative w-auto h-1/3">
       <img

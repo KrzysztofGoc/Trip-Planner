@@ -41,7 +41,7 @@ export default function TripTimeline({ tripId, startDate, endDate }: TrimTimelin
         const dayDateLabel = dayjs(dayDate).format("MMM D");
         // Select events for this date (compare only date part)
         const dayEvents = (events ?? []).filter(event =>
-            dayjs(event.eventDate).isSame(dayDate, "day")
+            dayjs(event.from).isSame(dayDate, "day")
         );
 
         timelineDays.push(

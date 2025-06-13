@@ -1,17 +1,14 @@
 import { TripEvent } from "@/types/tripEvent";
 import { db } from "@/firebase";
 import { collection, getDocs, doc, getDoc, DocumentData } from "firebase/firestore";
+import dayjs from "dayjs";
 
 interface FetchTripEventParams {
   tripId: string | undefined;
   eventId: string | undefined;
 }
 
-interface FetchTripEventsParams {
-  tripId: string | undefined;
-}
-
-// Helper to convert Firestore data to TripEvent with eventDate as Date
+// Helper to convert Firestore data to TripEvent with from and to as Date
 const parseTripEvent = (id: string, data: DocumentData): TripEvent => {
 
   const parsedTripEvent = {
@@ -22,9 +19,8 @@ const parseTripEvent = (id: string, data: DocumentData): TripEvent => {
     address: data.address,
     lat: data.lat,
     lng: data.lng,
-    from: data.from,
-    to: data.to,
-    eventDate: data.eventDate.toDate(), // Convert Firestore Timestamp to JS Date
+    from: data.from.toDate(),
+    to: data.to.toDate(),
   };
 
   return parsedTripEvent;
@@ -44,11 +40,35 @@ export const fetchTripEvent = async ({ tripId, eventId }: FetchTripEventParams):
   return parseTripEvent(eventSnap.id, eventSnap.data());
 };
 
+type FetchTripEventsParams = {
+  tripId: string | undefined;
+}
+
 export const fetchTripEvents = async ({ tripId }: FetchTripEventsParams): Promise<TripEvent[]> => {
   if (!tripId) throw new Error("Trip ID is missing");
 
   const eventsRef = collection(db, "trips", tripId, "events");
   const snapshot = await getDocs(eventsRef);
 
-  return snapshot.docs.map(doc => parseTripEvent(doc.id, doc.data()));
+  const data = snapshot.docs.map(doc => parseTripEvent(doc.id, doc.data()));
+
+  return data;
+};
+
+/**
+ * Fetch all events for a trip **on a specific day**
+ * @param tripId Trip id
+ * @param dayDate Date object for the day
+ */
+export const fetchTripEventsForDay = async (tripId: string | undefined, dayDate: Date): Promise<TripEvent[]> => {
+  if (!tripId) throw new Error("Trip ID is missing");
+
+  // Fetch all events for this trip (client-side filter)
+  const eventsRef = collection(db, "trips", tripId, "events");
+  const snapshot = await getDocs(eventsRef);
+
+  const allEvents = snapshot.docs.map(doc => parseTripEvent(doc.id, doc.data()));
+
+  // Only events whose 'from' is on the same calendar day as 'dayDate'
+  return allEvents.filter(ev => dayjs(ev.from).isSame(dayDate, "day"));
 };

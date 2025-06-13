@@ -8,7 +8,6 @@ export interface TripEvent {
     address: string;
     lat: number;
     lng: number;
-    from: string;
-    to: string;
-    eventDate: Timestamp;
+    from: Timestamp;
+    to: Timestamp;
 }
