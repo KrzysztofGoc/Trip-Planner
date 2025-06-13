@@ -1,6 +1,8 @@
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import { TripEvent } from "./types/event";
+import { Timestamp, FieldValue } from "firebase-admin/firestore";
+import dayjs from "dayjs";
 
 admin.initializeApp();
 
@@ -14,13 +16,13 @@ export const updateTripDateRange = onCall(async (request) => {
     throw new HttpsError("invalid-argument", "Missing data: tripId, startDate, endDate required.");
   }
 
-  const newStart = new Date(startDate);
-  const newEnd = new Date(endDate);
+  const newFrom = new Date(startDate);
+  const newTo = new Date(endDate);
 
-  if (isNaN(newStart.getTime()) || isNaN(newEnd.getTime())) {
+  if (isNaN(newFrom.getTime()) || isNaN(newTo.getTime())) {
     throw new HttpsError("invalid-argument", "Invalid dates provided.");
   }
-  if (newStart > newEnd) {
+  if (newFrom > newTo) {
     throw new HttpsError("invalid-argument", "Start date must be before or equal to end date.");
   }
 
@@ -37,22 +39,45 @@ export const updateTripDateRange = onCall(async (request) => {
   const snapshot = await eventsRef.get();
 
   const batch = admin.firestore().batch();
+  const orphans: TripEvent[] = [];
 
   snapshot.forEach(doc => {
     const data = doc.data() as TripEvent;
-    const rawDate = data.eventDate.toDate(); // Handle Firestore Timestamp
-    if (!(rawDate instanceof Date) || isNaN(rawDate.getTime())) return; // skip malformed
 
-    if (rawDate < newStart || rawDate > newEnd) {
-      batch.delete(doc.ref); // Delete orphaned event
+    // Defensive checks
+    if (!data.from || !data.to) return;
+
+    let fromDate: Date;
+    let toDate: Date;
+
+    if (data.from instanceof Timestamp) {
+      fromDate = data.from.toDate();
+    } else {
+      return;
+    }
+
+    if (data.to instanceof Timestamp) {
+      toDate = data.to.toDate();
+    } else {
+      return;
+    }
+
+    if (isNaN(toDate.getTime()) || isNaN(fromDate.getTime())) return; // skip malformed
+
+    if (
+      dayjs(fromDate).isBefore(newFrom, "day") ||
+      dayjs(toDate).isAfter(newTo, "day")
+    ) {
+      orphans.push(data);
+      batch.delete(doc.ref);
     }
   });
 
   // Update trip document
   batch.update(tripRef, {
-    startDate: admin.firestore.Timestamp.fromDate(newStart),
-    endDate: admin.firestore.Timestamp.fromDate(newEnd),
-    updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    startDate: Timestamp.fromDate(newFrom),
+    endDate: Timestamp.fromDate(newTo),
+    updatedAt: FieldValue.serverTimestamp(),
   });
 
   // Commit changes

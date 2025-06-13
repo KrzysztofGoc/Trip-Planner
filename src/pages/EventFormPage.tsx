@@ -5,7 +5,6 @@ import { useQuery } from "@tanstack/react-query";
 import TripNavigation from "@/components/Trip/TripNavigation";
 import TripImage from "@/components/Trip/TripImage";
 import TripHeader from "@/components/Trip/TripHeader/TripHeader";
-import TripDateRange from "@/components/Trip/TripDateRange/TripDateRange";
 import { Place } from "@/types/place";
 import { Trip } from "@/types/trip";
 import { TripEvent } from "@/types/tripEvent";
@@ -13,9 +12,10 @@ import dayjs from "dayjs";
 import EventFormActionButton from "@/components/EventFormActionButton";
 import MapWidget from "@/components/Map/MapWidget";
 import { fetchTripEvent } from "@/api/events"; // Updated fetch function to get event data
+import EventTimeRange from "@/components/EventTimeRange/EventTimeRange";
 
-function getTripDayDate(startDate: Date, day: number) {
-    return dayjs(startDate).add(day - 1, "day").format("MMM D");
+function getTripDayDateObj(startDate: Date, day: number) {
+    return dayjs(startDate).add(day - 1, "day").toDate();
 }
 
 export default function EventFormPage() {
@@ -66,7 +66,7 @@ export default function EventFormPage() {
             throw new Error("No event found.");
         };
 
-        const eventDate = dayjs(eventData.eventDate);
+        const eventDate = dayjs(eventData.from);
         const tripStartDate = dayjs(tripData.startDate);
 
         const eventDay = eventDate.diff(tripStartDate, "days") + 1; // Calculate dayNumber (1-based)
@@ -74,8 +74,18 @@ export default function EventFormPage() {
 
         const formattedDate = `Day ${eventDay}, ${formattedEventDate}`;
 
+        const placeData = {
+            id: eventData.id,
+            name: eventData.name,
+            category: eventData.category,
+            img: eventData.img,
+            address: eventData.address,
+            lat: eventData.lat,
+            lng: eventData.lng
+        }
+
         return (
-            <div className="size-auto flex flex-col">
+            <div className="size-auto flex flex-col pb-32">
                 <TripNavigation />
                 <TripImage mode="event" imageUrl={eventData.img} />
 
@@ -86,11 +96,15 @@ export default function EventFormPage() {
                         destination={eventData.address}
                         formattedDate={formattedDate}
                     />
-                    {/* <TripDateRange
-                        startDate={`${formattedDate}, ${eventData.from}`}
-                        endDate={`${formattedDate}, ${eventData.to}`}
-                    /> */}
+                    <EventTimeRange
+                        mode="edit"
+                        tripId={tripId}
+                        eventId={eventId}
+                        from={eventData.from}
+                        to={eventData.to}
+                    />
                     <EventFormActionButton onClick={() => null} label="Save" />
+                    <MapWidget place={placeData} />
                 </div>
             </div>
         );
@@ -103,13 +117,15 @@ export default function EventFormPage() {
             throw new Error("No place found.")
         }
 
-        // If adding event the day is derived from route param
+        // If adding event, the day is derived from route param
         const day = Number(dayNumber);
-        const formattedDate = getTripDayDate(tripData.startDate, day);
+        const addingDate = getTripDayDateObj(tripData.startDate, day);
+
+        const formattedDate = dayjs(addingDate).format("MMM D");
         const formattedDayDate = `Day ${day}, ${formattedDate}`;
 
         return (
-            <div className="size-auto flex flex-col pb-84">
+            <div className="size-auto flex flex-col pb-32">
                 <TripNavigation />
                 <TripImage mode="event" imageUrl={placeData.img} />
 
@@ -120,10 +136,11 @@ export default function EventFormPage() {
                         destination={placeData.address}
                         formattedDate={formattedDayDate}
                     />
-                    {/* <TripDateRange
-                        startDate={`${formattedDate}, not selected`}
-                        endDate={`${formattedDate}, not selected`}
-                    /> */}
+                    <EventTimeRange
+                        mode="add"
+                        tripId={tripId}
+                        addingDate={addingDate}
+                    />
                     <EventFormActionButton onClick={() => null} label="Add" />
                     <MapWidget place={placeData} />
                 </div>
