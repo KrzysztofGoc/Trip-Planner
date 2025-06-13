@@ -4,13 +4,13 @@ import { Button } from "../ui/button";
 import TripImageChangeDialog from "./TripImageChangeDialog";
 
 type TripImageProps =
-  | { mode: 'display'; imageUrl: string | null }  // Display mode
-  | { mode: 'editable'; imageUrl: string | null; tripId: string | undefined}; // Editable mode requires `tripId`
+  | { mode: 'event'; imageUrl: string | null }  // Display mode
+  | { mode: 'trip'; imageUrl: string | null; tripId: string | undefined}; // Editable mode requires `tripId`
 
 export default function TripImage(props: TripImageProps) {
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  const isEditable = props.mode === "editable";
+  const isTrip = props.mode === "trip";
 
   console.log(props.imageUrl);
 
@@ -22,7 +22,7 @@ export default function TripImage(props: TripImageProps) {
         alt="Trip Cover"
       />
 
-      {isEditable && (
+      {isTrip && (
         <>
           <Button
             size={null}

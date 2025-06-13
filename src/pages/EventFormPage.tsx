@@ -77,7 +77,7 @@ export default function EventFormPage() {
         return (
             <div className="size-auto flex flex-col">
                 <TripNavigation />
-                <TripImage mode="display" imageUrl={eventData.img} />
+                <TripImage mode="event" imageUrl={eventData.img} />
 
                 <div className="size-auto h-2/3 flex flex-col px-6 pt-6 gap-6">
                     <TripHeader
@@ -111,7 +111,7 @@ export default function EventFormPage() {
         return (
             <div className="size-auto flex flex-col pb-84">
                 <TripNavigation />
-                <TripImage mode="display" imageUrl={placeData.img} />
+                <TripImage mode="event" imageUrl={placeData.img} />
 
                 <div className="size-auto h-2/3 flex flex-col px-6 pt-6 gap-6">
                     <TripHeader
