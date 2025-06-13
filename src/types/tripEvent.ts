@@ -1,4 +1,4 @@
-export interface TripEvent {
+export type TripEvent = {
   id: string;
   name: string;
   category: string;
@@ -6,7 +6,6 @@ export interface TripEvent {
   address: string;
   lat: number;
   lng: number;
-  eventDate: Date;
-  from: string;
-  to: string;
+  from: Date;
+  to: Date;
 }
