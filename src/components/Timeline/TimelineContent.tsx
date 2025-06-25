@@ -5,16 +5,17 @@ import { TripEvent } from "@/types/tripEvent";
 type TimelineContentProps = {
     events: TripEvent[];
     dayNumber: number,
+    tripId: string | undefined,
 }
 
-export default function TimelineContent({ events, dayNumber }: TimelineContentProps) {
+export default function TimelineContent({ events, dayNumber, tripId }: TimelineContentProps) {
     return (
-        <div className="flex flex-col gap-2 pr-4">
-            {!events || events.length === 0 ? (
+        <div className="flex flex-col gap-2 pr-0">
+            {events.length === 0 ? (
                 <p className="text-gray-500 italic">No events planned for this day.</p>
             ) : (
                 events.map((event) => (
-                    <TimelineEvent key={event.id} event={event} />
+                    <TimelineEvent key={event.id} event={event} tripId={tripId} />
                 ))
             )}
 
