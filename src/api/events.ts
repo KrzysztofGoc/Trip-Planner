@@ -1,6 +1,6 @@
 import { TripEvent } from "@/types/tripEvent";
 import { db } from "@/firebase";
-import { collection, getDocs, doc, getDoc, DocumentData } from "firebase/firestore";
+import { collection, getDocs, doc, getDoc, DocumentData, deleteDoc } from "firebase/firestore";
 import dayjs from "dayjs";
 
 interface FetchTripEventParams {
@@ -71,4 +71,23 @@ export const fetchTripEventsForDay = async (tripId: string | undefined, dayDate:
 
   // Only events whose 'from' is on the same calendar day as 'dayDate'
   return allEvents.filter(ev => dayjs(ev.from).isSame(dayDate, "day"));
+};
+
+
+interface DeleteTripEventParams {
+  tripId: string | undefined;
+  eventId: string | undefined;
+}
+
+/**
+ * Delete a single trip event from Firestore.
+ * @param tripId - Trip id
+ * @param eventId - Event id
+ */
+export const deleteTripEvent = async ({ tripId, eventId }: DeleteTripEventParams): Promise<void> => {
+  if (!tripId) throw new Error("Trip ID is missing");
+  if (!eventId) throw new Error("Event ID is missing");
+
+  const eventRef = doc(db, "trips", tripId, "events", eventId);
+  await deleteDoc(eventRef);
 };
