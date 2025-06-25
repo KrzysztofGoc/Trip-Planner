@@ -16,7 +16,7 @@ export default function TripTimeline({ tripId, startDate, endDate }: TrimTimelin
 
     const numberOfDays = dayjs(endDate).diff(startDate, "days") + 1;
 
-    const { data: events, isLoading, isError } = useQuery<TripEvent[]>({
+    const { data: events = [], isLoading, isError } = useQuery<TripEvent[]>({
         queryKey: ["events", { tripId }],
         queryFn: () => fetchTripEvents({ tripId }),
         enabled: numberOfDays > 0,
@@ -39,15 +39,15 @@ export default function TripTimeline({ tripId, startDate, endDate }: TrimTimelin
         const dayNumber = i + 1;
         const dayDate = dayjs(startDate).add(i, "days").toDate();
         const dayDateLabel = dayjs(dayDate).format("MMM D");
-        // Select events for this date (compare only date part)
-        const dayEvents = (events ?? []).filter(event =>
+        // Select events for this date (compare only day part)
+        const dayEvents = events.filter(event =>
             dayjs(event.from).isSame(dayDate, "day")
         );
 
         timelineDays.push(
             <TimelineDay key={dayDateLabel}>
                 <TimelineHeader dayNumber={dayNumber} dayDate={dayDateLabel} />
-                <TimelineContent dayNumber={dayNumber} events={dayEvents} />
+                <TimelineContent dayNumber={dayNumber} events={dayEvents} tripId={tripId}/>
             </TimelineDay>
         );
     }
