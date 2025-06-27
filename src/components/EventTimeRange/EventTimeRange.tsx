@@ -1,4 +1,3 @@
-import { useReducer } from "react";
 import dayjs from "dayjs";
 import { useQuery } from "@tanstack/react-query";
 import { fetchTripEventsForDay } from "@/api/events";
@@ -7,6 +6,7 @@ import TripDateRangePreview from "../Trip/TripDateRange/TripDateRangePreview";
 import { ChevronDown, LoaderCircle, MoveRight } from "lucide-react";
 import { TimePickerWheel } from "./TimePicker/TimePickerWheel";
 import { Button } from "../ui/button";
+import { RangeState, RangeAction } from "@/state/eventRangeReducer";
 
 // --- Utility ---
 function getHM(date: Date) {
@@ -31,32 +31,26 @@ function getBlockedHourMap(
 ) {
     const blockedTimes = new Set<string>();
     for (const ev of allEvents) {
-        // Skip currently edited event
         if (selfId && ev.id === selfId) continue;
         let start = dayjs(ev.from);
         const end = dayjs(ev.to);
 
         if (pickerType === "from") {
-            // Block every slot inside the event but DO NOT block the end time
             while (start.isBefore(end, "minute")) {
                 blockedTimes.add(start.format("HH:mm"));
                 start = start.add(15, "minute");
             }
         } else if (pickerType === "to") {
-            // Block every slot inside the event, but DO NOT block the start time
             while (start.isBefore(end, "minute")) {
-                // Only block if not the exact event start
                 if (!start.isSame(ev.from, "minute")) {
                     blockedTimes.add(start.format("HH:mm"));
                 }
                 start = start.add(15, "minute");
             }
-            // And, block the end time itself (you can't end at the end time of an event)
             blockedTimes.add(dayjs(end).format("HH:mm"));
         }
     }
 
-    // Map hour -> blocked minutes, and Set of fully blocked hours
     const blockedMinutesByHour: Record<string, Set<string>> = {};
     const blockedHours = new Set<string>();
     for (const hour of hours) {
@@ -70,115 +64,43 @@ function getBlockedHourMap(
     return { blockedHours, blockedMinutesByHour };
 }
 
-// --- State ---
-type IdleState = {
-    mode: 'idle';
-    range: { from: Date | null; to: Date | null };
-    addingDate?: Date;
-};
-type EditingState = {
-    mode: 'editing';
-    range: { from: Date | null; to: Date | null };
-    draft: { from: Date; to: Date };
-    addingDate?: Date;
-};
-type RangeState = IdleState | EditingState;
-
-type RangeAction =
-    | { type: 'START_EDIT'; range: { from: Date | null; to: Date | null } }
-    | { type: 'UPDATE_FROM'; value: { hour: string; minute: string } }
-    | { type: 'UPDATE_TO'; value: { hour: string; minute: string } }
-    | { type: 'CANCEL' }
-    | { type: 'SAVE' };
-
-function rangeReducer(state: RangeState, action: RangeAction): RangeState {
-    switch (action.type) {
-        case 'START_EDIT': {
-            let from = action.range.from;
-            let to = action.range.to;
-            if (!from || !to) {
-                if (!state.addingDate) throw new Error("No addingDate for add mode");
-                from = new Date(state.addingDate); from.setHours(1, 0, 0, 0);
-                to = new Date(state.addingDate); to.setHours(2, 0, 0, 0);
-            }
-            return {
-                mode: 'editing',
-                range: state.range,
-                draft: { from, to },
-                addingDate: state.addingDate,
-            };
-        }
-        case 'UPDATE_FROM': {
-            if (state.mode !== 'editing') return state;
-            const updatedFrom = new Date(state.draft.from);
-            updatedFrom.setHours(Number(action.value.hour));
-            updatedFrom.setMinutes(Number(action.value.minute));
-            return { ...state, draft: { ...state.draft, from: updatedFrom } };
-        }
-        case 'UPDATE_TO': {
-            if (state.mode !== 'editing') return state;
-            const updatedTo = new Date(state.draft.to);
-            updatedTo.setHours(Number(action.value.hour));
-            updatedTo.setMinutes(Number(action.value.minute));
-            return { ...state, draft: { ...state.draft, to: updatedTo } };
-        }
-        case 'CANCEL':
-            if (state.mode !== 'editing') return state;
-            return {
-                mode: 'idle',
-                range: state.range,
-                addingDate: state.addingDate,
-            };
-        case 'SAVE':
-            if (state.mode !== 'editing') return state;
-            return {
-                mode: 'idle',
-                range: { from: state.draft.from, to: state.draft.to },
-                addingDate: state.addingDate,
-            };
-        default:
-            return state;
-    }
-}
-
-// --- Props for parent ---
 type EventTimeRangeProps =
-    | { mode: "edit"; tripId: string | undefined; from: Date; to: Date; eventId: string | undefined }
-    | { mode: "add"; tripId: string | undefined; addingDate: Date };
+    | {
+        mode: "edit";
+        tripId: string | undefined;
+        from: Date; to: Date;
+        eventId: string | undefined;
+        state: RangeState;
+        dispatch: React.Dispatch<RangeAction>;
+    }
+    | {
+        mode: "add";
+        tripId: string | undefined;
+        addingDate: Date;
+        state: RangeState;
+        dispatch: React.Dispatch<RangeAction>;
+    };
 
-// --- Overlap validation ---
 function doesOverlap(from: Date, to: Date, allEvents: TripEvent[], selfId?: string | undefined): boolean {
-
     return allEvents.some(ev => {
         if (selfId && ev.id === selfId) return false;
         return dayjs(from).isBefore(ev.to, "minute") && dayjs(to).isAfter(ev.from, "minute");
     });
 }
 
-// --- Main Component ---
 export default function EventTimeRange(props: EventTimeRangeProps) {
-    const isAdd = props.mode === "add";
     const dayDate = props.mode === "add" ? props.addingDate : props.from;
     const eventId = props.mode === "edit" ? props.eventId : undefined;
+    const { state, dispatch } = props;
 
-    // Load all events for this day
     const { data: allEvents = [], isLoading: isLoadingEvents } = useQuery({
         queryKey: ["trip-events", props.tripId, dayDate.toISOString()],
         queryFn: () => fetchTripEventsForDay(props.tripId, dayDate),
     });
 
-    // Preview/committed range state
-    const [state, dispatch] = useReducer(rangeReducer, {
-        mode: "idle",
-        range: isAdd ? { from: null, to: null } : { from: props.from, to: props.to },
-        ...(isAdd ? { addingDate: props.addingDate } : {}),
-    });
-
-    // --- Blocked hours/minutes for wheels ---
     const fromHourBlock = getBlockedHourMap(allEvents, hours, minutes, eventId, "from");
     const toHourBlock = getBlockedHourMap(allEvents, hours, minutes, eventId, "to");
 
-    // --- Validation ---
     const isValidRange =
         state.mode === "editing"
             ? state.draft.from < state.draft.to
@@ -189,7 +111,6 @@ export default function EventTimeRange(props: EventTimeRangeProps) {
         allEvents &&
         doesOverlap(state.draft.from, state.draft.to, allEvents, eventId);
 
-    // --- Preview formatting ---
     const formattedStart =
         state.mode === "idle"
             ? state.range.from
@@ -203,10 +124,9 @@ export default function EventTimeRange(props: EventTimeRangeProps) {
                 : "Not selected"
             : "Not selected";
 
-    // --- Render ---
     return (
         <div className={`flex flex-col items-center justify-center border-1 border-gray-200 gap-2 px-6 pt-6 rounded-lg shadow-md ${state.mode === "editing" && "pb-6"}`}>
-            {/* --- Editing mode --- */}
+
             {state.mode === "editing" ? (
                 isLoadingEvents ? (
                     <div className="w-full flex flex-col gap-6 items-center py-12">
@@ -236,7 +156,6 @@ export default function EventTimeRange(props: EventTimeRangeProps) {
                                 blockedMinutes={toHourBlock.blockedMinutesByHour[getHM(state.draft.to).hour] || new Set()}
                             />
                         </div>
-                        {/* --- Validation errors --- */}
                         {!isValidRange && (
                             <div className="text-sm font-semibold text-red-500 mt-2">
                                 End time must be after start time.

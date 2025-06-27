@@ -1,18 +1,21 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { useReducer, useEffect } from "react";
+import { rangeReducer } from "@/state/eventRangeReducer";
+
 import { fetchPlace } from "@/api/places";
+import { addTripEvent, updateTripEvent, fetchTripEvent } from "@/api/events";
 import { fetchTrip } from "@/api/trips";
-import { useQuery } from "@tanstack/react-query";
-import TripNavigation from "@/components/Trip/TripNavigation";
+
+import EventTimeRange from "@/components/EventTimeRange/EventTimeRange";
+import EventFormActionButton from "@/components/EventFormActionButton";
 import TripImage from "@/components/Trip/TripImage";
 import TripHeader from "@/components/Trip/TripHeader/TripHeader";
-import { Place } from "@/types/place";
-import { Trip } from "@/types/trip";
-import { TripEvent } from "@/types/tripEvent";
-import dayjs from "dayjs";
-import EventFormActionButton from "@/components/EventFormActionButton";
+import TripNavigation from "@/components/Trip/TripNavigation";
 import MapWidget from "@/components/Map/MapWidget";
-import { fetchTripEvent } from "@/api/events"; // Updated fetch function to get event data
-import EventTimeRange from "@/components/EventTimeRange/EventTimeRange";
+
+import dayjs from "dayjs";
+import { toast } from "sonner";
 
 function getTripDayDateObj(startDate: Date, day: number) {
     return dayjs(startDate).add(day - 1, "day").toDate();
@@ -20,61 +23,128 @@ function getTripDayDateObj(startDate: Date, day: number) {
 
 export default function EventFormPage() {
     const { tripId, dayNumber, placeId, eventId } = useParams();
+    const navigate = useNavigate();
 
     const isEditing = !!eventId;
     const isAdding = !!placeId && !!dayNumber;
 
-    if (!isAdding && !isEditing) {
-        throw new Error("Route params not found.")
-    }
+    // --- Hooks MUST be top-level, no conditions!
+    const [rangeState, rangeDispatch] = useReducer(rangeReducer, {
+        mode: "idle",
+        range: { from: null, to: null }
+    });
 
-    const { data: tripData, isLoading: isTripLoading, isError: isTripError, error: tripError } = useQuery<Trip>({
+    // Always call hooks, regardless of param presence:
+    const { data: tripData, isLoading: isTripLoading, isError: isTripError, error: tripError } = useQuery({
         queryKey: ["trip", tripId],
         queryFn: () => fetchTrip({ tripId }),
     });
 
-    const { data: placeData, isLoading: isPlaceLoading, isError: isPlaceError, error: placeError } = useQuery<Place>({
+    const { data: placeData, isLoading: isPlaceLoading, isError: isPlaceError, error: placeError } = useQuery({
         queryKey: ["place", placeId],
         queryFn: () => fetchPlace(placeId),
         enabled: isAdding,
     });
 
-    // Query to fetch event for editing
-    const { data: eventData, isLoading: isEventLoading, isError: isEventError, error: eventError } = useQuery<TripEvent>({
+    const { data: eventData, isLoading: isEventLoading, isError: isEventError, error: eventError } = useQuery({
         queryKey: ["event", eventId],
         queryFn: () => fetchTripEvent({ tripId, eventId }),
         enabled: isEditing,
     });
 
-    if (isTripLoading || isPlaceLoading || isEventLoading) {
-        return <p>Loading...</p>;
+    const addMutation = useMutation({
+        mutationFn: addTripEvent,
+        onSuccess: () => {
+            toast.success("Event added!");
+            navigate(`/trips/${tripId}`);
+        },
+        onError: () => {
+            toast.error("Failed to add event");
+        }
+    });
+
+    const editMutation = useMutation({
+        mutationFn: updateTripEvent,
+        onSuccess: () => {
+            toast.success("Event updated!");
+            navigate(`/trips/${tripId}`);
+        },
+        onError: () => {
+            toast.error("Failed to update event");
+        }
+    });
+
+    // --- Unconditionally sync reducer when data loads/changes
+    useEffect(() => {
+        if (eventId && eventData) {
+            // Editing mode
+            rangeDispatch({
+                type: "RESET",
+                state: {
+                    mode: "idle",
+                    range: { from: eventData.from, to: eventData.to }
+                }
+            });
+        } else if (placeId && dayNumber && tripData && placeData) {
+            // Adding mode
+            const addingDate = getTripDayDateObj(tripData.startDate, Number(dayNumber));
+            rangeDispatch({
+                type: "RESET",
+                state: {
+                    mode: "idle",
+                    range: { from: null, to: null },
+                    addingDate
+                }
+            });
+        }
+    }, [eventId, eventData, placeId, dayNumber, tripData, placeData]);
+
+    // --- Handle loading/errors (these may return early, that's fine)
+    if (isTripLoading || isPlaceLoading || isEventLoading) return <p>Loading...</p>;
+    if (isTripError || isPlaceError || isEventError) return <p>{tripError?.message || placeError?.message || eventError?.message}</p>;
+    
+    if (!tripData) throw new Error("No trip found.");
+
+    // --- Add/Edit Handler
+    function handleSaveOrAdd() {
+        const { from, to } = rangeState.range;
+        if (!from || !to) {
+            toast.error("Please select a valid time range.");
+            return;
+        }
+
+        // Add event
+        if (placeId && placeData && tripData) {
+            addMutation.mutate({
+                tripId,
+                event: {
+                    ...placeData,
+                    from: from,
+                    to: to,
+                }
+            });
+        }
+        // Edit event
+        else if (eventId && eventData) {
+            editMutation.mutate({
+                tripId,
+                eventId,
+                event: {
+                    from: from,
+                    to: to,
+                }
+            });
+        }
     }
 
-    if (isTripError || isPlaceError || isEventError) {
-        return <p>{tripError?.message || placeError?.message || eventError?.message}</p>;
-    }
-
-    // TODO Reroute to Not Found page 
-    if (!tripData) {
-        throw new Error("No trip found.");
-    };
-
-    // Handle edit mode
-    if (isEditing) {
-        // TODO Reroute to Not Found page
-        if (!eventData) {
-            throw new Error("No event found.");
-        };
-
+    // --- Render: Editing or Adding
+    if (eventId && eventData) {
         const eventDate = dayjs(eventData.from);
-        const tripStartDate = dayjs(tripData.startDate);
-
-        const eventDay = eventDate.diff(tripStartDate, "days") + 1; // Calculate dayNumber (1-based)
+        const eventDay = eventDate.diff(tripData.startDate, "days") + 1;
         const formattedEventDate = eventDate.format("MMM D, YYYY");
-
         const formattedDate = `Day ${eventDay}, ${formattedEventDate}`;
 
-        const placeData = {
+        const placeForMap = {
             id: eventData.id,
             name: eventData.name,
             category: eventData.category,
@@ -82,13 +152,12 @@ export default function EventFormPage() {
             address: eventData.address,
             lat: eventData.lat,
             lng: eventData.lng
-        }
+        };
 
         return (
             <div className="size-auto flex flex-col pb-32">
                 <TripNavigation />
                 <TripImage mode="event" imageUrl={eventData.img} />
-
                 <div className="size-auto h-2/3 flex flex-col px-6 pt-6 gap-6">
                     <TripHeader
                         mode="event"
@@ -102,25 +171,23 @@ export default function EventFormPage() {
                         eventId={eventId}
                         from={eventData.from}
                         to={eventData.to}
+                        state={rangeState}
+                        dispatch={rangeDispatch}
                     />
-                    <EventFormActionButton onClick={() => null} label="Save" />
-                    <MapWidget place={placeData} />
+                    <EventFormActionButton
+                        onClick={handleSaveOrAdd}
+                        label="Save"
+                        disabled={!(rangeState.range.from && rangeState.range.to)}
+                    />
+                    <MapWidget place={placeForMap} />
                 </div>
             </div>
         );
     }
 
-    // Handle add mode
-    if (isAdding) {
-        // TODO Reroute to Not Found page
-        if (!placeData) {
-            throw new Error("No place found.")
-        }
-
-        // If adding event, the day is derived from route param
+    if (placeId && dayNumber && placeData && tripData) {
         const day = Number(dayNumber);
         const addingDate = getTripDayDateObj(tripData.startDate, day);
-
         const formattedDate = dayjs(addingDate).format("MMM D");
         const formattedDayDate = `Day ${day}, ${formattedDate}`;
 
@@ -128,7 +195,6 @@ export default function EventFormPage() {
             <div className="size-auto flex flex-col pb-32">
                 <TripNavigation />
                 <TripImage mode="event" imageUrl={placeData.img} />
-
                 <div className="size-auto h-2/3 flex flex-col px-6 pt-6 gap-6">
                     <TripHeader
                         mode="event"
@@ -140,8 +206,14 @@ export default function EventFormPage() {
                         mode="add"
                         tripId={tripId}
                         addingDate={addingDate}
+                        state={rangeState}
+                        dispatch={rangeDispatch}
                     />
-                    <EventFormActionButton onClick={() => null} label="Add" />
+                    <EventFormActionButton
+                        onClick={handleSaveOrAdd}
+                        label="Add"
+                        disabled={!(rangeState.range.from && rangeState.range.to)}
+                    />
                     <MapWidget place={placeData} />
                 </div>
             </div>
