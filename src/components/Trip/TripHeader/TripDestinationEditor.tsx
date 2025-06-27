@@ -78,9 +78,13 @@ export default function TripDestinationEditor({ destination, tripId, }: TripDest
         enabled: !!debouncedQuery,
     });
 
-    function handleSelect(description: string) {
-        if (description !== destination) {
-            mutateDestination({ tripId, destination: description });
+    function handleSelect(newDestination: string) {
+        if (newDestination !== destination) {
+            mutateDestination({ tripId, destination: newDestination });
+            setOpen(false)
+            setQuery("");
+        } else {
+            toast.error("New destination cannot be the same as previous one.", { id: "trip-destination-update" })
         }
     }
 
@@ -99,7 +103,12 @@ export default function TripDestinationEditor({ destination, tripId, }: TripDest
                     <Pencil className="size-4 text-red-400 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
             </PopoverTrigger>
-            <PopoverContent className="w-[300px] max-h-256 overflow-y-auto p-0" side="bottom" align="start" avoidCollisions={false}>
+            <PopoverContent
+                className="w-[300px] max-h-256 overflow-y-auto p-0"
+                side="bottom"
+                align="start"
+                avoidCollisions={false}
+            >
                 <Command shouldFilter={false}>
                     <CommandInput
                         placeholder="Search for a destination..."
