@@ -23,7 +23,7 @@ export default function TimelineEvent({ event, tripId }: TimelineEventProps) {
     const { mutate: deleteEvent } = useMutation({
         mutationFn: deleteTripEvent,
         onMutate: async ({ tripId, eventId }) => {
-            toast.success("Event deleted", { id: "event-delete" });
+            toast.success("Event deleted", { id: `event-${eventId}-delete` });
             await queryClient.cancelQueries({ queryKey: ["events", { tripId }] });
             const previousEvents = queryClient.getQueryData<TripEvent[]>(["events", { tripId }]);
             if (!previousEvents) {
@@ -35,8 +35,8 @@ export default function TimelineEvent({ event, tripId }: TimelineEventProps) {
             );
             return { previousEvents };
         },
-        onError: (_error, _eventId, context) => {
-            toast.error("Failed to delete event", { id: "event-delete" });
+        onError: (_error, { eventId }, context) => {
+            toast.error("Failed to delete event", { id: `event-${eventId}-delete` });
             if (context?.previousEvents) {
                 queryClient.setQueryData(["events", { tripId }], context.previousEvents);
             }
