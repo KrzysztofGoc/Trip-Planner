@@ -18,7 +18,6 @@ export default function TripNameEditor({ name, tripId }: TripNameEditorProps) {
   const [inputValue, setInputValue] = useState(name);
 
   // Keep inputValue in sync if prop changes while not editing
-  // Optional: If you want to sync external name updates
   useEffect(() => {
     if (!editing) setInputValue(name);
   }, [name]);
