@@ -20,6 +20,7 @@ export default function TripTimeline({ tripId, startDate, endDate }: TrimTimelin
         queryKey: ["events", { tripId }],
         queryFn: () => fetchTripEvents({ tripId }),
         enabled: numberOfDays > 0,
+        staleTime: 10000,
     });
 
     if (numberOfDays < 1) {
