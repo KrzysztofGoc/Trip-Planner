@@ -1,13 +1,14 @@
-import { Plus, UserRound, Plane } from "lucide-react";
+import { Plus, UserRound, Plane, LogIn } from "lucide-react";
 import { Button } from "./ui/button";
-import { NavLink } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { createTrip } from "@/api/trips";
 import { toast } from "sonner";
+import { useAuthStore } from "@/state/useAuthStore";
 
 export default function MainNavigation() {
     const navigate = useNavigate();
+    const user = useAuthStore(s => s.user); // Get the current user from Zustand state
 
     const { mutate: handleCreateTrip, isPending } = useMutation({
         mutationFn: createTrip,
@@ -26,12 +27,18 @@ export default function MainNavigation() {
         }
     });
 
+    // Function to handle adding a trip, but only if the user is logged in
     function handleAddTrip() {
+        if (!user) {
+            toast.error("You must be logged in to add a trip.");
+            navigate("/login");
+            return;
+        }
         handleCreateTrip();
     }
 
     const navButtonStyle = (isActive: boolean) =>
-        `flex flex-col items-center justify-end w-3/4 h-14.5 transition-[color] ${isActive ? "text-red-400 stroke" : ""}`;
+        `flex flex-col items-center justify-end w-3/4 h-14.5 transition-[color] ${isActive ? "text-red-400" : ""}`;
 
     return (
         /* Mobile Navigation */
@@ -56,14 +63,22 @@ export default function MainNavigation() {
                 </Button>
             </div>
 
-            {/* User Profile Button */}
-            <NavLink to="/profile" className={({ isActive }) => navButtonStyle(isActive)}>
-                <UserRound className="size-6 stroke-current" />
-                <span>
-                    Profile
-                </span>
-            </NavLink>
-
+            {/* User Button: Login if not logged in, Profile if logged in */}
+            {user ? (
+                <NavLink to="/account" className={({ isActive }) => navButtonStyle(isActive)}>
+                    <UserRound className="size-6 stroke-current" />
+                    <span>
+                        Profile
+                    </span>
+                </NavLink>
+            ) : (
+                <NavLink to="/login" className={({ isActive }) => navButtonStyle(isActive)}>
+                    <LogIn className="size-6 stroke-current" />
+                    <span>
+                        Login
+                    </span>
+                </NavLink>
+            )}
         </div>
     )
 }
