@@ -102,14 +102,19 @@ type addTripEventParams = {
  * 
  * @param tripId - Trip id
  * @param event - event object without id field, will be added to the trip
+ * @returns The new TripEvent's document id
  */
 export async function addTripEvent({ tripId, event }: addTripEventParams) {
   if (!tripId) throw new Error("Trip ID is missing");
 
+  await new Promise(resolve => setTimeout(resolve, 5000));
+
   const eventsRef = collection(db, "trips", tripId, "events");
   // Remove id field if present
   // from/to should be Firestore Timestamps or { seconds, nanoseconds }
-  await addDoc(eventsRef, event);
+  const res = await addDoc(eventsRef, event);
+
+  return res.id;
 }
 
 type UpdateTripEventParams = {

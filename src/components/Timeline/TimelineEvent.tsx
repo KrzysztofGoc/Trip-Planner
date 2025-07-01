@@ -1,4 +1,4 @@
-import { Triangle, Trash2 } from "lucide-react";
+import { Triangle, Trash2, LoaderCircle } from "lucide-react";
 import PlaceCard from "../PlaceCard";
 import { TripEvent } from "@/types/tripEvent";
 import dayjs from "dayjs";
@@ -16,6 +16,7 @@ interface TimelineEventProps {
 }
 
 export default function TimelineEvent({ event, tripId }: TimelineEventProps) {
+    const isPending = !!event.optimistic;
     const [open, setOpen] = useState(false);
     const navigate = useNavigate();
 
@@ -61,18 +62,30 @@ export default function TimelineEvent({ event, tripId }: TimelineEventProps) {
                 <div className="h-0.5 w-full bg-gray-200"></div>
             </div>
 
-            {/* PlaceCard and delete icon */}
             <div className="relative group">
-                <PlaceCard event={event} onClick={() => navigate(`/trips/${tripId}/edit/${event.id}`)} />
+                {/* Overlay if optimistic */}
+                {isPending && (
+                    <div className="absolute inset-0 z-10 bg-gray-200/60 flex items-center justify-center rounded-lg pointer-events-none">
+                        <LoaderCircle className="animate-spin text-gray-400 w-8 h-8" />
+                    </div>
+                )}
+                <PlaceCard
+                    event={event}
+                    onClick={() => {
+                        if (!isPending) navigate(`/trips/${tripId}/edit/${event.id}`);
+                    }}
+                />
                 <button
                     className="absolute top-1 right-1 size-10 flex items-center justify-center"
+                    disabled={isPending}
                     onClick={e => {
+                        if (isPending) return;
                         e.stopPropagation();
                         setOpen(true);
                     }}
                     aria-label="Delete event"
                 >
-                    <Trash2 className="size-5 text-red-500 drop-shadow-sm" />
+                    <Trash2 className={`size-5 ${isPending ? "text-gray-400" : "text-red-500"} drop-shadow-sm`} />
                 </button>
             </div>
 
