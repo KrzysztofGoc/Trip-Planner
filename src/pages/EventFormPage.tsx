@@ -6,6 +6,7 @@ import { rangeReducer } from "@/state/eventRangeReducer";
 import { fetchPlace } from "@/api/places";
 import { addTripEvent, updateTripEvent, fetchTripEvent } from "@/api/events";
 import { fetchTrip } from "@/api/trips";
+import { queryClient } from "@/api/queryClient";
 
 import EventTimeRange from "@/components/EventTimeRange/EventTimeRange";
 import EventFormActionButton from "@/components/EventFormActionButton";
@@ -16,6 +17,7 @@ import MapWidget from "@/components/Map/MapWidget";
 
 import dayjs from "dayjs";
 import { toast } from "sonner";
+import { TripEvent } from "@/types/tripEvent";
 
 function getTripDayDateObj(startDate: Date, day: number) {
     return dayjs(startDate).add(day - 1, "day").toDate();
@@ -28,13 +30,11 @@ export default function EventFormPage() {
     const isEditing = !!eventId;
     const isAdding = !!placeId && !!dayNumber;
 
-    // --- Hooks MUST be top-level, no conditions!
     const [rangeState, rangeDispatch] = useReducer(rangeReducer, {
         mode: "idle",
         range: { from: null, to: null }
     });
 
-    // Always call hooks, regardless of param presence:
     const { data: tripData, isLoading: isTripLoading, isError: isTripError, error: tripError } = useQuery({
         queryKey: ["trip", tripId],
         queryFn: () => fetchTrip({ tripId }),
@@ -65,18 +65,40 @@ export default function EventFormPage() {
 
     const editMutation = useMutation({
         mutationFn: updateTripEvent,
-        onSuccess: () => {
-            toast.success("Event updated!");
-            navigate(`/trips/${tripId}`);
+        onMutate: async ({ tripId, eventId, event }) => {
+            toast.success("Event updated", { id: `event-${eventId}-update` });
+
+            await queryClient.cancelQueries({ queryKey: ["events", { tripId }] });
+            const previousEvents = queryClient.getQueryData<TripEvent[]>(["events", { tripId }]);
+            const newEvents = previousEvents ? [...previousEvents] : [];
+
+            // Find the event to update
+            const idx = newEvents.findIndex(ev => ev.id === eventId);
+
+            if (idx === -1) {
+                throw new Error("Cannot optimistically update: event is missing from cache.");
+            }
+
+            // Replace with new data
+            newEvents[idx] = { ...newEvents[idx], ...event };
+            queryClient.setQueryData(["events", { tripId }], newEvents);
+
+            return { previousEvents };
         },
-        onError: () => {
-            toast.error("Failed to update event");
-        }
+        onError: (_err, { tripId }, context) => {
+            if (context?.previousEvents) {
+                queryClient.setQueryData(["events", { tripId }], context.previousEvents);
+            }
+            toast.error("Failed to update event", { id: `event-${eventId}-update` });
+        },
+        onSettled: (_data, _error, { tripId }) => {
+            queryClient.invalidateQueries({ queryKey: ["events", { tripId }] });
+        },
     });
 
     // --- Unconditionally sync reducer when data loads/changes
     useEffect(() => {
-        if (eventId && eventData) {
+        if (isEditing && eventData) {
             // Editing mode
             rangeDispatch({
                 type: "RESET",
@@ -85,7 +107,7 @@ export default function EventFormPage() {
                     range: { from: eventData.from, to: eventData.to }
                 }
             });
-        } else if (placeId && dayNumber && tripData && placeData) {
+        } else if (isAdding && tripData && placeData) {
             // Adding mode
             const addingDate = getTripDayDateObj(tripData.startDate, Number(dayNumber));
             rangeDispatch({
@@ -97,12 +119,12 @@ export default function EventFormPage() {
                 }
             });
         }
-    }, [eventId, eventData, placeId, dayNumber, tripData, placeData]);
+    }, [eventData, tripData, placeData, isAdding, isEditing, dayNumber]);
 
-    // --- Handle loading/errors (these may return early, that's fine)
+    // --- Handle loading/errors
     if (isTripLoading || isPlaceLoading || isEventLoading) return <p>Loading...</p>;
     if (isTripError || isPlaceError || isEventError) return <p>{tripError?.message || placeError?.message || eventError?.message}</p>;
-    
+
     if (!tripData) throw new Error("No trip found.");
 
     // --- Add/Edit Handler
@@ -123,6 +145,7 @@ export default function EventFormPage() {
                     to: to,
                 }
             });
+            navigate(`/trips/${tripId}`);
         }
         // Edit event
         else if (eventId && eventData) {
@@ -134,6 +157,7 @@ export default function EventFormPage() {
                     to: to,
                 }
             });
+            navigate(`/trips/${tripId}`);
         }
     }
 
