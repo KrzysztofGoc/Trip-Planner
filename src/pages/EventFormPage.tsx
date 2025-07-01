@@ -54,13 +54,42 @@ export default function EventFormPage() {
 
     const addMutation = useMutation({
         mutationFn: addTripEvent,
-        onSuccess: () => {
-            toast.success("Event added!");
+        onMutate: async ({ tripId, event }) => {
+            await queryClient.cancelQueries({ queryKey: ["events", { tripId }] });
+            const previousEvents = queryClient.getQueryData<TripEvent[]>(["events", { tripId }]) || [];
+            const tempId = "optimistic-" + Date.now()
+            const optimisticEvent: TripEvent = {
+                ...event,
+                id: tempId,
+                optimistic: true,
+            };
+
+            toast.success("Event added!", { id: `event-${tempId}-add` });
+
+            queryClient.setQueryData(["events", { tripId }], [...previousEvents, optimisticEvent]);
+
             navigate(`/trips/${tripId}`);
+            return { previousEvents, tempId };
         },
-        onError: () => {
-            toast.error("Failed to add event");
-        }
+        onError: (_err, { tripId }, context) => {
+            if (context?.previousEvents) {
+                queryClient.setQueryData(["events", { tripId }], context.previousEvents);
+            }
+            toast.error("Failed to add event", { id: `event-${context?.tempId}-add` });
+        },
+        onSuccess: (docId, { tripId, event }, context) => {
+            // Remove optimistic event, add the real one (with true id)
+            const events = queryClient.getQueryData<TripEvent[]>(["events", { tripId }]) || [];
+            const filtered = events.filter(ev => ev.id !== context.tempId);
+            queryClient.setQueryData(["events", { tripId }], [
+                ...filtered,
+                { ...event, id: docId } // Add real event, no optimistic flag
+            ]);
+
+        },
+        onSettled: (_data, _error, { tripId }) => {
+            queryClient.invalidateQueries({ queryKey: ["events", { tripId }] });
+        },
     });
 
     const editMutation = useMutation({
@@ -145,7 +174,7 @@ export default function EventFormPage() {
                     to: to,
                 }
             });
-            navigate(`/trips/${tripId}`);
+
         }
         // Edit event
         else if (eventId && eventData) {

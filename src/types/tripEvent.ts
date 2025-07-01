@@ -8,4 +8,5 @@ export type TripEvent = {
   lng: number;
   from: Date;
   to: Date;
+  optimistic?: boolean;
 }
