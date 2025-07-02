@@ -18,7 +18,7 @@ import { Toaster } from "sonner";
 import { useAuthStore } from "./state/useAuthStore";
 import { useEffect } from "react";
 import { auth } from "./firebase";
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged, signInAnonymously } from "firebase/auth";
 import { RequireAuth } from "./components/RequireAuth";
 
 const router = createBrowserRouter([
@@ -53,10 +53,17 @@ function App() {
   const setLoading = useAuthStore(s => s.setLoading);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, user => {
-      setUser(user);
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        // If no user is logged in, sign in anonymously
+        await signInAnonymously(auth);
+      }
+      // Set the user in your Zustand store (whether anonymous or authenticated)
+      setUser(auth.currentUser);
       setLoading(false);
     });
+
+    // Clean up the listener when the component unmounts
     return unsubscribe;
   }, [setUser, setLoading]);
 
