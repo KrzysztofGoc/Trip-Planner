@@ -3,13 +3,14 @@ import { Timestamp } from "firebase/firestore";
 
 export interface Trip {
     id: string;
-    name: string;
-    destination: string;
-    startDate: Date;
-    endDate: Date;
-    description: string;
+    name: string | null;
+    destination: string | null;
+    startDate: Date | null;
+    endDate: Date | null;
+    description: string | null;
     image: string | null;
-    participants: Participant[],
+    participants: Participant[] | [],
     createdAt: Timestamp;
     updatedAt: Timestamp;
+    ownerId: string;
   }

@@ -1,12 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
 import { fetchTrips } from "@/api/trips";
 import TripCard from "./TripCard";
+import { useAuthStore } from "@/state/useAuthStore";
 
 export default function TripsGrid() {
-    const { data: trips, isLoading, isError, error } = useQuery({
-        queryFn: fetchTrips,
-        queryKey: ["trips"],
-    });
+    const user = useAuthStore(s => s.user); // Get the current user from Zustand store
+
+  const { data: trips, isLoading, isError, error } = useQuery({
+    queryFn: () => fetchTrips(user?.uid || ""), // Pass user UID to fetchTrips
+    queryKey: ["trips", user?.uid], // Use the user UID as part of the query key
+  });
 
     return (
         <>
