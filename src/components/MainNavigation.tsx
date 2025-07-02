@@ -15,9 +15,9 @@ export default function MainNavigation() {
         onMutate: () => {
             toast.loading("Creating trip...", { id: "create-trip" });
         },
-        onSuccess: (trip) => {
+        onSuccess: (tripId) => {
             toast.success("Trip created!", { id: "create-trip" });
-            navigate(`/trips/${trip.id}`);
+            navigate(`/trips/${tripId}`);
         },
         onError: (err) => {
             toast.error("Failed to create trip", {
@@ -27,7 +27,7 @@ export default function MainNavigation() {
         }
     });
 
-    // Function to handle adding a trip, but only if the user is logged in
+    // Function to handle adding a trip
     function handleAddTrip() {
         if (!user) {
             toast.error("You must be logged in to add a trip.");
@@ -39,6 +39,7 @@ export default function MainNavigation() {
 
     const navButtonStyle = (isActive: boolean) =>
         `flex flex-col items-center justify-end w-3/4 h-14.5 transition-[color] ${isActive ? "text-red-400" : ""}`;
+
 
     return (
         /* Mobile Navigation */
@@ -63,15 +64,27 @@ export default function MainNavigation() {
                 </Button>
             </div>
 
-            {/* User Button: Login if not logged in, Profile if logged in */}
+            {/* User Button: Login if not logged in anonymously, Profile if logged in */}
             {user ? (
-                <NavLink to="/account" className={({ isActive }) => navButtonStyle(isActive)}>
-                    <UserRound className="size-6 stroke-current" />
-                    <span>
-                        Profile
-                    </span>
-                </NavLink>
+                user.isAnonymous ? (
+                    // If the user is logged in anonymously, show Login button
+                    <NavLink to="/login" className={({ isActive }) => navButtonStyle(isActive)}>
+                        <LogIn className="size-6 stroke-current" />
+                        <span>
+                            Login
+                        </span>
+                    </NavLink>
+                ) : (
+                    // If the user is logged in (not anonymously), show Profile button
+                    <NavLink to="/account" className={({ isActive }) => navButtonStyle(isActive)}>
+                        <UserRound className="size-6 stroke-current" />
+                        <span>
+                            Profile
+                        </span>
+                    </NavLink>
+                )
             ) : (
+                // If the user is not logged in at all, show Login button
                 <NavLink to="/login" className={({ isActive }) => navButtonStyle(isActive)}>
                     <LogIn className="size-6 stroke-current" />
                     <span>

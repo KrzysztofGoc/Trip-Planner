@@ -1,12 +1,24 @@
 import { Trip } from "@/types/trip";
 import { db } from "@/firebase";
-import { addDoc, getDoc, doc, collection, serverTimestamp, getDocs, updateDoc, Timestamp } from "firebase/firestore";
-import { getFunctions, httpsCallable } from "firebase/functions"
-import { functions } from "../firebase"
+import { addDoc, getDoc, doc, collection, serverTimestamp, getDocs, updateDoc, Timestamp, where, query, or, writeBatch } from "firebase/firestore";
+import { httpsCallable } from "firebase/functions"
+import { functions, auth } from "../firebase"
+import { signInWithEmailAndPassword } from "firebase/auth";
 
-export const fetchTrips = async (): Promise<Trip[]> => {
+export const fetchTrips = async (uid: string): Promise<Trip[]> => {
+  // Fetch trips where the user is either the owner or a participant
   const tripsRef = collection(db, "trips");
-  const snapshot = await getDocs(tripsRef);
+
+  // Query for trips where the user is either the owner or a participant
+  const q = query(
+    tripsRef,
+    or(
+      where("ownerId", "==", uid), // Filter by ownerId
+      where("participants", "array-contains", uid) // Filter by participants array
+    )
+  );
+
+  const snapshot = await getDocs(q);
 
   return snapshot.docs.map(docSnap => {
     const data = docSnap.data();
@@ -45,27 +57,34 @@ export const fetchTrip = async ({ tripId }: FetchTripParams): Promise<Trip> => {
 };
 
 // Create a new trip with a Firestore-generated ID
-export const createTrip = async (): Promise<Trip> => {
+export const createTrip = async (): Promise<string> => {
+  // Get the currently authenticated user (whether logged in or anonymous)
+  const user = auth.currentUser;
+
+  if (!user) {
+    throw new Error("User must be logged in (either authenticated or anonymous) to create a trip.");
+  }
+
+  // Set the trip data
   const tripData = {
-    name: "",
-    destination: "",
+    name: null,
+    destination: null,
     startDate: null,
     endDate: null,
-    description: "",
+    description: null,
     image: null,
     participants: [],
     events: [],
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
+    ownerId: user.uid, // Use the Firebase user UID (whether authenticated or anonymous)
   };
 
+  // Create a new trip document in the 'trips' collection
   const docRef = await addDoc(collection(db, "trips"), tripData);
 
-  return {
-    id: docRef.id,
-    ...tripData,
-  } as Trip;
-}
+  return docRef.id;
+};
 
 
 interface UpdateTripImageParams {
@@ -125,4 +144,35 @@ export const updateTripDateRange = async ({ tripId, startDate, endDate, }: Updat
     startDate: startDate.toISOString(),
     endDate: endDate.toISOString(),
   });
+};
+
+type transferTripOwnershipProps = {
+  login: string,
+  password: string,
+}
+
+// Function to update ownerId in all trips created by the anonymous user
+export const loginAndTransferTripOwnership = async ({ login, password }: transferTripOwnershipProps) => {
+  const oldUid = auth.currentUser?.uid;
+
+  try {
+    await signInWithEmailAndPassword(auth, login, password);
+  } catch (err) {
+    throw new Error("Failed to login" + err);
+  }
+
+  const newUid = auth.currentUser?.uid;
+
+  const tripsRef = collection(db, "trips");
+  const q = query(tripsRef, where("ownerId", "==", oldUid));
+
+  const snapshot = await getDocs(q);
+
+  const batch = writeBatch(db);
+  snapshot.forEach(docSnap => {
+    const tripRef = doc(db, "trips", docSnap.id);
+    batch.update(tripRef, { ownerId: newUid });
+  });
+
+  await batch.commit(); // Commit the batch to update all trips
 };
