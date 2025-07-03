@@ -85,3 +85,75 @@ export const updateTripDateRange = onCall(async (request) => {
 
   return { success: true };
 });
+
+// Fetch user data by UID
+exports.getUserData = onCall(async (request) => {
+  if (!request.auth?.uid) {
+    throw new HttpsError("unauthenticated", "You must be logged in.");
+  }
+
+  const { uid } = request.data || {};
+
+  if (!uid) {
+    throw new HttpsError("invalid-argument", "Missing data: uid.");
+  }
+
+  try {
+    // Fetch the user data using Firebase Admin SDK
+    const userRecord = await admin.auth().getUser(uid);
+
+    // Return the user data
+    return {
+      displayName: userRecord.displayName,
+      photoURL: userRecord.photoURL,
+    };
+  } catch (error) {
+    // Handle any errors
+    console.error('Error fetching user data:', error);
+    throw new HttpsError('internal', 'Unable to fetch user data');
+  }
+});
+
+export const searchUsers = onCall(async (request) => {
+  if (!request.auth?.uid) {
+    throw new HttpsError("unauthenticated", "You must be logged in.");
+  }
+
+  const { query, tripId } = request.data || {};
+
+  if (!query || typeof query !== "string" || !tripId) {
+    throw new HttpsError("invalid-argument", "Missing data: query or tripId.");
+  }
+
+  // Fetch the trip from Firestore and check ownership
+  const tripDoc = await admin.firestore().collection("trips").doc(tripId).get();
+  if (!tripDoc.exists) {
+    throw new HttpsError("not-found", "Trip not found.");
+  }
+  const trip = tripDoc.data();
+  if (!trip || trip.ownerId !== request.auth.uid) {
+    throw new HttpsError("permission-denied", "Only the trip owner can search users.");
+  }
+
+  // List and filter users
+  const lowerQuery = query.toLowerCase();
+  const allUsers: admin.auth.UserRecord[] = [];
+  let nextPageToken: string | undefined = undefined;
+
+  do {
+    const result = await admin.auth().listUsers(1000, nextPageToken);
+    allUsers.push(...result.users);
+    nextPageToken = result.pageToken;
+  } while (nextPageToken);
+
+  const filtered = allUsers.filter((user) => {
+    const name = user.displayName?.toLowerCase() ?? "";
+    return name.includes(lowerQuery);
+  });
+
+  return filtered.slice(0, 10).map((user) => ({
+    uid: user.uid,
+    displayName: user.displayName || "Unknown",
+    photoURL: user.photoURL || "",
+  }));
+});

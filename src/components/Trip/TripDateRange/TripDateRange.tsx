@@ -5,13 +5,14 @@ import { ChevronDown } from "lucide-react";
 import dayjs from "dayjs";
 import { DateRange } from "react-day-picker";
 
-interface TripDateRangeProps {
+type TripDateRangeProps = {
     startDate: Date;
     endDate: Date;
     tripId: string | undefined;
+    isOwner: boolean;
 }
 
-export default function TripDateRange({ startDate, endDate, tripId }: TripDateRangeProps) {
+export default function TripDateRange({ startDate, endDate, tripId, isOwner }: TripDateRangeProps) {
     const [editing, setEditing] = useState(false);
     const [range, setRange] = useState<DateRange | undefined>({
         from: startDate,
@@ -28,11 +29,11 @@ export default function TripDateRange({ startDate, endDate, tripId }: TripDateRa
     const formattedEndDate = range?.to ? dayjs(range.to).format("MMM D, YYYY") : "Not selected";
 
     return (
-        <div className={`flex flex-col items-center justify-center border-1 border-gray-200 gap-2 px-6 pt-6 rounded-lg shadow-md ${editing && "pb-6"}`}>
+        <div className={`flex flex-col items-center justify-center border-1 border-gray-200 gap-2 px-6 pt-6 rounded-lg shadow-md ${editing && "pb-6"} ${!isOwner && "pb-8"}`}>
 
             <TripDateRangePreview formattedStart={formattedStartDate} formattedEnd={formattedEndDate} />
 
-            {editing && (
+            {isOwner && editing && (
                 <TripDateRangeEditor
                     startDate={startDate}
                     endDate={endDate}
@@ -42,7 +43,7 @@ export default function TripDateRange({ startDate, endDate, tripId }: TripDateRa
                     setRange={setRange}
                 />
             )}
-            {!editing && (
+            {isOwner && !editing && (
                 <button
                     aria-label={editing ? "Close calendar" : "Open calendar"}
                     className="w-full h-12 flex justify-center items-center"

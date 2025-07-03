@@ -18,6 +18,7 @@ import MapWidget from "@/components/Map/MapWidget";
 import dayjs from "dayjs";
 import { toast } from "sonner";
 import { TripEvent } from "@/types/tripEvent";
+import { useAuthStore } from "@/state/useAuthStore";
 
 function getTripDayDateObj(startDate: Date, day: number) {
     return dayjs(startDate).add(day - 1, "day").toDate();
@@ -51,6 +52,16 @@ export default function EventFormPage() {
         queryFn: () => fetchTripEvent({ tripId, eventId }),
         enabled: isEditing,
     });
+
+    const currentUser = useAuthStore(state => state.user);
+    const isOwner = !!tripData && currentUser?.uid === tripData.ownerId;
+
+    useEffect(() => {
+        if (isAdding && tripData && !isOwner) {
+            toast.error("Only the trip owner can add events.");
+            navigate(`/trips/${tripId}`);
+        }
+    }, [isAdding, isOwner, tripData, tripId, navigate]);
 
     const addMutation = useMutation({
         mutationFn: addTripEvent,
@@ -226,12 +237,15 @@ export default function EventFormPage() {
                         to={eventData.to}
                         state={rangeState}
                         dispatch={rangeDispatch}
+                        isOwner={isOwner}
                     />
-                    <EventFormActionButton
-                        onClick={handleSaveOrAdd}
-                        label="Save"
-                        disabled={!(rangeState.range.from && rangeState.range.to)}
-                    />
+                    {isOwner && (
+                        <EventFormActionButton
+                            onClick={handleSaveOrAdd}
+                            label="Save"
+                            disabled={!(rangeState.range.from && rangeState.range.to)}
+                        />
+                    )}
                     <MapWidget place={placeForMap} />
                 </div>
             </div>
@@ -261,12 +275,15 @@ export default function EventFormPage() {
                         addingDate={addingDate}
                         state={rangeState}
                         dispatch={rangeDispatch}
+                        isOwner={isOwner}
                     />
-                    <EventFormActionButton
-                        onClick={handleSaveOrAdd}
-                        label="Add"
-                        disabled={!(rangeState.range.from && rangeState.range.to)}
-                    />
+                    {isOwner && (
+                        <EventFormActionButton
+                            onClick={handleSaveOrAdd}
+                            label="Add"
+                            disabled={!(rangeState.range.from && rangeState.range.to)}
+                        />
+                    )}
                     <MapWidget place={placeData} />
                 </div>
             </div>

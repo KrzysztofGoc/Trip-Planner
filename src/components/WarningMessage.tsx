@@ -34,7 +34,7 @@ const WarningMessage = () => {
           <div className="flex items-center justify-center gap-4">
             <CloudAlert className="shrink-0 size-12 text-red-400" />
             <p className="text-center">
-              You're using as a guest. You can create trips, but they will be lost after leaving unless you log in or register.
+              You're using as a guest. You can create trips, but they will be lost after leaving unless you log in or register after.
             </p>
           </div>
           <Button
