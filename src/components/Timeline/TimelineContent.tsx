@@ -6,20 +6,21 @@ type TimelineContentProps = {
     events: TripEvent[];
     dayNumber: number,
     tripId: string | undefined,
+    isOwner: boolean,
 }
 
-export default function TimelineContent({ events, dayNumber, tripId }: TimelineContentProps) {
+export default function TimelineContent({ events, dayNumber, tripId, isOwner }: TimelineContentProps) {
     return (
         <div className="flex flex-col gap-2 pr-0">
             {events.length === 0 ? (
                 <p className="text-gray-500 italic">No events planned for this day.</p>
             ) : (
                 events.map((event) => (
-                    <TimelineEvent key={event.id} event={event} tripId={tripId} />
+                    <TimelineEvent key={event.id} event={event} tripId={tripId} isOwner={isOwner}/>
                 ))
             )}
 
-            <TimelineAddEventButton dayNumber={dayNumber} />
+            {isOwner && <TimelineAddEventButton dayNumber={dayNumber} />}
         </div>
     );
 }

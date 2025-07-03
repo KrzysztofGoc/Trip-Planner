@@ -72,6 +72,7 @@ type EventTimeRangeProps =
         eventId: string | undefined;
         state: RangeState;
         dispatch: React.Dispatch<RangeAction>;
+        isOwner: boolean;
     }
     | {
         mode: "add";
@@ -79,6 +80,7 @@ type EventTimeRangeProps =
         addingDate: Date;
         state: RangeState;
         dispatch: React.Dispatch<RangeAction>;
+        isOwner: boolean;
     };
 
 function doesOverlap(from: Date, to: Date, allEvents: TripEvent[], selfId?: string | undefined): boolean {
@@ -125,7 +127,7 @@ export default function EventTimeRange(props: EventTimeRangeProps) {
             : "Not selected";
 
     return (
-        <div className={`flex flex-col items-center justify-center border-1 border-gray-200 gap-2 px-6 pt-6 rounded-lg shadow-md ${state.mode === "editing" && "pb-6"}`}>
+        <div className={`flex flex-col items-center justify-center border-1 border-gray-200 gap-2 px-6 pt-6 rounded-lg shadow-md ${state.mode === "editing" && "pb-6"} ${!props.isOwner && "pb-8"}`}>
 
             {state.mode === "editing" ? (
                 isLoadingEvents ? (
@@ -186,18 +188,20 @@ export default function EventTimeRange(props: EventTimeRangeProps) {
             ) : (
                 <>
                     <TripDateRangePreview formattedStart={formattedStart} formattedEnd={formattedEnd} />
-                    <button
-                        aria-label="Open time picker"
-                        className="w-full h-12 flex justify-center items-center"
-                        onClick={() =>
-                            dispatch({
-                                type: "START_EDIT",
-                                range: state.range,
-                            })
-                        }
-                    >
-                        <ChevronDown className={"text-red-400"} />
-                    </button>
+                    {props.isOwner && (
+                        <button
+                            aria-label="Open time picker"
+                            className="w-full h-12 flex justify-center items-center"
+                            onClick={() =>
+                                dispatch({
+                                    type: "START_EDIT",
+                                    range: state.range,
+                                })
+                            }
+                        >
+                            <ChevronDown className={"text-red-400"} />
+                        </button>
+                    )}
                 </>
             )}
         </div>

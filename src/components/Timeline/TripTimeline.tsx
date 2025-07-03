@@ -10,9 +10,10 @@ interface TrimTimelineProps {
     tripId: string | undefined,
     startDate: Date,
     endDate: Date,
+    isOwner: boolean
 }
 
-export default function TripTimeline({ tripId, startDate, endDate }: TrimTimelineProps) {
+export default function TripTimeline({ tripId, startDate, endDate, isOwner }: TrimTimelineProps) {
 
     const numberOfDays = dayjs(endDate).diff(startDate, "days") + 1;
 
@@ -48,7 +49,7 @@ export default function TripTimeline({ tripId, startDate, endDate }: TrimTimelin
         timelineDays.push(
             <TimelineDay key={dayDateLabel}>
                 <TimelineHeader dayNumber={dayNumber} dayDate={dayDateLabel} />
-                <TimelineContent dayNumber={dayNumber} events={dayEvents} tripId={tripId}/>
+                <TimelineContent dayNumber={dayNumber} events={dayEvents} tripId={tripId} isOwner={isOwner}/>
             </TimelineDay>
         );
     }

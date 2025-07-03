@@ -1,5 +1,5 @@
 export interface Participant {
-    id: string;
-    name: string;
-    image: string;
+    uid: string;
+    displayName: string;
+    photoURL: string;
 }
