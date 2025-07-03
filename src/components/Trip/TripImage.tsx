@@ -5,12 +5,13 @@ import TripImageChangeDialog from "./TripImageChangeDialog";
 
 type TripImageProps =
   | { mode: 'event'; imageUrl: string | null }  // Display mode
-  | { mode: 'trip'; imageUrl: string | null; tripId: string | undefined}; // Editable mode requires `tripId`
+  | { mode: 'trip'; imageUrl: string | null; tripId: string | undefined, isOwner: boolean }; // Editable mode requires `tripId`
 
 export default function TripImage(props: TripImageProps) {
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  const isTrip = props.mode === "trip";
+  // Only editable if we're in "trip" mode and user is the owner
+  const isEditable = props.mode === "trip" && "isOwner" in props && props.isOwner;
 
   return (
     <div className="relative w-auto h-1/3">
@@ -20,7 +21,7 @@ export default function TripImage(props: TripImageProps) {
         alt="Trip Cover"
       />
 
-      {isTrip && (
+      {isEditable && (
         <>
           <Button
             size={null}

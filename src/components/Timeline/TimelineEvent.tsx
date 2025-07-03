@@ -13,9 +13,10 @@ import { deleteTripEvent } from "@/api/events"; // API call for event deletion
 interface TimelineEventProps {
     event: TripEvent;
     tripId: string | undefined;
+    isOwner: boolean,
 }
 
-export default function TimelineEvent({ event, tripId }: TimelineEventProps) {
+export default function TimelineEvent({ event, tripId, isOwner }: TimelineEventProps) {
     const isPending = !!event.optimistic;
     const [open, setOpen] = useState(false);
     const navigate = useNavigate();
@@ -75,18 +76,21 @@ export default function TimelineEvent({ event, tripId }: TimelineEventProps) {
                         if (!isPending) navigate(`/trips/${tripId}/edit/${event.id}`);
                     }}
                 />
-                <button
-                    className="absolute top-1 right-1 size-10 flex items-center justify-center"
-                    disabled={isPending}
-                    onClick={e => {
-                        if (isPending) return;
-                        e.stopPropagation();
-                        setOpen(true);
-                    }}
-                    aria-label="Delete event"
-                >
-                    <Trash2 className={`size-5 ${isPending ? "text-gray-400" : "text-red-500"} drop-shadow-sm`} />
-                </button>
+                {/* Only show delete button if isOwner */}
+                {isOwner && (
+                    <button
+                        className="absolute top-1 right-1 size-10 flex items-center justify-center"
+                        disabled={isPending}
+                        onClick={e => {
+                            if (isPending) return;
+                            e.stopPropagation();
+                            setOpen(true);
+                        }}
+                        aria-label="Delete event"
+                    >
+                        <Trash2 className={`size-5 ${isPending ? "text-gray-400" : "text-red-500"} drop-shadow-sm`} />
+                    </button>
+                )}
             </div>
 
             {/* End Time Handle */}
