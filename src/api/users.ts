@@ -1,7 +1,7 @@
 import { functions } from "@/firebase";
 import { Participant } from "@/types/participant";
 import { httpsCallable } from "firebase/functions";
-import { signInWithEmailAndPassword, EmailAuthProvider, updateProfile, linkWithCredential, User } from "firebase/auth";
+import { signInWithEmailAndPassword, EmailAuthProvider, updateProfile, linkWithCredential, User, sendPasswordResetEmail, signOut } from "firebase/auth";
 import { auth } from "@/firebase";
 
 type fetchUserByIdProps = {
@@ -66,4 +66,36 @@ export async function registerUser({ email, password, nickname, user }: Register
             displayName: nickname,
         });
     }
+}
+
+type UpdateUserDisplayNameProps = {
+    name: string
+};
+
+export async function updateUserDisplayName({ name }: UpdateUserDisplayNameProps) {
+    if (!auth.currentUser) throw new Error("Not logged in");
+
+    await updateProfile(auth.currentUser, { displayName: name.trim() });
+}
+
+type UpdateUserPhotoProps = {
+    url: string
+};
+
+export async function updateUserPhoto({ url }: UpdateUserPhotoProps) {
+    if (!auth.currentUser) throw new Error("Not logged in");
+    await updateProfile(auth.currentUser, { photoURL: url });
+}
+
+type SendUserPasswordResetEmailProps = {
+    email: string | null | undefined;
+};
+
+export async function sendUserPasswordResetEmail({ email }: SendUserPasswordResetEmailProps) {
+    if (!email) throw new Error("No email set");
+    await sendPasswordResetEmail(auth, email);
+}
+
+export async function logoutUser() {
+  await signOut(auth);
 }
