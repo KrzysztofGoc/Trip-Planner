@@ -1,9 +1,8 @@
 import { Trip } from "@/types/trip";
 import { db } from "@/firebase";
-import { addDoc, getDoc, doc, collection, serverTimestamp, getDocs, updateDoc, Timestamp, where, query, or, writeBatch, arrayRemove, arrayUnion } from "firebase/firestore";
+import { addDoc, getDoc, doc, collection, serverTimestamp, getDocs, updateDoc, Timestamp, where, query, or, arrayRemove, arrayUnion } from "firebase/firestore";
 import { httpsCallable } from "firebase/functions"
 import { functions, auth } from "../firebase"
-import { signInWithEmailAndPassword } from "firebase/auth";
 import { Participant } from "@/types/participant";
 
 export const fetchTrips = async (uid: string): Promise<Trip[]> => {
@@ -145,37 +144,6 @@ export const updateTripDateRange = async ({ tripId, startDate, endDate, }: Updat
     startDate: startDate.toISOString(),
     endDate: endDate.toISOString(),
   });
-};
-
-type transferTripOwnershipProps = {
-  login: string,
-  password: string,
-}
-
-// Function to update ownerId in all trips created by the anonymous user and log him in
-export const loginAndTransferTripOwnership = async ({ login, password }: transferTripOwnershipProps) => {
-  const oldUid = auth.currentUser?.uid;
-
-  try {
-    await signInWithEmailAndPassword(auth, login, password);
-  } catch (err) {
-    throw new Error("Failed to login" + err);
-  }
-
-  const newUid = auth.currentUser?.uid;
-
-  const tripsRef = collection(db, "trips");
-  const q = query(tripsRef, where("ownerId", "==", oldUid));
-
-  const snapshot = await getDocs(q);
-
-  const batch = writeBatch(db);
-  snapshot.forEach(docSnap => {
-    const tripRef = doc(db, "trips", docSnap.id);
-    batch.update(tripRef, { ownerId: newUid });
-  });
-
-  await batch.commit(); // Commit the batch to update all trips
 };
 
 type AddParticipantToTripParams = {
