@@ -1,77 +1,169 @@
-import { useState, useEffect } from "react";
-import { linkWithCredential, EmailAuthProvider, updateProfile } from "firebase/auth";
+import { useEffect } from "react";
 import { useAuthStore } from "@/state/useAuthStore";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { auth } from "@/firebase";  // Import Firebase auth
+import { useMutation } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
+import { registerUser } from "@/api/users"; // <- the function from above
+
+const registerSchema = z.object({
+  email: z.string().email({ message: "Invalid email" }),
+  password: z.string().min(12, "Password must be at least 12 characters"),
+  nickname: z.string().min(2, "Nickname must be at least 2 characters"),
+});
+
+type RegisterValues = z.infer<typeof registerSchema>;
 
 export default function RegisterPage() {
-    const user = useAuthStore(s => s.user);
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [nickname, setNickname] = useState(""); // Add state for nickname
-    const setLoading = useAuthStore(s => s.setLoading);
-    const navigate = useNavigate();
+  const user = useAuthStore((s) => s.user);
+  const navigate = useNavigate();
 
-    // Redirect to /account if the user is already logged in and not anonymous
-    useEffect(() => {
-        if (!user?.isAnonymous) {
-            navigate("/account");
-        }
-    }, [navigate, user]);
+  const form = useForm<RegisterValues>({
+    resolver: zodResolver(registerSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+      nickname: "",
+    },
+  });
 
-    async function handleRegister(e: React.FormEvent) {
-        e.preventDefault();
-        setLoading(true);
-        try {
-            if (user?.isAnonymous) {
-                // Create a credential for the email/password account
-                const credential = EmailAuthProvider.credential(email, password);
+  const { mutate: registerMutate, isPending } = useMutation({
+    mutationFn: (data: RegisterValues) =>
+      registerUser({ ...data, user }),
+    onSuccess: () => {
+      toast.success("Account created successfully!");
+      navigate("/trips");
+    },
+    onError: (err) => {
+      const msg =
+        err?.message?.replace(/^Firebase:\s*/, "") ||
+        "Could not register";
+      toast.error(msg);
+      form.setError("email", { message: " " });
+      form.setError("password", { message: " " });
+      form.setError("nickname", { message: " " });
+    },
+  });
 
-                // Link the anonymous account with the new email/password credentials
-                await linkWithCredential(user, credential);
-
-                if (auth.currentUser) {
-                    // Update the user's profile with the nickname (displayName)
-                    await updateProfile(auth.currentUser, {
-                        displayName: nickname,
-                    });
-                }
-
-                setLoading(false);
-                navigate("/trips");
-            }
-        } catch (err) {
-            toast.error(`Registration failed: ${err}`);
-            setLoading(false);
-        }
+  useEffect(() => {
+    if (!user?.isAnonymous && !isPending) {
+      navigate("/account");
     }
+  }, [navigate, user, isPending]);
 
-    return (
-        <>
-            <form onSubmit={handleRegister} className="flex flex-col">
-                <input
-                    value={email}
-                    onChange={e => setEmail(e.target.value)}
-                    placeholder="Email"
-                />
-                <input
-                    value={password}
-                    onChange={e => setPassword(e.target.value)}
-                    placeholder="Password"
-                    type="password"
-                />
-                <input
-                    value={nickname}
-                    onChange={e => setNickname(e.target.value)}
-                    placeholder="Nickname"
-                />
-                <button type="submit">Register</button>
+  function onSubmit(data: RegisterValues) {
+    registerMutate(data);
+  }
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 to-white px-4">
+      <Card className="w-full max-w-md shadow-xl rounded-2xl">
+        <CardHeader className="flex flex-col gap-3 items-center pt-8">
+          <div className="w-16 h-16 rounded-full bg-red-200 flex items-center justify-center mb-2">
+            <span className="text-3xl font-bold text-red-500">✈️</span>
+          </div>
+          <CardTitle className="text-2xl font-bold">Create an account</CardTitle>
+          <p className="text-gray-500 text-sm text-center">Sign up to start planning your trips</p>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="flex flex-col gap-4"
+              autoComplete="on"
+              noValidate
+            >
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="email"
+                        autoComplete="email"
+                        placeholder="your@email.com"
+                        {...field}
+                        disabled={isPending}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="password"
+                        autoComplete="new-password"
+                        placeholder="••••••••"
+                        {...field}
+                        disabled={isPending}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="nickname"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Nickname</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="text"
+                        autoComplete="nickname"
+                        placeholder="How should we call you?"
+                        {...field}
+                        disabled={isPending}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Button
+                type="submit"
+                className="w-full h-12 rounded-lg bg-red-400 text-white text-lg font-semibold"
+                disabled={isPending}
+              >
+                {isPending ? (
+                  <>
+                    <Loader2 className="animate-spin mr-2 w-5 h-5" /> Registering...
+                  </>
+                ) : (
+                  "Register"
+                )}
+              </Button>
             </form>
-            <br />
-            <Link to={"/login"}>
-                <p>Already have an account? <span className="font-bold">Login</span></p>
+          </Form>
+          <div className="mt-6 text-center">
+            <Link to="/login" className="text-red-400 font-semibold hover:underline">
+              Already have an account? Login
             </Link>
-        </>
-    );
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
 }
