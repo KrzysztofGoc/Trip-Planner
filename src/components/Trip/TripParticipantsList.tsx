@@ -1,6 +1,6 @@
 import { Participant } from "@/types/participant";
 import TripParticipantsOwner from "./TripParticipantsOwner";
-import TripParticipantsGrid from "./TripParticipantsDialog";
+import TripParticipantsDialog from "./TripParticipantsDialog";
 
 interface TripParticipantsListProps {
   participants: Participant[];
@@ -18,7 +18,7 @@ export default function TripParticipantsList({ participants, ownerId, tripId, is
         <TripParticipantsOwner ownerId={ownerId} />
 
         {/* Participants Section with Dialog Trigger */}
-        <TripParticipantsGrid participants={participants} tripId={tripId} isOwner={isOwner}/>
+        <TripParticipantsDialog participants={participants} tripId={tripId} isOwner={isOwner}/>
       </div>
     </div>
   );
