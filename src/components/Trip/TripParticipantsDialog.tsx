@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Loader2, Trash2, Users, Pencil, Eye, List, ClipboardList, ExternalLink, ChevronRight } from "lucide-react";
+import { Loader2, Trash2, Users, Pencil, ChevronRight } from "lucide-react";
 import { Participant } from "@/types/participant";
 import { searchUsers } from "@/api/users";
 import { removeParticipantFromTrip, addParticipantToTrip } from "@/api/trips";
@@ -17,7 +17,7 @@ interface TripParticipantsGridProps {
   isOwner: boolean;
 }
 
-export default function TripParticipantsGrid({ participants, tripId, isOwner }: TripParticipantsGridProps) {
+export default function TripParticipantsDialog({ participants, tripId, isOwner }: TripParticipantsGridProps) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [debouncedSearch] = useDebounce(search, 300);

@@ -12,7 +12,7 @@ import EventTimeRange from "@/components/EventTimeRange/EventTimeRange";
 import EventFormActionButton from "@/components/EventFormActionButton";
 import TripImage from "@/components/Trip/TripImage";
 import TripHeader from "@/components/Trip/TripHeader/TripHeader";
-import TripNavigation from "@/components/Trip/TripNavigation";
+import TripNavigation from "@/components/Trip/TripNavigation/TripNavigation";
 import MapWidget from "@/components/Map/MapWidget";
 
 import dayjs from "dayjs";
