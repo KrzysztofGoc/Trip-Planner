@@ -1,4 +1,3 @@
-import { Participant } from "./participant";
 import { Timestamp } from "firebase/firestore";
 
 export interface Trip {
@@ -9,7 +8,6 @@ export interface Trip {
     endDate: Date | null;
     description: string | null;
     image: string | null;
-    participants: Participant[] | [],
     createdAt: Timestamp;
     updatedAt: Timestamp;
     ownerId: string;
