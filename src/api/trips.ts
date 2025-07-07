@@ -1,6 +1,6 @@
 import { Trip } from "@/types/trip";
 import { db } from "@/firebase";
-import { addDoc, getDoc, doc, collection, serverTimestamp, getDocs, updateDoc, Timestamp, where, query, or, arrayRemove, arrayUnion } from "firebase/firestore";
+import { addDoc, getDoc, doc, collection, serverTimestamp, getDocs, updateDoc, Timestamp, where, query, or, deleteDoc, setDoc } from "firebase/firestore";
 import { httpsCallable } from "firebase/functions"
 import { functions, auth } from "../firebase"
 import { Participant } from "@/types/participant";
@@ -161,27 +161,15 @@ export async function addParticipantToTrip({ tripId, participant }: AddParticipa
   if (!tripId) throw new Error("Trip ID is missing");
   if (!participant?.uid) throw new Error("Participant UID is missing");
 
-  const tripRef = doc(db, "trips", tripId);
-  const tripSnap = await getDoc(tripRef);
-
-  if (!tripSnap.exists()) {
-    throw new Error("Trip does not exist");
-  }
-
-  // Return early in participant already in the trip
-  const participants: Participant[] = tripSnap.data().participants ?? [];
-  if (participants.some((p) => p.uid === participant.uid)) {
-    throw new Error("Participant already added to the trip");
-  }
-
-  await updateDoc(tripRef, {
-    participants: arrayUnion(participant),
-  });
+  // Document at /trips/{tripId}/participants/{uid}
+  const participantRef = doc(db, "trips", tripId, "participants", participant.uid);
+  await setDoc(participantRef, participant);
 }
+
 
 type RemoveParticipantFromTripParams = {
   tripId: string | undefined;
-  uid: string;
+  uid: string | undefined | null;
 };
 
 /**
@@ -193,47 +181,35 @@ type RemoveParticipantFromTripParams = {
 export async function removeParticipantFromTrip({ tripId, uid }: RemoveParticipantFromTripParams): Promise<void> {
   if (!tripId) throw new Error("Trip ID is missing");
   if (!uid) throw new Error("Participant UID is missing");
-
-  const tripRef = doc(db, "trips", tripId);
-
-  // Fetch the trip document to get the current participants array
-  const tripSnap = await getDoc(tripRef);
-
-  // Throw if trip does not exist
-  if (!tripSnap.exists()) {
-    throw new Error("Trip does not exist");
-  }
-
-  // Get current participants array
-  const existing: Participant[] = tripSnap.data().participants ?? [];
-
-  // Find the participant object by UID
-  const participantObj = existing.find((p) => p.uid === uid);
-
-  // Throw if participant not found
-  if (!participantObj) {
-    throw new Error("Participant not found in this trip");
-  }
-
-  // Remove the participant from Firestore array
-  await updateDoc(tripRef, {
-    participants: arrayRemove(participantObj),
-  });
+  
+  const participantRef = doc(db, "trips", tripId, "participants", uid);
+  await deleteDoc(participantRef);
 }
 
 type deleteTripParams = {
   tripId: string | undefined;
 }
 
-export function deleteTrip({ tripId }: deleteTripParams) {
-  console.log(`Deleting ${tripId}`);
+export async function deleteTrip({ tripId }: deleteTripParams) {
+  if (!tripId) throw new Error("No trip ID provided.");
+
+  const tripRef = doc(db, "trips", tripId);
+  await deleteDoc(tripRef);
 }
 
 type transferTripOwnershipParams = {
   tripId: string | undefined;
-  selectedUserId: string;
+  selectedUserId: string | undefined;
 }
 
-export function transferTripOwnership({ tripId, selectedUserId }: transferTripOwnershipParams) {
-  console.log(`Deleting ${selectedUserId} from trip ${tripId}`);
+export async function transferTripOwnership({ tripId, selectedUserId }: transferTripOwnershipParams) {
+  if (!tripId) throw new Error("Missing tripId");
+  if (!selectedUserId) throw new Error("Missing selectedUserId");
+
+  const tripRef = doc(db, "trips", tripId);
+
+  await updateDoc(tripRef, {
+    ownerId: selectedUserId,
+    updatedAt: serverTimestamp(),
+  });
 }

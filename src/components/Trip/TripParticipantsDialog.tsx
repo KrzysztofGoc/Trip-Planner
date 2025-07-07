@@ -10,6 +10,7 @@ import { useDebounce } from "use-debounce";
 import { Input } from "../ui/input";
 import { queryClient } from "@/api/queryClient";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 interface TripParticipantsGridProps {
   participants: Participant[];
@@ -29,27 +30,63 @@ export default function TripParticipantsDialog({ participants, tripId, isOwner }
     enabled: isOwner && debouncedSearch.length > 0,
   });
 
-  const removeMutation = useMutation({
+  const { mutate: removeUser } = useMutation({
     mutationFn: removeParticipantFromTrip,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["trips", { tripId: tripId }] });
+    onMutate: async ({ uid }) => {
+      toast.success("Removed participant", { id: "remove-participant" });
+
+      await queryClient.cancelQueries({ queryKey: ["trips", { tripId }, "participants"] });
+
+      // Snapshot previous participants
+      const previousParticipants = queryClient.getQueryData<Participant[]>(["trips", { tripId }, "participants"]);
+
+      // Optimistically update cache
+      if (previousParticipants) {
+        queryClient.setQueryData(["trips", { tripId }, "participants"],
+          previousParticipants.filter(p => p.uid !== uid)
+        );
+      }
+
+      return { previousParticipants };
+    },
+    onError: (_err, _data, context) => {
+      toast.error("Failed to remove participant", { id: "remove-participant" });
+      if (context?.previousParticipants) {
+        queryClient.setQueryData(["trips", { tripId }, "participants"], context.previousParticipants);
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["trips", { tripId }, "participants"] });
     },
   });
 
-  const addMutation = useMutation({
+  const { mutate: addUser } = useMutation({
     mutationFn: addParticipantToTrip,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["trips", { tripId: tripId }] });
+    onMutate: async ({ participant }) => {
+      toast.success("Added participant", { id: "add-participant" });
+
+      await queryClient.cancelQueries({ queryKey: ["trips", { tripId }, "participants"] });
+
+      // Snapshot previous
+      const previousParticipants = queryClient.getQueryData<Participant[]>(["trips", { tripId }, "participants"]);
+      if (previousParticipants) {
+        queryClient.setQueryData(["trips", { tripId }, "participants"], [
+          ...previousParticipants,
+          participant,
+        ]);
+      }
+      return { previousParticipants };
+    },
+    onError: (_err, _data, context) => {
+      toast.error("Failed to add participant", { id: "add-participant" });
+      if (context?.previousParticipants) {
+        queryClient.setQueryData(["trips", { tripId }, "participants"], context.previousParticipants);
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["trips", { tripId }, "participants"] });
     },
   });
-
-  function handleRemoveUser({ uid }: { uid: string }) {
-    removeMutation.mutate({ tripId: tripId, uid });
-  }
-
-  function handleAddUser({ tripId, user }: { tripId: string | undefined, user: Participant }) {
-    addMutation.mutate({ tripId: tripId, participant: user });
-  }
 
   function handleDialogOpenChange(open: boolean) {
     setDialogOpen(open);
@@ -60,12 +97,15 @@ export default function TripParticipantsDialog({ participants, tripId, isOwner }
     <Dialog open={dialogOpen} onOpenChange={handleDialogOpenChange}>
       <DialogTrigger asChild>
         <div className="flex flex-col gap-4 cursor-pointer transition hover:bg-gray-50 rounded-xl px-2 py-2">
+          {/* Participants label */}
           <div className="flex items-center gap-5.5">
             <Users className="size-6 w-12" />
             <p className="text-lg font-semibold">Participants</p>
             {isOwner && <Pencil className="w-5 h-5 text-red-400 -ml-2" />}
-            {!isOwner && <ChevronRight className="size-5 text-red-400 -ml-2"/>}
+            {!isOwner && <ChevronRight className="size-5 text-red-400 -ml-2" />}
           </div>
+
+          {/* Participants list */}
           <div className="flex items-center gap-3 justify-evenly">
             {participants.length === 0 && (
               <span className="text-xs text-gray-400">No participants yet</span>
@@ -87,9 +127,10 @@ export default function TripParticipantsDialog({ participants, tripId, isOwner }
           </div>
         </div>
       </DialogTrigger>
+
       <DialogContent className="flex flex-col gap-8">
         <DialogHeader>
-          <DialogTitle>Manage Participants</DialogTitle>
+          <DialogTitle>{isOwner ? "Manage Participants" : "Participants"}</DialogTitle>
         </DialogHeader>
         {/* Current Participants */}
         <div className="flex flex-col gap-2">
@@ -119,7 +160,7 @@ export default function TripParticipantsDialog({ participants, tripId, isOwner }
                       variant="ghost"
                       className="ml-auto"
                       title="Remove participant"
-                      onClick={() => handleRemoveUser({ uid: participant.uid })}
+                      onClick={() => removeUser({ tripId: tripId, uid: participant.uid })}
                     >
                       <Trash2 className="w-4 h-4 text-red-500" />
                     </Button>
@@ -165,7 +206,7 @@ export default function TripParticipantsDialog({ participants, tripId, isOwner }
                           size="sm"
                           className="ml-auto bg-red-400 text-white rounded-lg"
                           disabled={alreadyParticipant}
-                          onClick={() => handleAddUser({ tripId: tripId, user: user })}
+                          onClick={() => addUser({ tripId: tripId, participant: user })}
                         >
                           {alreadyParticipant ? "Added" : "Add"}
                         </Button>

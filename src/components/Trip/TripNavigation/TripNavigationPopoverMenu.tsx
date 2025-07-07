@@ -2,12 +2,15 @@ import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover
 import TripNavigationDeleteTrip from "./TripNavigationDeleteTrip";
 import TripNavigationChangeOwner from "./TripNavigationChangeOwner";
 import { Ellipsis } from "lucide-react";
+import { Participant } from "@/types/participant";
 
 type TripPopoverMenuProps = {
     tripId: string | undefined;
+    participants: Participant[];
+    ownerId: string;
 };
 
-export default function TripPopoverMenu({ tripId }: TripPopoverMenuProps) {
+export default function TripPopoverMenu({ tripId, participants, ownerId }: TripPopoverMenuProps) {
     return (
         <Popover>
             <PopoverTrigger>
@@ -27,7 +30,7 @@ export default function TripPopoverMenu({ tripId }: TripPopoverMenuProps) {
                     {/* Label */}
                     <div className="text-sm font-medium text-gray-500 pl-2 ">Trip options</div>
                     {/* Change Owner Button + Dialog */}
-                    <TripNavigationChangeOwner tripId={tripId} />
+                    <TripNavigationChangeOwner tripId={tripId} participants={participants} ownerId={ownerId}/>
                     {/* Divider */}
                     <div className="my-2 h-px bg-black/20" />
                     {/* Delete Trip Button + Dialog */}

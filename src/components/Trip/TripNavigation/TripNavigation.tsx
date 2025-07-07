@@ -3,14 +3,31 @@ import { Button } from '../../ui/button';
 import { Link } from 'react-router-dom';
 import TripLeaveDialog from './TripNavigationLeaveDialog';
 import TripPopoverMenu from './TripNavigationPopoverMenu';
+import { Participant } from '@/types/participant';
+import { useAuthStore } from '@/state/useAuthStore';
 
 type TripNavigationProps = {
+    mode: "trip"
     isOwner: boolean,
     tripId: string | undefined,
-}
+    participants: Participant[];
+    ownerId: string;
+} | {
+    mode: "event"
+};
 
 // You’ll pass isOwner and onLeave/onDelete/onChangeOwner as props:
-export default function TripNavigation({ isOwner, tripId }: TripNavigationProps) {
+export default function TripNavigation(props: TripNavigationProps) {
+    const currentUser = useAuthStore(s => s.user);
+
+    const isTrip = props.mode === "trip";
+    let isParticipant = false;
+
+
+    if (isTrip) {
+        isParticipant = !!props.participants.find(p => p.uid === currentUser?.uid);
+    }
+
     return (
         <div className="fixed z-50 top-4 left-0 w-full flex justify-between">
             {/* Back Button */}
@@ -27,12 +44,14 @@ export default function TripNavigation({ isOwner, tripId }: TripNavigationProps)
                         <SquareArrowOutUpRight className="size-6 text-white" />
                     </div>
                 </Button>
-                {!isOwner ? (
-                    // Leave Trip (Participant)
-                    <TripLeaveDialog tripId={tripId} />
-                ) : (
-                    // Owner: Menu
-                    <TripPopoverMenu tripId={tripId} />
+                {isTrip && (
+                    !props.isOwner ? (
+                        // Participant: Leave Trip button
+                        isParticipant && (<TripLeaveDialog tripId={props.tripId} />)
+                    ) : (
+                        // Owner: Menu
+                        <TripPopoverMenu tripId={props.tripId} participants={props.participants} ownerId={props.ownerId} />
+                    )
                 )}
             </div>
         </div>
