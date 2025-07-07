@@ -6,6 +6,7 @@ import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 // import your mutation fn here
 import { deleteTrip } from "@/api/trips";
+import { useNavigate } from "react-router-dom";
 
 type TripNavigationDeleteTripProps = {
     tripId: string | undefined;
@@ -13,11 +14,14 @@ type TripNavigationDeleteTripProps = {
 
 export default function TripNavigationDeleteTrip({ tripId }: TripNavigationDeleteTripProps) {
     const [open, setOpen] = useState(false);
+    const navigate = useNavigate();
+
     const { mutate, isPending } = useMutation({
-        mutationFn: () => deleteTrip(tripId),
+        mutationFn: deleteTrip,
         onSuccess: () => {
             toast.success("Trip deleted");
             setOpen(false);
+            navigate("/trips");
         },
         onError: () => toast.error("Failed to delete trip"),
     });
@@ -48,7 +52,7 @@ export default function TripNavigationDeleteTrip({ tripId }: TripNavigationDelet
                         </AlertDialogCancel>
                         <AlertDialogAction
                             className="h-12 bg-red-500 text-white"
-                            onClick={() => mutate()}
+                            onClick={() => mutate({ tripId })}
                             disabled={isPending}
                         >
                             {isPending ? "Deleting..." : "Delete"}
