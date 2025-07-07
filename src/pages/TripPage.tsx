@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchTrip } from "@/api/trips";
 import TripParticipantsList from "@/components/Trip/TripParticipantsList";
 import TripTimeline from "@/components/Timeline/TripTimeline";
-import TripNavigation from "@/components/Trip/TripNavigation";
+import TripNavigation from "@/components/Trip/TripNavigation/TripNavigation";
 import TripImage from "@/components/Trip/TripImage";
 import TripHeader from "@/components/Trip/TripHeader/TripHeader";
 import TripDateRange from "@/components/Trip/TripDateRange/TripDateRange";
@@ -37,7 +37,7 @@ export default function TripPage() {
             {tripData && (
                 <div className="size-auto flex flex-col">
                     {/* Trip Top Navigation */}
-                    <TripNavigation />
+                    <TripNavigation isOwner={isOwner} tripId={tripId} />
 
                     {/* Image Container */}
                     <TripImage mode="trip" imageUrl={tripData.image} tripId={tripId} isOwner={isOwner} />

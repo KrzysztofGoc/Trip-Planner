@@ -220,3 +220,20 @@ export async function removeParticipantFromTrip({ tripId, uid }: RemoveParticipa
     participants: arrayRemove(participantObj),
   });
 }
+
+type deleteTripParams = {
+  tripId: string | undefined;
+}
+
+export function deleteTrip({ tripId }: deleteTripParams) {
+  console.log(`Deleting ${tripId}`);
+}
+
+type transferTripOwnershipParams = {
+  tripId: string | undefined;
+  selectedUserId: string;
+}
+
+export function transferTripOwnership({ tripId, selectedUserId }: transferTripOwnershipParams) {
+  console.log(`Deleting ${selectedUserId} from trip ${tripId}`);
+}

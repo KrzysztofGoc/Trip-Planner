@@ -1,4 +1,4 @@
-import TripNavigation from "@/components/Trip/TripNavigation";
+import TripNavigation from "@/components/Trip/TripNavigation/TripNavigation";
 import Map from "@/components/Map/Map";
 import { useParams, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
