@@ -16,9 +16,10 @@ interface TripParticipantsGridProps {
   participants: Participant[];
   tripId: string | undefined;
   isOwner: boolean;
+  ownerId: string;
 }
 
-export default function TripParticipantsDialog({ participants, tripId, isOwner }: TripParticipantsGridProps) {
+export default function TripParticipantsDialog({ participants, tripId, isOwner, ownerId }: TripParticipantsGridProps) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [debouncedSearch] = useDebounce(search, 300);
@@ -153,16 +154,24 @@ export default function TripParticipantsDialog({ participants, tripId, isOwner }
                     <AvatarImage src={participant.photoURL} />
                     <AvatarFallback>{participant.displayName.charAt(0)}</AvatarFallback>
                   </Avatar>
-                  <span>{participant.displayName}</span>
+                  <span>
+                    {participant.displayName}
+                    {participant.uid === ownerId && (
+                      <span className="ml-1 text-xs font-semibold text-red-400">(Owner)</span>
+                    )}
+                  </span>
                   {isOwner && (
                     <Button
                       size="icon"
                       variant="ghost"
                       className="ml-auto"
                       title="Remove participant"
+                      disabled={participant.uid === ownerId}
                       onClick={() => removeUser({ tripId: tripId, uid: participant.uid })}
                     >
-                      <Trash2 className="w-4 h-4 text-red-500" />
+                      <Trash2 className={`size-4 ${participant.uid === ownerId ? " text-gray-300" : " text-red-500"}`
+
+                      } />
                     </Button>
                   )}
                 </div>

@@ -42,7 +42,7 @@ export default function TripPage() {
             {tripData && (
                 <div className="size-auto flex flex-col">
                     {/* Trip Top Navigation */}
-                    <TripNavigation isOwner={isOwner} tripId={tripId} participants={participants} ownerId={tripData.ownerId} />
+                    <TripNavigation mode="trip" isOwner={isOwner} tripId={tripId} participants={participants} ownerId={tripData.ownerId} />
 
                     {/* Image Container */}
                     <TripImage mode="trip" imageUrl={tripData.image} tripId={tripId} isOwner={isOwner} />

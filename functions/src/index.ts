@@ -1,4 +1,5 @@
 import { onCall, HttpsError } from "firebase-functions/v2/https";
+import { onDocumentDeleted, onDocumentCreated } from "firebase-functions/v2/firestore";
 import * as admin from "firebase-admin";
 import { TripEvent } from "./types/event";
 import { Timestamp, FieldValue } from "firebase-admin/firestore";
@@ -157,3 +158,66 @@ export const searchUsers = onCall(async (request) => {
     photoURL: user.photoURL || "",
   }));
 });
+
+export const onTripDeleted = onDocumentDeleted("trips/{tripId}", async (event) => {
+  const { tripId } = event.params;
+  const db = admin.firestore();
+
+  // (2) If you don’t have a participant array, fetch participants from subcollection
+  let allParticipantUids: string[] = [];
+  const participantsSnap = await db.collection(`trips/${tripId}/participants`).get();
+
+  participantsSnap.forEach(doc => {
+    allParticipantUids.push(doc.id); // assuming doc.id is the uid
+  });
+
+  const batch = db.batch();
+
+  // (3) Cleanup /userTrips/{uid}/trips/{tripId}
+  allParticipantUids.forEach(uid => {
+    batch.delete(db.doc(`userTrips/${uid}/trips/${tripId}`));
+  });
+
+  // (4) Delete participants subcollection (server-side recursive delete)
+  const participantsCollection = db.collection(`trips/${tripId}/participants`);
+  const participants = await participantsCollection.listDocuments();
+  for (const docRef of participants) {
+    batch.delete(docRef);
+  }
+
+  // (5) Delete events subcollection
+  const eventsCollection = db.collection(`trips/${tripId}/events`);
+  const events = await eventsCollection.listDocuments();
+  for (const docRef of events) {
+    batch.delete(docRef);
+  }
+
+  // Commit all deletes
+  await batch.commit();
+});
+
+export const onParticipantAdded = onDocumentCreated("trips/{tripId}/participants/{userId}", async (event) => {
+  const { tripId, userId } = event.params;
+  const db = admin.firestore();
+
+  // Create reference to the trip
+  const tripRef = db.doc(`trips/${tripId}`);
+
+  await db
+    .doc(`userTrips/${userId}/trips/${tripId}`)
+    .set({
+      tripRef,
+      joinedAt: FieldValue.serverTimestamp(),
+    });
+});
+
+export const onParticipantRemoved = onDocumentDeleted(
+  "trips/{tripId}/participants/{userId}",
+  async (event) => {
+    const { tripId, userId } = event.params;
+    const db = admin.firestore();
+
+    // Remove the userTrip entry for this user/trip combo
+    const userTripRef = db.doc(`userTrips/${userId}/trips/${tripId}`);
+    await userTripRef.delete();
+  });
