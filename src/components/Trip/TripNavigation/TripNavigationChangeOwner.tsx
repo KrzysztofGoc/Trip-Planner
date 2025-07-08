@@ -93,7 +93,7 @@ export default function TripNavigationChangeOwner({ tripId, participants, ownerI
                     </AlertDialogHeader>
                     <div className="flex flex-col gap-2 mt-2">
                         {eligibleParticipants.length === 0 ? (
-                            <div className="text-sm text-gray-500 italic">No other participants to transfer ownership.</div>
+                            <div className="text-sm text-gray-500 italic text-center">No other participants to transfer ownership.</div>
                         ) : (
                             eligibleParticipants.map((p) => (
                                 <button

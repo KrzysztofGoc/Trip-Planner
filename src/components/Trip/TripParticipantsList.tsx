@@ -18,7 +18,7 @@ export default function TripParticipantsList({ participants, ownerId, tripId, is
         <TripParticipantsOwner ownerId={ownerId} />
 
         {/* Participants Section with Dialog Trigger */}
-        <TripParticipantsDialog participants={participants} tripId={tripId} isOwner={isOwner}/>
+        <TripParticipantsDialog participants={participants} tripId={tripId} isOwner={isOwner} ownerId={ownerId}/>
       </div>
     </div>
   );
