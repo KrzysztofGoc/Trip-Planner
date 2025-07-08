@@ -1,6 +1,6 @@
 import { Trip } from "@/types/trip";
 import { db } from "@/firebase";
-import { addDoc, getDoc, doc, collection, serverTimestamp, getDocs, updateDoc, Timestamp, where, query, or, deleteDoc, setDoc } from "firebase/firestore";
+import { writeBatch, getDoc, doc, collection, serverTimestamp, getDocs, updateDoc, Timestamp, where, query, or, deleteDoc, setDoc } from "firebase/firestore";
 import { httpsCallable } from "firebase/functions"
 import { functions, auth } from "../firebase"
 import { Participant } from "@/types/participant";
@@ -56,16 +56,14 @@ export const fetchTrip = async ({ tripId }: FetchTripParams): Promise<Trip> => {
   } as Trip;
 };
 
-// Create a new trip with a Firestore-generated ID
 export const createTrip = async (): Promise<string> => {
-  // Get the currently authenticated user (whether logged in or anonymous)
   const user = auth.currentUser;
+  if (!user) throw new Error("User must be logged in to create a trip.");
 
-  if (!user) {
-    throw new Error("User must be logged in (either authenticated or anonymous) to create a trip.");
-  }
+  // 1. Generate a new trip document reference
+  const tripRef = doc(collection(db, "trips"));
 
-  // Set the trip data
+  // 2. Prepare trip data
   const tripData = {
     name: null,
     destination: null,
@@ -73,17 +71,24 @@ export const createTrip = async (): Promise<string> => {
     endDate: null,
     description: null,
     image: null,
-    participants: [],
-    events: [],
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
-    ownerId: user.uid, // Use the Firebase user UID (whether authenticated or anonymous)
+    ownerId: user.uid,
   };
 
-  // Create a new trip document in the 'trips' collection
-  const docRef = await addDoc(collection(db, "trips"), tripData);
+  // Create trip first
+  await setDoc(tripRef, tripData);
 
-  return docRef.id;
+  // Now, create the participant doc for the owner
+  const participantDoc = {
+    uid: user.uid,
+    displayName: user.displayName || "Trip owner",
+    photoURL: user.photoURL || null,
+  };
+  const participantRef = doc(tripRef, "participants", user.uid);
+  await setDoc(participantRef, participantDoc);
+
+  return tripRef.id;
 };
 
 

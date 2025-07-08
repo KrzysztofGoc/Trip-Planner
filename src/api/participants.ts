@@ -8,9 +8,5 @@ export async function fetchParticipants({ tripId }: { tripId: string | undefined
   const colRef = collection(db, "trips", tripId, "participants");
   const snapshot = await getDocs(colRef);
 
-  snapshot.forEach((doc) => {
-    console.log(doc.data())
-  })
-
   return snapshot.docs.map((doc) => doc.data() as Participant);
 }
