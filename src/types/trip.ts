@@ -1,5 +1,3 @@
-import { Timestamp } from "firebase/firestore";
-
 export interface Trip {
     id: string;
     name: string | null;
@@ -8,7 +6,7 @@ export interface Trip {
     endDate: Date | null;
     description: string | null;
     image: string | null;
-    createdAt: Timestamp;
-    updatedAt: Timestamp;
+    createdAt: Date;
+    updatedAt: Date;
     ownerId: string;
   }

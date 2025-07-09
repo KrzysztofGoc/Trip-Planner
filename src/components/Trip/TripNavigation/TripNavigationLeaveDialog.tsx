@@ -1,4 +1,14 @@
-import { AlertDialog, AlertDialogTitle, AlertDialogDescription, AlertDialogTrigger, AlertDialogContent, AlertDialogAction, AlertDialogCancel, AlertDialogFooter, AlertDialogHeader } from "@/components/ui/alert-dialog";
+import {
+    AlertDialog,
+    AlertDialogTitle,
+    AlertDialogDescription,
+    AlertDialogTrigger,
+    AlertDialogContent,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogFooter,
+    AlertDialogHeader
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { LogOut } from "lucide-react";
 import { useAuthStore } from "@/state/useAuthStore";
@@ -7,12 +17,12 @@ import { removeParticipantFromTrip } from "@/api/trips";
 import { queryClient } from "@/api/queryClient";
 import { toast } from "sonner";
 import { useState } from "react";
-import { Participant } from "@/types/participant";
 import { useNavigate } from "react-router-dom";
+import { Trip } from "@/types/trip";
 
 type TripLeaveDialogProps = {
     tripId: string | undefined;
-}
+};
 
 export default function TripLeaveDialog({ tripId }: TripLeaveDialogProps) {
     const [open, setOpen] = useState(false);
@@ -25,31 +35,33 @@ export default function TripLeaveDialog({ tripId }: TripLeaveDialogProps) {
         },
         onMutate: async () => {
             toast.success("Left the trip", { id: "leave-trip" });
-            navigate("/trips");
-            await queryClient.cancelQueries({ queryKey: ["trips", { tripId }, "participants"] });
 
-            // Save old participants
-            const previousParticipans = queryClient.getQueryData<Participant[]>(["trips", { tripId }, "participants"]);
+            if (!currentUser) throw new Error("No user found");
 
-            if (!previousParticipans) throw new Error("Partcipants data missing from cache");
-            if (!currentUser) throw new Error("Cannot find current user"); // Should never happen
+            // Optimistically remove this trip from user's trips list cache
+            await queryClient.cancelQueries({ queryKey: ["trips", currentUser.uid] });
+            const previousTrips = queryClient.getQueryData<Trip[]>(["trips", currentUser?.uid]);
+            if (!previousTrips) throw new Error("Cannot optimistically update: no trips found in cache");
 
-            // Remove yourself optimistically
+            // Remove the trip from the cache
             queryClient.setQueryData(
-                ["trips", { tripId }, "participants"],
-                previousParticipans.filter(p => p.uid !== currentUser.uid)
-            )
+                ["trips", currentUser?.uid],
+                previousTrips.filter(t => t.id !== tripId)
+            );
 
-            return { previousParticipans };
+            navigate("/trips");
+
+            return { previousTrips };
         },
         onError: (_err, _vars, ctx) => {
             toast.error("Failed to leave trip", { id: "leave-trip" });
-            if (ctx?.previousParticipans) {
-                queryClient.setQueryData(["trips", { tripId }, "participants"], ctx.previousParticipans);
+            // Rollback
+            if (ctx?.previousTrips) {
+                queryClient.setQueryData(["trips", currentUser?.uid], ctx.previousTrips);
             }
         },
         onSettled: () => {
-            queryClient.invalidateQueries({ queryKey: ["trips", { tripId }, "participants"] });
+            queryClient.invalidateQueries({ queryKey: ["trips", currentUser?.uid] });
         },
     });
 
