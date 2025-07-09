@@ -1,34 +1,53 @@
 import { Trip } from "@/types/trip";
 import { db } from "@/firebase";
-import { writeBatch, getDoc, doc, collection, serverTimestamp, getDocs, updateDoc, Timestamp, where, query, or, deleteDoc, setDoc } from "firebase/firestore";
+import { getDoc, doc, collection, serverTimestamp, getDocs, updateDoc, Timestamp, where, query, deleteDoc, setDoc } from "firebase/firestore";
 import { httpsCallable } from "firebase/functions"
 import { functions, auth } from "../firebase"
 import { Participant } from "@/types/participant";
 
+// Utility to convert Firestore Timestamp to Date, handling nulls and Dates
 export const fetchTrips = async (uid: string): Promise<Trip[]> => {
-  // Fetch trips where the user is either the owner or a participant
-  const tripsRef = collection(db, "trips");
+  if (!uid) return [];
 
-  // Query for trips where the user is either the owner or a participant
-  const q = query(
-    tripsRef,
-    or(
-      where("ownerId", "==", uid), // Filter by ownerId
-      where("participants", "array-contains", uid) // Filter by participants array
-    )
-  );
+  // 1. Get all userTrip documents for this user
+  const userTripsSnap = await getDocs(collection(db, "userTrips", uid, "trips"));
 
-  const snapshot = await getDocs(q);
+  const tripIds = userTripsSnap.docs.map(doc => doc.id);
 
-  return snapshot.docs.map(docSnap => {
-    const data = docSnap.data();
-    return {
-      id: docSnap.id,
-      ...data,
-      startDate: data.startDate instanceof Timestamp ? data.startDate.toDate() : data.startDate,
-      endDate: data.endDate instanceof Timestamp ? data.endDate.toDate() : data.endDate,
-    } as Trip;
-  });
+  if (tripIds.length === 0) return [];
+
+  // Split into chunks of 10 (safe for Firestore 'in' queries)
+  const chunkSize = 10;
+  const chunks: string[][] = [];
+  for (let i = 0; i < tripIds.length; i += chunkSize) {
+    chunks.push(tripIds.slice(i, i + chunkSize));
+  }
+
+  let trips: Trip[] = [];
+
+  for (const chunk of chunks) {
+    const tripsSnap = await getDocs(
+      query(
+        collection(db, "trips"),
+        where("__name__", "in", chunk)
+      )
+    );
+    trips = trips.concat(
+      tripsSnap.docs.map(doc => {
+        const data = doc.data();
+        return {
+          ...data,
+          id: doc.id,
+          startDate: data.startDate?.toDate(),
+          endDate: data.endDate?.toDate(),
+          createdAt: data.createdAt?.toDate(),
+          updatedAt: data.updatedAt?.toDate(),
+        } as Trip;
+      })
+    );
+  }
+
+  return trips;
 };
 
 interface FetchTripParams {
@@ -186,7 +205,7 @@ type RemoveParticipantFromTripParams = {
 export async function removeParticipantFromTrip({ tripId, uid }: RemoveParticipantFromTripParams): Promise<void> {
   if (!tripId) throw new Error("Trip ID is missing");
   if (!uid) throw new Error("Participant UID is missing");
-  
+
   const participantRef = doc(db, "trips", tripId, "participants", uid);
   await deleteDoc(participantRef);
 }
@@ -218,3 +237,21 @@ export async function transferTripOwnership({ tripId, selectedUserId }: transfer
     updatedAt: serverTimestamp(),
   });
 }
+
+type fetchTripsTogetherCountParams = {
+  currentUserUid: string | undefined;
+  otherUserUid: string;
+}
+
+type FetchTripsTogetherCountReturn = {
+  count: number;
+};
+
+export const fetchTripsTogetherCount = async ({ currentUserUid, otherUserUid }: fetchTripsTogetherCountParams): Promise<number> => {
+  if (!currentUserUid) throw new Error("Current user UID not found");
+
+  const fn = httpsCallable<fetchTripsTogetherCountParams, FetchTripsTogetherCountReturn>(functions, "getTripsTogether");
+  const result = await fn({ currentUserUid, otherUserUid });
+
+  return result.data.count;
+};

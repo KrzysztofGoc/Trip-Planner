@@ -221,3 +221,33 @@ export const onParticipantRemoved = onDocumentDeleted(
     const userTripRef = db.doc(`userTrips/${userId}/trips/${tripId}`);
     await userTripRef.delete();
   });
+
+export const getTripsTogether = onCall(async (request) => {
+  const { currentUserUid, otherUserUid } = request.data;
+
+  if (!request.auth || request.auth.uid !== currentUserUid) {
+    throw new HttpsError("permission-denied", "You can only fetch your own shared trips.");
+  }
+  if (!currentUserUid || !otherUserUid) {
+    throw new HttpsError("invalid-argument", "Missing required data");
+  }
+
+  const currentUserTripsRef = admin.firestore().collection(`userTrips/${currentUserUid}/trips`);
+  const otherUserTripsRef = admin.firestore().collection(`userTrips/${otherUserUid}/trips`);
+
+  const [currentUserDocRefs, otherUserDocRefs] = await Promise.all([
+    currentUserTripsRef.listDocuments(),
+    otherUserTripsRef.listDocuments()
+  ]);
+
+  const currentUserTripIds = new Set(currentUserDocRefs.map(ref => ref.id));
+  const otherUserTripIds = new Set(otherUserDocRefs.map(ref => ref.id));
+
+  // Intersection: count trips both are in
+  let sharedTripCount = 0;
+  for (const id of currentUserTripIds) {
+    if (otherUserTripIds.has(id)) sharedTripCount++;
+  }
+
+  return { count: sharedTripCount };
+});
