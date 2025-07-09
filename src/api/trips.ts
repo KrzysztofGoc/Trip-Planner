@@ -88,7 +88,6 @@ export const createTrip = async (): Promise<string> => {
     destination: null,
     startDate: null,
     endDate: null,
-    description: null,
     image: null,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),

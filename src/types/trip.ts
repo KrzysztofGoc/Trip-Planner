@@ -4,7 +4,6 @@ export interface Trip {
     destination: string | null;
     startDate: Date | null;
     endDate: Date | null;
-    description: string | null;
     image: string | null;
     createdAt: Date;
     updatedAt: Date;
