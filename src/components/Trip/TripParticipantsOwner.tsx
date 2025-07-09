@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchUserById } from "@/api/users";
 import { useAuthStore } from "@/state/useAuthStore";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { fetchTripsTogetherCount } from "@/api/trips";
 
 type TripParticipantsOwnerProps = {
     ownerId: string;
@@ -13,6 +14,14 @@ export default function TripParticipantsOwner({ ownerId }: TripParticipantsOwner
     const { data: owner, isLoading, isError } = useQuery({
         queryKey: ["user", ownerId],
         queryFn: () => fetchUserById({ uid: ownerId }),
+    });
+
+    const { data: tripsTogether, isLoading: loadingTripsTogether, isError: errorTripsTogether, } = useQuery({
+        queryKey: ["trips-together", currentUser?.uid, ownerId],
+        queryFn: () => {
+            return fetchTripsTogetherCount({ currentUserUid: currentUser?.uid, otherUserUid: ownerId });
+        },
+        enabled: !!currentUser?.uid && !!ownerId && currentUser.uid !== ownerId,
     });
 
     if (isLoading) return <p>Loading owner details...</p>;
@@ -32,7 +41,17 @@ export default function TripParticipantsOwner({ ownerId }: TripParticipantsOwner
                         {currentUser?.uid === ownerId ? " (you)" : ""}
                     </span>
                 </p>
-                <p className="text-sm text-gray-400">0 trips together</p>
+                {currentUser?.uid !== ownerId && (
+                    loadingTripsTogether ? (
+                        <p className="text-sm text-gray-400">Loading trips together…</p>
+                    ) : errorTripsTogether ? (
+                        <p className="text-sm text-red-400">Could not load trips together</p>
+                    ) : (
+                        <p className="text-sm text-gray-400">
+                            {tripsTogether} trip{tripsTogether === 1 ? "" : "s"} together
+                        </p>
+                    )
+                )}
             </div>
         </div>
     );
