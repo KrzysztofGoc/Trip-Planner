@@ -4,7 +4,7 @@ import { Button } from "../ui/button";
 import TripImageChangeDialog from "./TripImageChangeDialog";
 
 type TripImageProps =
-  | { mode: 'event'; imageUrl: string | null }  // Display mode
+  | { mode: 'event'; imageUrl: string | null | undefined }  // Display mode
   | { mode: 'trip'; imageUrl: string | null; tripId: string | undefined, isOwner: boolean }; // Editable mode requires `tripId`
 
 export default function TripImage(props: TripImageProps) {
@@ -17,8 +17,8 @@ export default function TripImage(props: TripImageProps) {
     <div className="relative w-auto h-1/3">
       <img
         className="object-cover size-full"
-        src={props.imageUrl || "https://images.unsplash.com/photo-1626009374423-9ece0284f2af"}
-        alt="Trip Cover"
+        src={props.imageUrl || (props.mode === "event" ? "/place_default_image.png" : "/trip_default_image.png")}
+        alt={props.imageUrl ? "Trip Cover" : "No trip image set"}
       />
 
       {isEditable && (
