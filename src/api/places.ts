@@ -54,7 +54,7 @@ export const fetchPlace = async (placeId: string | undefined): Promise<Place> =>
         id: place.id,
         name: place.displayName ?? "Unknown Place",
         category: place.primaryTypeDisplayName ?? "other",
-        img: place.photos?.[0]?.getURI() ?? "",
+        img: place.photos?.[0]?.getURI() ?? "/place_default_image.png",
         address: place.formattedAddress ?? "Unknown address",
         lat: place.location?.lat() ?? 0,
         lng: place.location?.lng() ?? 0,

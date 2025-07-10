@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Pencil } from "lucide-react";
 
 interface TripNameEditorProps {
-  name: string;
+  name: string | null;
   tripId: string | undefined;
 }
 
@@ -65,7 +65,7 @@ export default function TripNameEditor({ name, tripId }: TripNameEditorProps) {
   });
 
   function commitChange() {
-    const newName = inputValue.trim();
+    const newName = inputValue ? inputValue.trim() : "";
 
     if (newName !== name) {
       if (isValidTripName(newName)) {
@@ -85,7 +85,8 @@ export default function TripNameEditor({ name, tripId }: TripNameEditorProps) {
     <div className="group flex items-center gap-2" onClick={() => setEditing(true)}>
       {editing ? (
         <Input
-          value={inputValue}
+          value={inputValue || undefined}
+          placeholder="Name your trip..."
           onChange={e => setInputValue(e.target.value)}
           onBlur={commitChange}
           autoFocus
@@ -102,7 +103,7 @@ export default function TripNameEditor({ name, tripId }: TripNameEditorProps) {
       ) : (
         <>
           <h1 className="-ml-[3px] text-3xl font-bold py-1 border-1 border-transparent break-all">
-            {inputValue}
+            {inputValue || "Click to name your trip!"}
           </h1>
           <Pencil className="shrink-0 size-5 text-red-400 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity" />
         </>
