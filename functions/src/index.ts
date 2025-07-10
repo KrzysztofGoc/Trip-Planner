@@ -1,13 +1,17 @@
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 import { onDocumentDeleted, onDocumentCreated } from "firebase-functions/v2/firestore";
 import * as admin from "firebase-admin";
-import { TripEvent } from "./types/event";
 import { Timestamp, FieldValue } from "firebase-admin/firestore";
 import dayjs from "dayjs";
 
 admin.initializeApp();
 
 export const updateTripDateRange = onCall(async (request) => {
+  if (!request.auth) {
+    throw new HttpsError("permission-denied", "Only the trip owner can update the trip date range.");
+  }
+
+
   const { tripId, startDate, endDate } = request.data || {};
 
   // TODO: Add auth validation later
@@ -17,13 +21,14 @@ export const updateTripDateRange = onCall(async (request) => {
     throw new HttpsError("invalid-argument", "Missing data: tripId, startDate, endDate required.");
   }
 
-  const newFrom = new Date(startDate);
-  const newTo = new Date(endDate);
+  // Use dayjs for robust date handling
+  const newFrom = dayjs(startDate).startOf("day");
+  const newTo = dayjs(endDate).endOf("day");
 
-  if (isNaN(newFrom.getTime()) || isNaN(newTo.getTime())) {
+  if (!newFrom.isValid() || !newTo.isValid()) {
     throw new HttpsError("invalid-argument", "Invalid dates provided.");
   }
-  if (newFrom > newTo) {
+  if (newFrom.isAfter(newTo)) {
     throw new HttpsError("invalid-argument", "Start date must be before or equal to end date.");
   }
 
@@ -35,53 +40,45 @@ export const updateTripDateRange = onCall(async (request) => {
     throw new HttpsError("not-found", "Trip not found.");
   }
 
+  const tripData = tripDoc.data();
+
+  if (!tripData) {
+    throw new HttpsError("not-found", "Trip data not found.");
+  }
+
+  if (request.auth.uid !== tripData.ownerId) {
+    throw new HttpsError("permission-denied", "Only the trip owner can update the trip date range.");
+  }
+
   // Fetch all events for this trip
   const eventsRef = tripRef.collection("events");
   const snapshot = await eventsRef.get();
 
   const batch = admin.firestore().batch();
-  const orphans: TripEvent[] = [];
 
   snapshot.forEach(doc => {
-    const data = doc.data() as TripEvent;
+    const data = doc.data();
 
     // Defensive checks
     if (!data.from || !data.to) return;
 
-    let fromDate: Date;
-    let toDate: Date;
+    // Always handle Firestore Timestamp
+    let fromDate = data.from instanceof Timestamp ? dayjs(data.from.toDate()) : dayjs(data.from);
+    let toDate = data.to instanceof Timestamp ? dayjs(data.to.toDate()) : dayjs(data.to);
 
-    if (data.from instanceof Timestamp) {
-      fromDate = data.from.toDate();
-    } else {
-      return;
-    }
+    if (!fromDate.isValid() || !toDate.isValid()) return;
 
-    if (data.to instanceof Timestamp) {
-      toDate = data.to.toDate();
-    } else {
-      return;
-    }
-
-    if (isNaN(toDate.getTime()) || isNaN(fromDate.getTime())) return; // skip malformed
-
-    if (
-      dayjs(fromDate).isBefore(newFrom, "day") ||
-      dayjs(toDate).isAfter(newTo, "day")
-    ) {
-      orphans.push(data);
+    // An event is "orphaned" if it ends before trip starts, or starts after trip ends
+    if (toDate.isBefore(newFrom) || fromDate.isAfter(newTo)) {
       batch.delete(doc.ref);
     }
   });
 
-  // Update trip document
   batch.update(tripRef, {
-    startDate: Timestamp.fromDate(newFrom),
-    endDate: Timestamp.fromDate(newTo),
-    updatedAt: FieldValue.serverTimestamp(),
-  });
+    startDate: newFrom.toDate(),
+    endDate: newTo.toDate()
+  })
 
-  // Commit changes
   await batch.commit();
 
   return { success: true };
