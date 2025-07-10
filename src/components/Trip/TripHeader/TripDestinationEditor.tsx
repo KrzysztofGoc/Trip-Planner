@@ -20,7 +20,7 @@ import { Pencil } from "lucide-react";
 import { useDebounce } from "use-debounce";
 
 interface TripDestinationEditorProps {
-    destination: string;
+    destination: string | null;
     tripId: string | undefined;
 }
 
@@ -95,11 +95,18 @@ export default function TripDestinationEditor({ destination, tripId, }: TripDest
         }
     }
 
+    // Fallback for display
+    const displayDestination =
+        !destination || destination.trim() === ""
+            ? <span className="text-gray-400 italic">Click to set a destination!</span>
+            : destination;
+
+
     return (
         <Popover open={open} onOpenChange={(open) => handleOpenChange(open)}>
             <PopoverTrigger asChild>
                 <div className="group flex items-center gap-2 cursor-pointer">
-                    <p className="-ml-[1px] text-base text-gray-500 py-1">{destination}</p>
+                    <p className="-ml-[1px] text-base text-gray-500 py-1">{displayDestination}</p>
                     <Pencil className="size-4 text-red-400 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
             </PopoverTrigger>
