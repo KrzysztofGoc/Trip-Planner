@@ -14,8 +14,9 @@ interface TrimTimelineProps {
 }
 
 export default function TripTimeline({ tripId, startDate, endDate, isOwner }: TrimTimelineProps) {
-
-    const numberOfDays = dayjs(endDate).diff(startDate, "days") + 1;
+    const normalizedStart = dayjs(startDate).startOf("day");
+    const normalizedEnd = dayjs(endDate).endOf("day");
+    const numberOfDays = normalizedEnd.diff(normalizedStart, "days") + 1;
 
     const { data: events = [], isLoading, isError } = useQuery<TripEvent[]>({
         queryKey: ["events", { tripId }],
@@ -39,7 +40,7 @@ export default function TripTimeline({ tripId, startDate, endDate, isOwner }: Tr
 
     for (let i = 0; i < numberOfDays; i++) {
         const dayNumber = i + 1;
-        const dayDate = dayjs(startDate).add(i, "days").toDate();
+        const dayDate = normalizedStart.add(i, "days").toDate();
         const dayDateLabel = dayjs(dayDate).format("MMM D");
         // Select events for this date (compare only day part)
         const dayEvents = events.filter(event =>
@@ -49,7 +50,7 @@ export default function TripTimeline({ tripId, startDate, endDate, isOwner }: Tr
         timelineDays.push(
             <TimelineDay key={dayDateLabel}>
                 <TimelineHeader dayNumber={dayNumber} dayDate={dayDateLabel} />
-                <TimelineContent dayNumber={dayNumber} events={dayEvents} tripId={tripId} isOwner={isOwner}/>
+                <TimelineContent dayNumber={dayNumber} events={dayEvents} tripId={tripId} isOwner={isOwner} />
             </TimelineDay>
         );
     }

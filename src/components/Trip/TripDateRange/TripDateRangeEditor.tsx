@@ -12,9 +12,10 @@ import { TripDateRangeDestructiveDialog } from "./TripDateRangeDestructiveDialog
 import dayjs from "dayjs";
 
 function getOrphanedEvents(events: TripEvent[], newFrom: Date, newTo: Date): TripEvent[] {
+    const from = dayjs(newFrom).startOf("day");
+    const to = dayjs(newTo).endOf("day");
     return events.filter(ev =>
-        dayjs(ev.from).isBefore(newFrom, "day") ||
-        dayjs(ev.to).isAfter(newTo, "day")
+        dayjs(ev.from).isBefore(from) || dayjs(ev.to).isAfter(to)
     );
 }
 
