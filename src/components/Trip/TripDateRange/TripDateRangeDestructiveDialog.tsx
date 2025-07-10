@@ -27,16 +27,16 @@ export function TripDateRangeDestructiveDialog({ open, orphans, onCancel, onConf
                     </AlertDialogTitle>
                     <AlertDialogDescription>
                         The following events are outside the new date range and will be removed permanently:
-                        <ul className="my-2 list-none flex flex-col items-center gap-1">
+                        <span className="my-2 flex flex-col items-center gap-1">
                             {orphans.slice(0, 5).map(ev => (
-                                <li key={ev.id} className="w-fit">
+                                <span key={ev.id} className="w-fit">
                                     {ev.name} ({ev.from.toLocaleDateString()})
-                                </li>
+                                </span>
                             ))}
                             {orphans.length > 5 && (
                                 <p className=" text-gray-500">+{orphans.length - 5} more…</p>
                             )}
-                        </ul>
+                        </span>
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
