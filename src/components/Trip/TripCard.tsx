@@ -23,7 +23,7 @@ export default function TripCard({ trip }: TripCardProps) {
     return (
         <Card onClick={handleCardClick} className="border-none shadow-none p-0 cursor-pointer gap-4">
             <CardHeader className="p-0">
-                <img className="rounded-xl aspect-square object-cover" src={trip.image} />
+                <img className="rounded-xl aspect-square object-cover" src={trip.image || "/trip_default_thumbnail_image.png"} />
             </CardHeader>
             <CardContent className="p-0 flex flex-col gap-1">
                 <CardTitle>

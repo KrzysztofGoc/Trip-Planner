@@ -36,7 +36,6 @@ export default function TripPage() {
     if (!tripData) throw new Error("No trip found");
     if (!participants) throw new Error("No participants found");
 
-
     return (
         <>
             {tripData && (
