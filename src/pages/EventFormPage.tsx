@@ -136,6 +136,7 @@ export default function EventFormPage() {
         },
     });
 
+
     // --- Unconditionally sync reducer when data loads/changes
     useEffect(() => {
         if (isEditing && eventData) {
@@ -148,6 +149,8 @@ export default function EventFormPage() {
                 }
             });
         } else if (isAdding && tripData && placeData) {
+            if (!tripData.startDate) return;
+
             // Adding mode
             const addingDate = getTripDayDateObj(tripData.startDate, Number(dayNumber));
             rangeDispatch({
@@ -166,6 +169,7 @@ export default function EventFormPage() {
     if (isTripError || isPlaceError || isEventError) return <p>{tripError?.message || placeError?.message || eventError?.message}</p>;
 
     if (!tripData) throw new Error("No trip found.");
+    if (!tripData.startDate || !tripData.endDate) throw new Error("Trip date range not set.")
 
     // --- Add/Edit Handler
     function handleSaveOrAdd() {
@@ -220,7 +224,7 @@ export default function EventFormPage() {
 
         return (
             <div className="size-auto flex flex-col pb-32">
-                <TripNavigation mode="event"/>
+                <TripNavigation mode="event" />
                 <TripImage mode="event" imageUrl={eventData.img} />
                 <div className="size-auto h-2/3 flex flex-col px-6 pt-6 gap-6">
                     <TripHeader
@@ -260,7 +264,7 @@ export default function EventFormPage() {
 
         return (
             <div className="size-auto flex flex-col pb-32">
-                <TripNavigation mode="event"/>
+                <TripNavigation mode="event" />
                 <TripImage mode="event" imageUrl={placeData.img} />
                 <div className="size-auto h-2/3 flex flex-col px-6 pt-6 gap-6">
                     <TripHeader

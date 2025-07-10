@@ -20,8 +20,8 @@ function getOrphanedEvents(events: TripEvent[], newFrom: Date, newTo: Date): Tri
 }
 
 interface TripDateRangeEditorProps {
-    startDate: Date;
-    endDate: Date;
+    startDate: Date | null;
+    endDate: Date | null;
     tripId: string | undefined;
     onClose: () => void;
     range: DateRange | undefined;
@@ -105,10 +105,7 @@ export default function TripDateRangeEditor({ startDate, endDate, tripId, onClos
     };
 
     function handleCancel() {
-        setRange({
-            from: startDate,
-            to: endDate,
-        });
+        setRange(startDate && endDate ? { from: startDate, to: endDate } : undefined);
         onClose();
     }
 

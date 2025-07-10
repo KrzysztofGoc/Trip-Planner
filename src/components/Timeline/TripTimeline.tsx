@@ -8,8 +8,8 @@ import dayjs from "dayjs";
 
 interface TrimTimelineProps {
     tripId: string | undefined,
-    startDate: Date,
-    endDate: Date,
+    startDate: Date | null,
+    endDate: Date | null,
     isOwner: boolean
 }
 
@@ -25,7 +25,7 @@ export default function TripTimeline({ tripId, startDate, endDate, isOwner }: Tr
         staleTime: 10000,
     });
 
-    if (numberOfDays < 1) {
+    if (isNaN(numberOfDays)) {
         return <p className="text-gray-500 italic">No events planned for this trip.</p>;
     }
 

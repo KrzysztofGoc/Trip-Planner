@@ -6,22 +6,19 @@ import dayjs from "dayjs";
 import { DateRange } from "react-day-picker";
 
 type TripDateRangeProps = {
-    startDate: Date;
-    endDate: Date;
+    startDate: Date | null;
+    endDate: Date | null;
     tripId: string | undefined;
     isOwner: boolean;
 }
 
 export default function TripDateRange({ startDate, endDate, tripId, isOwner }: TripDateRangeProps) {
     const [editing, setEditing] = useState(false);
-    const [range, setRange] = useState<DateRange | undefined>({
-        from: startDate,
-        to: endDate,
-    });
+    const [range, setRange] = useState<DateRange | undefined>(startDate && endDate ? { from: startDate, to: endDate } : undefined);
 
     useEffect(() => {
         // Whenever startDate or endDate props change (i.e. after a rollback), update local state
-        setRange({ from: startDate, to: endDate });
+        setRange(startDate && endDate ? { from: startDate, to: endDate } : undefined);
     }, [startDate, endDate]);
 
     // Formatted dates derived from range
