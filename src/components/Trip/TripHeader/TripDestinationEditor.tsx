@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { updateTripDestination } from "@/api/trips";
-import { fetchPlaceSuggestions } from "@/api/places";
+import { fetchPlaceSuggestions, PlaceSuggestion } from "@/api/places";
 import { toast } from "sonner";
 import { queryClient } from "@/api/queryClient";
 import { Trip } from "@/types/trip";
@@ -33,7 +33,7 @@ export default function TripDestinationEditor({ destination, tripId, }: TripDest
     const { mutate: mutateDestination } = useMutation({
         mutationFn: updateTripDestination,
 
-        onMutate: async ({ destination }) => {
+        onMutate: async ({ tripId, destination }) => {
             // Optimistically confirm update to user
             toast.success("Trip destination updated", { id: "trip-destination-update" });
 
@@ -55,8 +55,10 @@ export default function TripDestinationEditor({ destination, tripId, }: TripDest
             return { previousTripData };
         },
 
-        onError: (_error, _data, context) => {
+        onError: (error, _data, context) => {
             toast.error("Failed to update destination", { id: "trip-destination-update" });
+
+            console.log(error);
 
             // Rollback cache on error
             const previousTripData = context?.previousTripData;
@@ -78,9 +80,9 @@ export default function TripDestinationEditor({ destination, tripId, }: TripDest
         enabled: !!debouncedQuery,
     });
 
-    function handleSelect(newDestination: string) {
-        if (newDestination !== destination) {
-            mutateDestination({ tripId, destination: newDestination });
+    function handleSelect(newDestination: PlaceSuggestion) {
+        if (newDestination.label !== destination) {
+            mutateDestination({ tripId, destination: newDestination.label, destinationId: newDestination.placeId });
             setOpen(false)
             setQuery("");
         } else {
@@ -139,11 +141,11 @@ export default function TripDestinationEditor({ destination, tripId, }: TripDest
                         <CommandList>
                             {suggestions.map((suggestion) => (
                                 <CommandItem
-                                    key={suggestion}
+                                    key={suggestion.label}
                                     onSelect={() => handleSelect(suggestion)}
-                                    value={suggestion}
+                                    value={suggestion.label}
                                 >
-                                    {suggestion}
+                                    {suggestion.label}
                                 </CommandItem>
                             ))}
                         </CommandList>
