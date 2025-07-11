@@ -1,24 +1,46 @@
 import { Place } from "@/types/place";
 
 export interface SearchPlacesParams {
-    query: string;
+    query: string | undefined;
     location: {
         lat: number;
         lng: number;
-    };
+    } | undefined;
+    includedType: string | undefined;
 }
 
-export async function fetchPlaces({ query, location }: SearchPlacesParams): Promise<Place[]> {
+export async function fetchPlaces({
+    query,
+    location,
+    includedType,
+}: SearchPlacesParams): Promise<Place[]> {
+    if (!location) throw new Error("Location is required");
+
     await google.maps.importLibrary('places');
 
-    const request = {
-        textQuery: query,
-        locationBias: location,
-        fields: ["id", "displayName", "location", "photos", "primaryTypeDisplayName", "formattedAddress"],
-        maxResultCount: 20,
-    };
+    let places: google.maps.places.Place[] = [];
 
-    const { places } = await google.maps.places.Place.searchByText(request);
+    if (query) {
+        const request = {
+            textQuery: query,
+            locationBias: location,
+            includedType: includedType,
+            fields: ["id", "displayName", "location", "photos", "primaryTypeDisplayName", "formattedAddress"],
+            maxResultCount: 20,
+        };
+
+        places = (await google.maps.places.Place.searchByText(request)).places;
+    } else {
+        const request = {
+            locationRestriction: { center: { ...location }, radius: 5000 },
+            includedTypes: includedType ? [includedType] : undefined,
+            fields: ["id", "displayName", "location", "photos", "primaryTypeDisplayName", "formattedAddress"],
+            maxResultCount: 20,
+        }
+
+        places = (await google.maps.places.Place.searchNearby(request)).places;
+    }
+
 
     if (!places) return [];
 
@@ -61,7 +83,12 @@ export const fetchPlace = async (placeId: string | undefined): Promise<Place> =>
     };
 };
 
-export const fetchPlaceSuggestions = async (query: string): Promise<string[]> => {
+export type PlaceSuggestion = {
+    label: string;
+    placeId: string;
+};
+
+export const fetchPlaceSuggestions = async (query: string): Promise<PlaceSuggestion[]> => {
     if (!query) return [];
 
     const { AutocompleteSuggestion, AutocompleteSessionToken } =
@@ -72,12 +99,17 @@ export const fetchPlaceSuggestions = async (query: string): Promise<string[]> =>
     const request: google.maps.places.AutocompleteRequest = {
         input: query,
         includedPrimaryTypes: ["country", "locality"],
-        sessionToken: sessionToken,
+        sessionToken,
     };
 
     const { suggestions } = await AutocompleteSuggestion.fetchAutocompleteSuggestions(request);
 
-    const mappedSuggestions = suggestions.map((s) => s.placePrediction?.text.text || "");
-
-    return mappedSuggestions;
+    return suggestions
+        .map(s => {
+            const label = s.placePrediction?.text.text;
+            const placeId = s.placePrediction?.placeId;
+            if (!label || !placeId) return null;
+            return { label, placeId };
+        })
+        .filter((item): item is { label: string; placeId: string } => !!item);
 };

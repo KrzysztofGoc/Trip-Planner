@@ -136,17 +136,30 @@ export async function updateTripName({ tripId, name, }: UpdateTripNameParams): P
   await updateDoc(ref, { name });
 }
 
+async function fetchPlaceLatLng(placeId: string) {
+  const { Place } = await google.maps.importLibrary('places') as google.maps.PlacesLibrary;
+  const place = new Place({ id: placeId });
+  await place.fetchFields({ fields: ['location'] });
+  return {
+    lat: place.location?.lat() ?? 0,
+    lng: place.location?.lng() ?? 0,
+  };
+}
+
 interface UpdateTripDestinationParams {
   tripId: string | undefined;
   destination: string;
+  destinationId: string;
 }
 
-export async function updateTripDestination({ tripId, destination, }: UpdateTripDestinationParams): Promise<void> {
+export async function updateTripDestination({ tripId, destination, destinationId }: UpdateTripDestinationParams): Promise<void> {
   if (!tripId) throw new Error("Trip ID is missing");
   if (!destination) throw new Error("Trip destination is missing");
 
+  const { lat, lng } = await fetchPlaceLatLng(destinationId);
+
   const ref = doc(db, "trips", tripId);
-  await updateDoc(ref, { destination });
+  await updateDoc(ref, { destination: destination, destinationLat: lat, destinationLng: lng });
 }
 
 type UpdateTripDateRangeParams = {
