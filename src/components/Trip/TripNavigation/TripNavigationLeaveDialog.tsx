@@ -30,9 +30,7 @@ export default function TripLeaveDialog({ tripId }: TripLeaveDialogProps) {
     const navigate = useNavigate();
 
     const { mutate: leaveTrip, isPending } = useMutation({
-        mutationFn: async () => {
-            return removeParticipantFromTrip({ tripId, uid: currentUser?.uid });
-        },
+        mutationFn: () => removeParticipantFromTrip({ tripId, uid: currentUser?.uid }),
         onMutate: async () => {
             toast.success("Left the trip", { id: "leave-trip" });
 
@@ -40,7 +38,7 @@ export default function TripLeaveDialog({ tripId }: TripLeaveDialogProps) {
 
             // Optimistically remove this trip from user's trips list cache
             await queryClient.cancelQueries({ queryKey: ["trips", currentUser.uid] });
-            const previousTrips = queryClient.getQueryData<Trip[]>(["trips", currentUser?.uid]);
+            const previousTrips = queryClient.getQueryData<Trip[]>(["trips", currentUser.uid]);
             if (!previousTrips) throw new Error("Cannot optimistically update: no trips found in cache");
 
             // Remove the trip from the cache
