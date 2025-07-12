@@ -86,6 +86,8 @@ export const createTrip = async (): Promise<string> => {
   const tripData = {
     name: null,
     destination: null,
+    destinationLat: null,
+    destinationLng: null,
     startDate: null,
     endDate: null,
     image: null,
