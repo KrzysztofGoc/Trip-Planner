@@ -6,14 +6,13 @@ import { Search } from "lucide-react";
 interface SearchBarProps {
     value: string;
     onChange: (v: string) => void;
-    onSearch: (v: string) => void;
     placeholder?: string;
 }
 
-export default function SearchBar({ value, onChange, onSearch, placeholder = "Search..." }: SearchBarProps) {
+export default function SearchBar({ value, onChange, placeholder = "Search..." }: SearchBarProps) {
     function handleSubmit(e: FormEvent) {
         e.preventDefault();
-        onSearch(value.trim());
+        onChange(value.trim());
     }
 
     return (

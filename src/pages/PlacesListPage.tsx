@@ -19,7 +19,6 @@ export default function PlacesListPage() {
         <SearchBar
           value={search}
           onChange={setSearch}
-          onSearch={setSearch}
           placeholder="Search for places..."
         />
         <PlaceCategoryFilter value={category} onChange={setCategory} />

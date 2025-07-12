@@ -94,7 +94,7 @@ export const deleteTripEvent = async ({ tripId, eventId }: DeleteTripEventParams
 
 type addTripEventParams = {
   tripId: string | undefined;
-  event: Omit<TripEvent, "id">;
+  event: TripEvent;
 }
 
 /**
