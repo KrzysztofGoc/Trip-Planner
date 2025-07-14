@@ -16,7 +16,7 @@ export default function SearchBar({ value, onChange, placeholder = "Search..." }
     }
 
     return (
-        <div className="w-auto h-16 bg-white border-1 border-gray-300 mx-6 mb-5 mt-3 px-3 rounded-full shadow-lg focus-within:border-ring focus-within:ring-ring/50 focus-within:ring-[3px] transition-[color,box-shadow]">
+        <div className="w-full h-16 bg-white border-1 border-gray-300 px-3 rounded-full shadow-lg focus-within:border-ring focus-within:ring-ring/50 focus-within:ring-[3px] transition-[color,box-shadow]">
             <div className="flex size-full items-center gap-3">
                 <Input
                     type="text"
