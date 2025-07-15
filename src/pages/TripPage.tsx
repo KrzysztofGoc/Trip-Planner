@@ -1,6 +1,5 @@
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { fetchTrip } from "@/api/trips";
 import TripParticipantsList from "@/components/Trip/TripParticipantsList";
 import TripTimeline from "@/components/Timeline/TripTimeline";
 import TripNavigation from "@/components/Trip/TripNavigation/TripNavigation";
@@ -8,7 +7,10 @@ import TripImage from "@/components/Trip/TripImage";
 import TripHeader from "@/components/Trip/TripHeader/TripHeader";
 import TripDateRange from "@/components/Trip/TripDateRange/TripDateRange";
 import { useAuthStore } from "@/state/useAuthStore";
+import { fetchTrip } from "@/api/trips";
 import { fetchParticipants } from "@/api/participants";
+import { fetchTripEvents } from "@/api/events";
+import MapWidget from "@/components/Map/MapWidget";
 
 export default function TripPage() {
     const { tripId } = useParams();
@@ -23,6 +25,11 @@ export default function TripPage() {
         queryKey: ["trips", { tripId }, "participants"],
     });
 
+    const { data: events, isLoading: isLoadingEvents, isError: isErrorEvents, error: eventsError } = useQuery({
+        queryFn: () => fetchTripEvents({ tripId }),
+        queryKey: ["events", { tripId }],
+    });
+
     // Get current user from global store
     const currentUser = useAuthStore((state) => state.user);
 
@@ -31,15 +38,20 @@ export default function TripPage() {
         ? tripData.ownerId === currentUser.uid
         : false;
 
-    if (isErrorTrip || isErrorParticipants) return (<p>{tripError?.message || participantsError?.message}</p>);
-    if (isLoadingTrip || isLoadingParticipants) return (<p>Loading trip...</p>);
+    if (isErrorTrip || isErrorParticipants || isErrorEvents) return (
+        <p>{tripError?.message || participantsError?.message || eventsError?.message}</p>
+    );
+    if (isLoadingTrip || isLoadingParticipants || isLoadingEvents) return (
+        <p>Loading trip...</p>
+    );
     if (!tripData) throw new Error("No trip found");
     if (!participants) throw new Error("No participants found");
+    if (!events) throw new Error("No events found");
 
     return (
         <>
             {tripData && (
-                <div className="size-auto flex flex-col">
+                <div className="size-auto flex flex-col pb-32">
                     {/* Trip Top Navigation */}
                     <TripNavigation mode="trip" isOwner={isOwner} tripId={tripId} participants={participants} ownerId={tripData.ownerId} />
 
@@ -76,13 +88,26 @@ export default function TripPage() {
                             isOwner={isOwner}
                         />
 
-                        {/* Trip Timeline */}
-                        <TripTimeline
-                            startDate={tripData.startDate}
-                            endDate={tripData.endDate}
-                            tripId={tripId}
-                            isOwner={isOwner}
-                        />
+                        {/* Guard: Show map and timeline only if date range is set */}
+                        {(!!tripData.startDate && !!tripData.endDate) ? (
+                            <>
+                                {/* Trip Map */}
+                                <MapWidget mode="route" events={events} startDate={tripData.startDate} endDate={tripData.endDate} />
+
+                                {/* Trip Timeline */}
+                                <TripTimeline
+                                    startDate={tripData.startDate}
+                                    endDate={tripData.endDate}
+                                    tripId={tripId}
+                                    isOwner={isOwner}
+                                />
+                            </>
+                        ) : (
+                            <div className="w-full text-center text-gray-500 text-base border-2 border-dashed border-gray-300 bg-gray-50 rounded-xl p-6 mt-4">
+                                <span className="block text-lg mb-2">Trip timeline and map</span>
+                                will be shown when you select this trip's date range.
+                            </div>
+                        )}
                     </div>
                 </div>
             )}
