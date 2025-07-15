@@ -24,9 +24,7 @@ export default function Directions({ events }: DirectionsProps) {
     if (!map) return;
 
     if (isDirectionsLoading || isDirectionsError) {
-      map.setOptions({ gestureHandling: "none", keyboardShortcuts: false });
-    } else {
-      map.setOptions({ gestureHandling: "auto", keyboardShortcuts: true });
+      map.setOptions({ gestureHandling: "none", keyboardShortcuts: false, clickableIcons: false });
     }
   }, [map, isDirectionsLoading, isDirectionsError]);
 
@@ -34,7 +32,7 @@ export default function Directions({ events }: DirectionsProps) {
     if (!routesLib || !map || !directions) return;
 
     if (!rendererRef.current) {
-      rendererRef.current = new routesLib.DirectionsRenderer({ map: map });
+      rendererRef.current = new routesLib.DirectionsRenderer({ map: map, markerOptions: { clickable: false } });
     }
 
     rendererRef.current.setDirections(directions);
