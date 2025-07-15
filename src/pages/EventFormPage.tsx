@@ -205,7 +205,7 @@ export default function EventFormPage() {
         }
     }
 
-    // --- Render: Editing or Adding
+    // --- Render: Editing
     if (eventId && eventData) {
         const eventDate = dayjs(eventData.from);
         const eventDay = eventDate.diff(tripData.startDate, "days") + 1;
@@ -224,7 +224,7 @@ export default function EventFormPage() {
 
         return (
             <div className="size-auto flex flex-col pb-32">
-                <TripNavigation mode="event" />
+                <TripNavigation mode="event" showShareButton={true}/>
                 <TripImage mode="event" imageUrl={eventData.img} />
                 <div className="size-auto h-2/3 flex flex-col px-6 pt-6 gap-6">
                     <TripHeader
@@ -256,6 +256,7 @@ export default function EventFormPage() {
         );
     }
 
+    // --- Render: Adding
     if (placeId && dayNumber && placeData && tripData) {
         const day = Number(dayNumber);
         const addingDate = getTripDayDateObj(tripData.startDate, day);
@@ -264,7 +265,7 @@ export default function EventFormPage() {
 
         return (
             <div className="size-auto flex flex-col pb-32">
-                <TripNavigation mode="event" />
+                <TripNavigation mode="event" showShareButton={false}/>
                 <TripImage mode="event" imageUrl={placeData.img} />
                 <div className="size-auto h-2/3 flex flex-col px-6 pt-6 gap-6">
                     <TripHeader
