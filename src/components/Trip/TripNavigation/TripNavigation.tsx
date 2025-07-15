@@ -15,8 +15,10 @@ type TripNavigationProps = {
     tripId: string | undefined,
     participants: Participant[];
     ownerId: string;
+    showShareButton?: boolean;
 } | {
     mode: "event"
+    showShareButton?: boolean;
 };
 
 // You’ll pass isOwner and onLeave/onDelete/onChangeOwner as props:
@@ -49,6 +51,8 @@ export default function TripNavigation(props: TripNavigationProps) {
         backLink = `/trips`;
     }
 
+    const showShareButton = props.showShareButton !== false; // default true unless explicitly false
+
     return (
         <div className="fixed z-50 top-4 left-0 w-full flex justify-between">
             {/* Back Button */}
@@ -60,15 +64,19 @@ export default function TripNavigation(props: TripNavigationProps) {
 
             {/* Share and Role-Based Actions */}
             <div className="flex gap-2 w-fit pr-3">
-                <Button
-                    className="size-12 flex justify-center items-center bg-transparent shadow-none"
-                    onClick={() => setShareOpen(true)}
-                >
-                    <div className="size-10 aspect-square flex justify-center items-center bg-white/20 backdrop-blur-md rounded-full">
-                        <SquareArrowOutUpRight className="size-6 text-white" />
-                    </div>
-                </Button>
-                <TripShareDialog open={shareOpen} onOpenChange={setShareOpen}/>
+                {showShareButton && (
+                    <>
+                        <Button
+                            className="size-12 flex justify-center items-center bg-transparent shadow-none"
+                            onClick={() => setShareOpen(true)}
+                        >
+                            <div className="size-10 aspect-square flex justify-center items-center bg-white/20 backdrop-blur-md rounded-full">
+                                <SquareArrowOutUpRight className="size-6 text-white" />
+                            </div>
+                        </Button>
+                        <TripShareDialog open={shareOpen} onOpenChange={setShareOpen} mode={isTrip ? "trip" : "event"} />
+                    </>
+                )}
                 {isTrip && (
                     !props.isOwner ? (
                         // Participant: Leave Trip button
