@@ -56,8 +56,8 @@ export default function TripTimeline({ tripId, startDate, endDate, isOwner }: Tr
     }
 
     return (
-        <div className="size-auto border-b-2 border-gray-200 pb-6">
-            <div className="flex flex-col gap-16">
+        <div className="size-auto">
+            <div className="flex flex-col gap-8">
                 {timelineDays}
             </div>
         </div>

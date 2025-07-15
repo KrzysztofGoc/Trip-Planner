@@ -250,7 +250,7 @@ export default function EventFormPage() {
                             disabled={!(rangeState.range.from && rangeState.range.to)}
                         />
                     )}
-                    <MapWidget place={placeForMap} />
+                    <MapWidget mode="place" place={placeForMap} />
                 </div>
             </div>
         );
@@ -289,7 +289,7 @@ export default function EventFormPage() {
                             disabled={!(rangeState.range.from && rangeState.range.to)}
                         />
                     )}
-                    <MapWidget place={placeData} />
+                    <MapWidget mode="place" place={placeData} />
                 </div>
             </div>
         );
