@@ -32,9 +32,9 @@ export default function TripLeaveDialog({ tripId }: TripLeaveDialogProps) {
     const { mutate: leaveTrip, isPending } = useMutation({
         mutationFn: () => removeParticipantFromTrip({ tripId, uid: currentUser?.uid }),
         onMutate: async () => {
-            toast.success("Left the trip", { id: "leave-trip" });
-
             if (!currentUser) throw new Error("No user found");
+
+            toast.success("Left the trip", { id: "leave-trip" });
 
             // Optimistically remove this trip from user's trips list cache
             await queryClient.cancelQueries({ queryKey: ["trips", currentUser.uid] });

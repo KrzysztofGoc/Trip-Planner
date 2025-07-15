@@ -4,9 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
-// import your mutation fn here
 import { deleteTrip } from "@/api/trips";
 import { useNavigate } from "react-router-dom";
+import { Trip } from "@/types/trip";
+import { useAuthStore } from "@/state/useAuthStore";
+import { queryClient } from "@/api/queryClient";
 
 type TripNavigationDeleteTripProps = {
     tripId: string | undefined;
@@ -15,15 +17,45 @@ type TripNavigationDeleteTripProps = {
 export default function TripNavigationDeleteTrip({ tripId }: TripNavigationDeleteTripProps) {
     const [open, setOpen] = useState(false);
     const navigate = useNavigate();
+    const user = useAuthStore(s => s.user);
 
     const { mutate, isPending } = useMutation({
         mutationFn: deleteTrip,
-        onSuccess: () => {
-            toast.success("Trip deleted");
-            setOpen(false);
+
+        // Optimistic update:
+        onMutate: async ({ tripId }) => {
+            if (!user) throw new Error("No user found");
+
+            toast.success("Trip deleted", { id: "trip-delete" });
+
+            // Cancel any ongoing trips queries
+            await queryClient.cancelQueries({ queryKey: ["trips", user?.uid] });
+            // Snapshot previous value
+            const previousTrips = queryClient.getQueryData<Trip[]>(["trips", user?.uid]);
+            if (!previousTrips) throw new Error("Cannot optimistically update: trips not found in cache")
+
+            // Optimistically remove trip from cache
+            queryClient.setQueryData(
+                ["trips", user.uid],
+                previousTrips.filter(trip => trip.id !== tripId)
+            );
+
             navigate("/trips");
+
+            return { previousTrips };
         },
-        onError: () => toast.error("Failed to delete trip"),
+        // Rollback if error:
+        onError: (_err, _vars, context) => {
+            toast.error("Failed to delete trip", { id: "trip-delete" });
+
+            if (context?.previousTrips) {
+                queryClient.setQueryData(["trips", user?.uid], context.previousTrips);
+            }
+        },
+        // Always refetch just in case
+        onSettled: () => {
+            queryClient.invalidateQueries({ queryKey: ["trips", user?.uid] });
+        },
     });
 
     return (

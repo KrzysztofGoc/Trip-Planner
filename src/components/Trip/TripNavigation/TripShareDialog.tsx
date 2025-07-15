@@ -14,10 +14,11 @@ import { useState } from "react";
 
 type TripShareDialogProps = {
     open: boolean;
+    mode: "trip" | "event";
     onOpenChange: (open: boolean) => void;
 };
 
-export function TripShareDialog({ open, onOpenChange }: TripShareDialogProps) {
+export function TripShareDialog({ open, mode, onOpenChange }: TripShareDialogProps) {
     const [copied, setCopied] = useState(false);
     const shareUrl = String(window.location);
 
@@ -32,15 +33,21 @@ export function TripShareDialog({ open, onOpenChange }: TripShareDialogProps) {
         }
     };
 
+    const isTrip = mode === "trip";
+    const title = isTrip ? "Share this trip" : "Share this event";
+    const description = isTrip
+        ? "Anyone with this link can view your trip details."
+        : "Anyone with this link can view this event’s details in the trip.";
+
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle className="text-red-400">
-                        Share this trip
+                        {title}
                     </DialogTitle>
                     <DialogDescription>
-                        Anyone with this link can view your trip details.
+                        {description}
                     </DialogDescription>
                 </DialogHeader>
 
