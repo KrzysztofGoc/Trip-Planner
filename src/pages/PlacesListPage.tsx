@@ -16,7 +16,7 @@ export default function PlacesListPage() {
   const [debouncedCategory] = useDebounce(category, 600);
 
   return (
-    <div className="w-screen min-h-screen bg-white text-black flex flex-col">
+    <div className="w-screen min-h-screen bg-white text-black flex flex-col pb-32">
       <div className="h-auto w-screen border-b-2 border-gray-100 flex flex-col">
         <div className="flex items-center pb-5 pt-3 pr-6 pl-4 gap-5">
           <Link

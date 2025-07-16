@@ -16,7 +16,7 @@ export default function TripImage(props: TripImageProps) {
   return (
     <div className="relative w-auto h-1/3">
       <img
-        className="object-cover size-full"
+        className="object-cover size-full max-h-96"
         src={props.imageUrl || (props.mode === "event" ? "/place_default_image.png" : "/trip_default_image.png")}
         alt={props.imageUrl ? "Trip Cover" : "No trip image set"}
       />

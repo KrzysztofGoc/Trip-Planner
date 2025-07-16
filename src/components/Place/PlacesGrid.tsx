@@ -5,7 +5,7 @@ import { fetchTrip } from "@/api/trips";
 import { useParams, useNavigate } from "react-router-dom";
 
 interface PlacesGridProps {
-    category: string | undefined; // This is the Google type string (e.g. "restaurant")
+    category: string | undefined;
     search: string;
 }
 
@@ -24,7 +24,7 @@ export default function PlacesGrid({ search, category }: PlacesGridProps) {
             ? { lat: tripData.destinationLat, lng: tripData.destinationLng }
             : undefined;
 
-    const { data: places, isLoading: isPlacesLoading, isError: isPlacesError, error: placesError } = useQuery({
+    const { data: places, isLoading: isPlacesLoading, isError: isPlacesError } = useQuery({
         queryKey: ["places", search, category, location],
         queryFn: () => fetchPlaces({
             query: search || undefined,
@@ -58,23 +58,29 @@ export default function PlacesGrid({ search, category }: PlacesGridProps) {
         return <div className="p-6">Loading places…</div>;
     }
     if (isPlacesError) {
-        return <div className="p-6 text-red-500">{placesError instanceof Error ? placesError.message : "Error loading places"}</div>;
+        return <div className="p-6 text-red-500">Error loading places</div>;
     }
 
     return (
         <div className="w-auto h-auto p-6">
             <div className="w-auto min-h-screen grid grid-cols-1 gap-6 content-start">
+                {/* Case 1: Places are truthy and there are results */}
                 {places && places.length > 0 ? (
                     places.map((place) => (
                         <PlaceCard
                             onClick={() => handlePlaceClick(place.id)}
-                            key={place.id}
                             event={place}
                         />
                     ))
-                ) : (
-                    <p>Select category or type in search bar to see available places.</p>
-                )}
+                ) :
+                    // Case 2: Places are truthy but empty
+                    places && places.length === 0 ? (
+                        <p className="text-center text-gray-500">No places found for this category. Try adjusting the category or search term.</p>
+                    ) :
+                        // Case 3: Places are falsy (query is not enabled)
+                        (
+                            <p className="text-center text-gray-500">Select category or type in search bar to see available places.</p>
+                        )}
             </div>
         </div>
     );
