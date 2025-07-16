@@ -25,7 +25,7 @@ export default function TripImage(props: TripImageProps) {
         <>
           <Button
             size={null}
-            className="absolute bottom-3 right-3 text-white shadow-none bg-white/20 backdrop-blur-md rounded-lg flex gap-2 items-center px-4 py-2"
+            className="absolute bottom-3 right-3 text-white shadow-none bg-black/30 backdrop-blur-md rounded-lg flex gap-2 items-center px-4 py-2"
             onClick={() => setDialogOpen(true)}
           >
             <Camera className="size-6 text-inherit" />

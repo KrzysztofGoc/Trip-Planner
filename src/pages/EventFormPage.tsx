@@ -223,7 +223,7 @@ export default function EventFormPage() {
         };
 
         return (
-            <div className="size-auto flex flex-col pb-32">
+            <div className="size-auto flex flex-col pb-12">
                 <TripNavigation mode="event" showShareButton={true}/>
                 <TripImage mode="event" imageUrl={eventData.img} />
                 <div className="size-auto h-2/3 flex flex-col px-6 pt-6 gap-6">
@@ -264,7 +264,7 @@ export default function EventFormPage() {
         const formattedDayDate = `Day ${day}, ${formattedDate}`;
 
         return (
-            <div className="size-auto flex flex-col pb-32">
+            <div className="size-auto flex flex-col pb-12">
                 <TripNavigation mode="event" showShareButton={false}/>
                 <TripImage mode="event" imageUrl={placeData.img} />
                 <div className="size-auto h-2/3 flex flex-col px-6 pt-6 gap-6">
