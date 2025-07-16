@@ -107,7 +107,6 @@ export default function MapComponent(props: MapProps) {
       clickableIcons: false,
     });
 
-    // <<--- Add this here!
     if (isRouteMode) {
       fitBoundsForEvents(map, events);
     }

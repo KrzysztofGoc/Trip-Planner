@@ -27,13 +27,14 @@ export async function fetchPlaces({
             includedType: includedType,
             fields: ["id", "displayName", "location", "photos", "primaryTypeDisplayName", "formattedAddress"],
             maxResultCount: 20,
+            useStrictTypeFiltering: true,
         };
 
         places = (await google.maps.places.Place.searchByText(request)).places;
     } else {
         const request = {
             locationRestriction: { center: { ...location }, radius: 5000 },
-            includedTypes: includedType ? [includedType] : undefined,
+            includedPrimaryTypes: includedType ? [includedType] : undefined,
             fields: ["id", "displayName", "location", "photos", "primaryTypeDisplayName", "formattedAddress"],
             maxResultCount: 20,
         }

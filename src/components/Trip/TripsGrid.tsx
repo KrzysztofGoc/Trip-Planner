@@ -16,15 +16,17 @@ export default function TripsGrid({ search }: TripsGridProps) {
         queryKey: ["trips", user?.uid],
     });
 
-    let filteredTrips: Trip[] = [];
+    let filteredTrips: Trip[] | undefined = undefined;
 
     if (trips) {
         const query = search?.toLowerCase() || null;
-        filteredTrips = query ? trips.filter(trip =>
-            (trip.name?.toLowerCase().includes(query) || false) ||
-            (trip.destination?.toLowerCase().includes(query) || false))
-            :
-            trips
+        if (query) {
+            filteredTrips = trips.filter(trip =>
+                (trip.name?.toLowerCase().includes(query) || false) ||
+                (trip.destination?.toLowerCase().includes(query) || false))
+        } else {
+            filteredTrips = trips
+        }
     }
 
     return (
