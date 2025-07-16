@@ -10,7 +10,7 @@ export default function PlaceCard({ event, onClick }: PlaceCardProps) {
     return (
         <LazyLoad
             height={128}
-            offset={-200}
+            offset={-64}
             once
             placeholder={<div className="h-32 animate-pulse bg-gray-300 rounded-lg" />}
         >

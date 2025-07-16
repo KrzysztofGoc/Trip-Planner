@@ -20,27 +20,31 @@ import { useEffect } from "react";
 import { auth } from "./firebase";
 import { onAuthStateChanged, signInAnonymously } from "firebase/auth";
 import { RequireAuth } from "./components/RequireAuth";
+import NavigationLayout from "./pages/NavigationLayout";
 
 const router = createBrowserRouter([
   {
     path: '/',
     element: <RootLayout />,
     children: [
-      { index: true, element: <Navigate to="trips" replace /> },
-      { path: 'trips/:tripId', element: <TripPage /> }, // Public (view only)
-      { path: '/login', element: <LoginPage /> },
-      { path: '/register', element: <RegisterPage /> },
-
-      // PROTECTED ROUTES
       {
         element: <RequireAuth />,
         children: [
-          { path: 'trips', element: <TripsPage /> },
+          { index: true, element: <Navigate to="trips" replace /> },
+          { path: 'trips/:tripId', element: <TripPage /> },
           { path: 'trips/:tripId/map', element: <FullMapPage /> },
           { path: 'trips/:tripId/:dayNumber/add', element: <PlacesListPage /> },
           { path: 'trips/:tripId/:dayNumber/add/:placeId', element: <EventFormPage /> },
           { path: 'trips/:tripId/edit/:eventId', element: <EventFormPage /> },
-          { path: '/account', element: <ProfilePage /> },
+          {
+            element: <NavigationLayout />,
+            children: [
+              { path: 'trips', element: <TripsPage /> },
+              { path: 'account', element: <ProfilePage /> },
+              { path: 'login', element: <LoginPage /> },
+              { path: 'register', element: <RegisterPage /> },
+            ]
+          },
         ],
       },
     ]
