@@ -1,4 +1,4 @@
-import { ChevronLeft, SquareArrowOutUpRight } from 'lucide-react';
+import { ChevronLeft, Share2 } from 'lucide-react';
 import { Button } from '../../ui/button';
 import { Link } from 'react-router-dom';
 import TripLeaveDialog from './TripNavigationLeaveDialog';
@@ -21,14 +21,12 @@ type TripNavigationProps = {
     showShareButton?: boolean;
 };
 
-// You’ll pass isOwner and onLeave/onDelete/onChangeOwner as props:
 export default function TripNavigation(props: TripNavigationProps) {
     const currentUser = useAuthStore(s => s.user);
     const [shareOpen, setShareOpen] = useState(false);
 
     const isTrip = props.mode === "trip";
     let isParticipant = false;
-
 
     if (isTrip) {
         isParticipant = !!props.participants.find(p => p.uid === currentUser?.uid);
@@ -54,10 +52,10 @@ export default function TripNavigation(props: TripNavigationProps) {
     const showShareButton = props.showShareButton !== false; // default true unless explicitly false
 
     return (
-        <div className="fixed z-50 top-4 left-0 w-full flex justify-between">
+        <div className="absolute z-50 top-4 left-0 w-full flex justify-between">
             {/* Back Button */}
             <Link to={backLink} className="size-12 flex justify-center items-center pl-3">
-                <div className="size-10 aspect-square flex justify-center items-center bg-white/20 backdrop-blur-md rounded-full">
+                <div className="size-10 aspect-square flex justify-center items-center bg-black/30 backdrop-blur-md rounded-full">
                     <ChevronLeft className="size-6 text-white" />
                 </div>
             </Link>
@@ -70,8 +68,8 @@ export default function TripNavigation(props: TripNavigationProps) {
                             className="size-12 flex justify-center items-center bg-transparent shadow-none"
                             onClick={() => setShareOpen(true)}
                         >
-                            <div className="size-10 aspect-square flex justify-center items-center bg-white/20 backdrop-blur-md rounded-full">
-                                <SquareArrowOutUpRight className="size-6 text-white" />
+                            <div className="size-10 aspect-square flex justify-center items-center bg-black/30 backdrop-blur-md rounded-full"> {/* Darker backdrop for contrast */}
+                                <Share2 className="size-5.5 -ml-0.5 text-white" />
                             </div>
                         </Button>
                         <TripShareDialog open={shareOpen} onOpenChange={setShareOpen} mode={isTrip ? "trip" : "event"} />

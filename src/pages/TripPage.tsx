@@ -51,7 +51,7 @@ export default function TripPage() {
     return (
         <>
             {tripData && (
-                <div className="size-auto flex flex-col pb-32">
+                <div className="size-auto flex flex-col pb-16">
                     {/* Trip Top Navigation */}
                     <TripNavigation mode="trip" isOwner={isOwner} tripId={tripId} participants={participants} ownerId={tripData.ownerId} />
 
