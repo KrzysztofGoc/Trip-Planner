@@ -63,7 +63,7 @@ export default function PlacesGrid({ search, category }: PlacesGridProps) {
 
     return (
         <div className="w-auto h-auto p-6">
-            <div className="w-auto min-h-screen grid grid-cols-1 gap-6 content-start">
+            <div className="w-auto h-auto grid grid-cols-1 gap-6 content-start">
                 {/* Case 1: Places are truthy and there are results */}
                 {places && places.length > 0 ? (
                     places.map((place) => (

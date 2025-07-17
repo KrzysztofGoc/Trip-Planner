@@ -5,20 +5,30 @@ import TripImageChangeDialog from "./TripImageChangeDialog";
 
 type TripImageProps =
   | { mode: 'event'; imageUrl: string | null | undefined }  // Display mode
-  | { mode: 'trip'; imageUrl: string | null; tripId: string | undefined, isOwner: boolean }; // Editable mode requires `tripId`
+  | { mode: 'trip'; imageUrl: string | null; tripId: string | undefined, isOwner: boolean };
 
 export default function TripImage(props: TripImageProps) {
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
   // Only editable if we're in "trip" mode and user is the owner
   const isEditable = props.mode === "trip" && "isOwner" in props && props.isOwner;
 
+  // Determine which image to show
+  const getImageSrc = () => {
+    if (imageError || !props.imageUrl) {
+      return props.mode === "event" ? "/place_default_image.png" : "/trip_default_image.png";
+    }
+    return props.imageUrl;
+  };
+
   return (
-    <div className="relative w-auto h-1/3">
+    <div className="relative w-auto">
       <img
         className="object-cover size-full max-h-96"
-        src={props.imageUrl || (props.mode === "event" ? "/place_default_image.png" : "/trip_default_image.png")}
+        src={getImageSrc()}
         alt={props.imageUrl ? "Trip Cover" : "No trip image set"}
+        onError={() => setImageError(true)}
       />
 
       {isEditable && (
@@ -37,5 +47,4 @@ export default function TripImage(props: TripImageProps) {
       )}
     </div>
   );
-};
-
+}
