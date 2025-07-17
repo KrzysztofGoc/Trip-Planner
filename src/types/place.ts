@@ -6,4 +6,7 @@ export interface Place {
     address: string;
     lat: number,
     lng: number,
+    rating?: number | null | undefined;
+    userRatingCount?: number | null | undefined;
+    reviews?: google.maps.places.Review[] | undefined;
 }

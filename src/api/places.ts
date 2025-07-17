@@ -25,7 +25,7 @@ export async function fetchPlaces({
             textQuery: query,
             locationBias: location,
             includedType: includedType,
-            fields: ["id", "displayName", "location", "photos", "primaryTypeDisplayName", "formattedAddress"],
+            fields: ["id", "displayName", "location", "photos", "primaryTypeDisplayName", "formattedAddress", "rating", "userRatingCount", "reviews"],
             maxResultCount: 20,
             useStrictTypeFiltering: true,
         };
@@ -35,7 +35,7 @@ export async function fetchPlaces({
         const request = {
             locationRestriction: { center: { ...location }, radius: 5000 },
             includedPrimaryTypes: includedType ? [includedType] : undefined,
-            fields: ["id", "displayName", "location", "photos", "primaryTypeDisplayName", "formattedAddress"],
+            fields: ["id", "displayName", "location", "photos", "primaryTypeDisplayName", "formattedAddress", "rating", "userRatingCount", "reviews"],
             maxResultCount: 20,
         }
 
@@ -53,7 +53,12 @@ export async function fetchPlaces({
         address: place.formattedAddress ?? "Unknown address",
         lat: place.location?.lat ?? 0,
         lng: place.location?.lng ?? 0,
+        rating: place.rating,
+        userRatingCount: place.userRatingCount,
+        reviews: place.reviews,
     })) as Place[];
+
+    console.log(returnedPlaces);
 
     return returnedPlaces;
 }
