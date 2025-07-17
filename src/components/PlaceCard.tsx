@@ -17,8 +17,6 @@ export default function PlaceCard({ event, onClick }: PlaceCardProps) {
         setExpanded(!expanded);
     };
 
-    console.log(`Event: ${event.name} | rating: ${event.rating}`)
-
     return (
         <LazyLoad
             height={expanded ? 300 : 128} // Adjust height based on expanded state

@@ -39,18 +39,21 @@ export default function EventFormPage() {
     const { data: tripData, isLoading: isTripLoading, isError: isTripError, error: tripError } = useQuery({
         queryKey: ["trip", tripId],
         queryFn: () => fetchTrip({ tripId }),
+        throwOnError: true,
     });
 
     const { data: placeData, isLoading: isPlaceLoading, isError: isPlaceError, error: placeError } = useQuery({
         queryKey: ["place", placeId],
         queryFn: () => fetchPlace(placeId),
         enabled: isAdding,
+        throwOnError: true,
     });
 
     const { data: eventData, isLoading: isEventLoading, isError: isEventError, error: eventError } = useQuery({
         queryKey: ["event", eventId],
         queryFn: () => fetchTripEvent({ tripId, eventId }),
         enabled: isEditing,
+        throwOnError: true,
     });
 
     const currentUser = useAuthStore(state => state.user);

@@ -21,14 +21,17 @@ import { auth } from "./firebase";
 import { onAuthStateChanged, signInAnonymously } from "firebase/auth";
 import { RequireAuth } from "./components/RequireAuth";
 import NavigationLayout from "./pages/NavigationLayout";
+import ErrorBoundary from "./components/ErrorBoundary";
 
 const router = createBrowserRouter([
   {
     path: '/',
     element: <RootLayout />,
+    errorElement: <ErrorBoundary />,
     children: [
       {
         element: <RequireAuth />,
+        errorElement: <ErrorBoundary />,
         children: [
           { index: true, element: <Navigate to="trips" replace /> },
           { path: 'trips/:tripId', element: <TripPage /> },

@@ -14,9 +14,10 @@ export default function PlacesGrid({ search, category }: PlacesGridProps) {
     const { tripId, dayNumber } = useParams();
 
     // Fetch trip data to get destination location
-    const { data: tripData, isLoading: isTripLoading, isError: isTripError, error: tripError } = useQuery({
+    const { data: tripData, isLoading: isTripLoading} = useQuery({
         queryKey: ["trip", tripId],
         queryFn: () => fetchTrip({ tripId }),
+        throwOnError: true,
     });
 
     const location =
@@ -24,7 +25,7 @@ export default function PlacesGrid({ search, category }: PlacesGridProps) {
             ? { lat: tripData.destinationLat, lng: tripData.destinationLng }
             : undefined;
 
-    const { data: places, isLoading: isPlacesLoading, isError: isPlacesError } = useQuery({
+    const { data: places, isLoading: isPlacesLoading } = useQuery({
         queryKey: ["places", search, category, location],
         queryFn: () => fetchPlaces({
             query: search || undefined,
@@ -32,6 +33,7 @@ export default function PlacesGrid({ search, category }: PlacesGridProps) {
             includedType: category,
         }),
         enabled: !!location && (!!search || !!category),
+        throwOnError: true,
     });
 
     function handlePlaceClick(placeId: string) {
@@ -41,9 +43,6 @@ export default function PlacesGrid({ search, category }: PlacesGridProps) {
     /// Handle trip loading and error
     if (isTripLoading) {
         return <div className="p-6">Loading trip info…</div>;
-    }
-    if (isTripError) {
-        return <div className="p-6 text-red-500">{tripError instanceof Error ? tripError.message : "Error loading trip"}</div>;
     }
     if (!location) {
         return (
@@ -56,9 +55,6 @@ export default function PlacesGrid({ search, category }: PlacesGridProps) {
     // Handle places loading and error
     if (isPlacesLoading) {
         return <div className="p-6">Loading places…</div>;
-    }
-    if (isPlacesError) {
-        return <div className="p-6 text-red-500">Error loading places</div>;
     }
 
     return (

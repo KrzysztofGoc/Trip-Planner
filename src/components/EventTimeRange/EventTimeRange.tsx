@@ -98,6 +98,7 @@ export default function EventTimeRange(props: EventTimeRangeProps) {
     const { data: allEvents = [], isLoading: isLoadingEvents } = useQuery({
         queryKey: ["trip-events", props.tripId, dayDate.toISOString()],
         queryFn: () => fetchTripEventsForDay(props.tripId, dayDate),
+        throwOnError: true,
     });
 
     const fromHourBlock = getBlockedHourMap(allEvents, hours, minutes, eventId, "from");
