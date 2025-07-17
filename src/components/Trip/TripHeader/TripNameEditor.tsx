@@ -111,7 +111,3 @@ export default function TripNameEditor({ name, tripId }: TripNameEditorProps) {
     </div>
   );
 }
-
-
-
-

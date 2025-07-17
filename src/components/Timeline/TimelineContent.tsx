@@ -11,9 +11,9 @@ type TimelineContentProps = {
 
 export default function TimelineContent({ events, dayNumber, tripId, isOwner }: TimelineContentProps) {
     return (
-        <div className="flex flex-col gap-2 pr-0">
+        <div className="flex flex-col gap-2 pb-8">
             {events.length === 0 ? (
-                <p className="text-gray-500 italic">No events planned for this day.</p>
+                <p className="text-gray-500 italic text-center">No events planned for this day.</p>
             ) : (
                 events.map((event) => (
                     <TimelineEvent key={event.id} event={event} tripId={tripId} isOwner={isOwner}/>

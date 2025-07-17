@@ -28,6 +28,7 @@ export default function TripPage() {
     const { data: events, isLoading: isLoadingEvents, isError: isErrorEvents, error: eventsError } = useQuery({
         queryFn: () => fetchTripEvents({ tripId }),
         queryKey: ["events", { tripId }],
+        staleTime: 10000,
     });
 
     // Get current user from global store
@@ -50,68 +51,66 @@ export default function TripPage() {
 
     return (
         <>
-            {tripData && (
-                <div className="size-auto flex flex-col pb-16">
-                    {/* Trip Top Navigation */}
-                    <TripNavigation mode="trip" isOwner={isOwner} tripId={tripId} participants={participants} ownerId={tripData.ownerId} />
+            <div className="size-auto flex flex-col pb-16">
+                {/* Trip Top Navigation */}
+                <TripNavigation mode="trip" isOwner={isOwner} tripId={tripId} participants={participants} ownerId={tripData.ownerId} />
 
-                    {/* Image Container */}
-                    <TripImage mode="trip" imageUrl={tripData.image} tripId={tripId} isOwner={isOwner} />
+                {/* Image Container */}
+                <TripImage mode="trip" imageUrl={tripData.image} tripId={tripId} isOwner={isOwner} />
 
-                    {/* Trip Data Container */}
-                    <div className="size-auto h-2/3 flex flex-col px-6 pt-6 gap-6">
+                {/* Trip Data Container */}
+                <div className="size-auto h-2/3 flex flex-col px-6 pt-6 gap-6">
 
-                        {/* Trip Header */}
-                        <TripHeader
-                            mode="trip"
-                            name={tripData.name}
-                            destination={tripData.destination}
-                            startDate={tripData.startDate}
-                            endDate={tripData.endDate}
-                            tripId={tripId}
-                            isOwner={isOwner}
-                        />
+                    {/* Trip Header */}
+                    <TripHeader
+                        mode="trip"
+                        name={tripData.name}
+                        destination={tripData.destination}
+                        startDate={tripData.startDate}
+                        endDate={tripData.endDate}
+                        tripId={tripId}
+                        isOwner={isOwner}
+                    />
 
-                        {/* Date Range */}
-                        <TripDateRange
-                            startDate={tripData.startDate}
-                            endDate={tripData.endDate}
-                            tripId={tripId}
-                            isOwner={isOwner}
-                        />
+                    {/* Date Range */}
+                    <TripDateRange
+                        startDate={tripData.startDate}
+                        endDate={tripData.endDate}
+                        tripId={tripId}
+                        isOwner={isOwner}
+                    />
 
-                        {/* Participants and Hosted By */}
-                        <TripParticipantsList
-                            participants={participants}
-                            ownerId={tripData.ownerId}
-                            tripId={tripId}
-                            isOwner={isOwner}
-                        />
+                    {/* Participants and Hosted By */}
+                    <TripParticipantsList
+                        participants={participants}
+                        ownerId={tripData.ownerId}
+                        tripId={tripId}
+                        isOwner={isOwner}
+                    />
 
-                        {/* Guard: Show map and timeline only if date range is set */}
-                        {(!!tripData.startDate && !!tripData.endDate) ? (
-                            <>
-                                {/* Trip Map */}
-                                <MapWidget mode="route" events={events} startDate={tripData.startDate} endDate={tripData.endDate} />
+                    {/* Guard: Show map and timeline only if date range is set */}
+                    {(!!tripData.startDate && !!tripData.endDate) ? (
+                        <>
+                            {/* Trip Map */}
+                            <MapWidget mode="route" events={events} startDate={tripData.startDate} endDate={tripData.endDate} />
 
-                                {/* Trip Timeline */}
-                                <TripTimeline
-                                    startDate={tripData.startDate}
-                                    endDate={tripData.endDate}
-                                    tripId={tripId}
-                                    isOwner={isOwner}
-                                />
-                            </>
-                        ) : (
-                            <div className="w-full text-center text-gray-500 text-base border-2 border-dashed border-gray-300 bg-gray-50 rounded-xl p-6 mt-4">
-                                <span className="block text-lg mb-2">Trip timeline and map</span>
-                                will be shown when you select this trip's date range.
-                            </div>
-                        )}
-                    </div>
+                            {/* Trip Timeline */}
+                            <TripTimeline
+                                startDate={tripData.startDate}
+                                endDate={tripData.endDate}
+                                tripId={tripId}
+                                isOwner={isOwner}
+                                events={events}
+                            />
+                        </>
+                    ) : (
+                        <div className="w-full text-center text-gray-500 text-base border-2 border-dashed border-gray-300 bg-gray-50 rounded-xl p-6 mt-4">
+                            <span className="block text-lg mb-2">Trip timeline and map</span>
+                            will be shown when you select this trip's date range.
+                        </div>
+                    )}
                 </div>
-            )}
-
+            </div>
         </>
     );
 }
