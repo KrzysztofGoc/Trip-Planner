@@ -9,7 +9,7 @@ export default function TripsPage() {
     const [debouncedSearch] = useDebounce(search, 400);
 
     return (
-        <div className="w-screen min-h-screen bg-white text-black flex flex-col pb-20">
+        <div className="w-screen h-auto bg-white text-black flex flex-col pb-20">
             <div className="h-auto w-screen border-b-2 border-gray-100 pb-5 pt-3 px-6">
                 <SearchBar
                     value={search}
