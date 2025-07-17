@@ -116,7 +116,7 @@ export default function TripParticipantsDialog({ participants, tripId, isOwner, 
                 key={participant.uid}
                 className="size-12 border-2 border-gray-300 shadow-md"
               >
-                <AvatarImage src={participant.photoURL} alt={participant.displayName} />
+                <AvatarImage src={participant.photoURL || undefined} alt={participant.displayName} />
                 <AvatarFallback>{participant.displayName.charAt(0)}</AvatarFallback>
               </Avatar>
             ))}
@@ -151,7 +151,7 @@ export default function TripParticipantsDialog({ participants, tripId, isOwner, 
                   className="flex items-center gap-2 border rounded p-2"
                 >
                   <Avatar className="size-8 border">
-                    <AvatarImage src={participant.photoURL} />
+                    <AvatarImage src={participant.photoURL || undefined} />
                     <AvatarFallback>{participant.displayName.charAt(0)}</AvatarFallback>
                   </Avatar>
                   <span>
@@ -207,7 +207,7 @@ export default function TripParticipantsDialog({ participants, tripId, isOwner, 
                         className="flex items-center gap-2 border rounded p-2"
                       >
                         <Avatar className="size-8 border">
-                          <AvatarImage src={user.photoURL} />
+                          <AvatarImage src={user.photoURL || undefined} />
                           <AvatarFallback>{user.displayName.charAt(0)}</AvatarFallback>
                         </Avatar>
                         <span>{user.displayName}</span>

@@ -30,7 +30,7 @@ export default function TripParticipantsOwner({ ownerId }: TripParticipantsOwner
     return (
         <div className="flex items-center gap-4">
             <Avatar className="size-16 border-2 border-gray-300 shadow-md">
-                <AvatarImage src={owner?.photoURL || ""} />
+                <AvatarImage src={owner?.photoURL || undefined} />
                 <AvatarFallback>{owner?.displayName?.charAt(0) || "U"}</AvatarFallback>
             </Avatar>
 

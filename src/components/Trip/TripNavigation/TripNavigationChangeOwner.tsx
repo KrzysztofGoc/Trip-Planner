@@ -108,7 +108,7 @@ export default function TripNavigationChangeOwner({ tripId, participants, ownerI
                                     type="button"
                                 >
                                     <Avatar className="size-8 border">
-                                        <AvatarImage src={p.photoURL} />
+                                        <AvatarImage src={p.photoURL || undefined} />
                                         <AvatarFallback>{p.displayName.charAt(0)}</AvatarFallback>
                                     </Avatar>
                                     <span className="flex-1 text-left">{p.displayName}</span>

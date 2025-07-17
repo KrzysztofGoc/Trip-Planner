@@ -74,7 +74,7 @@ service cloud.firestore {
   			request.resource.data.keys().hasAll(['displayName', 'photoURL', 'uid']) &&
   			request.resource.data.keys().hasOnly(['displayName', 'photoURL', 'uid']) &&
   			(request.resource.data.displayName is string && request.resource.data.displayName.size() > 2) &&
-  			(request.resource.data.photoURL is string) &&
+  			(request.resource.data.photoURL is string || request.resource.data.photoURL == null) &&
   			(request.resource.data.uid is string && request.resource.data.uid.size() > 0) &&
         (request.resource.data.uid == participantId);
     }
