@@ -22,7 +22,10 @@ export default function PlaceCard({ event, onClick }: PlaceCardProps) {
                     alt={event.name}
                 />
                 <div className="flex flex-col p-4 pr-12 justify-center grow">
-                    <p className="text-md font-bold select-none">{event.name}</p>
+                    {/* Truncated Event Name */}
+                    <p className="text-md font-bold select-none line-clamp-2">
+                        {event.name}
+                    </p>
                     <p className="text-gray-500 font-light text-sm select-none">{event.category}</p>
                 </div>
             </div>
