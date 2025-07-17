@@ -1,3 +1,4 @@
+import { AppError } from "@/components/AppError";
 import { Place } from "@/types/place";
 
 export interface SearchPlacesParams {
@@ -58,8 +59,6 @@ export async function fetchPlaces({
         reviews: place.reviews,
     })) as Place[];
 
-    console.log(returnedPlaces);
-
     return returnedPlaces;
 }
 
@@ -70,12 +69,27 @@ export const fetchPlace = async (placeId: string | undefined): Promise<Place> =>
 
     const selectedPlace = new google.maps.places.Place({ id: placeId });
 
-    const { place } = await selectedPlace.fetchFields({
-        fields: ["id", "displayName", "location", "photos", "formattedAddress", "primaryTypeDisplayName"],
-    });
-
-    if (!place) {
-        throw new Error(`Failed to fetch place with id ${placeId}`);
+    let place: google.maps.places.Place | null = null;
+    try {
+        // This can throw on invalid ID or network issues
+        const result = await selectedPlace.fetchFields({
+            fields: [
+                "id",
+                "displayName",
+                "location",
+                "photos",
+                "formattedAddress",
+                "primaryTypeDisplayName"
+            ],
+        });
+        place = result.place;
+    } catch (err: any) {
+        throw new AppError({
+            message: `Error fetching place with id ${placeId}`,
+            status: 404,
+            title: "Place Not Found",
+            description: "The requested place does not exist, may have been removed, or could not be loaded."
+        });
     }
 
     return {

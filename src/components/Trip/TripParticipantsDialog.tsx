@@ -29,6 +29,7 @@ export default function TripParticipantsDialog({ participants, tripId, isOwner, 
     queryKey: ["searchUsers", debouncedSearch, tripId],
     queryFn: () => searchUsers({ query: debouncedSearch, tripId }),
     enabled: isOwner && debouncedSearch.length > 0,
+    throwOnError: true,
   });
 
   const { mutate: removeUser } = useMutation({
@@ -223,7 +224,7 @@ export default function TripParticipantsDialog({ participants, tripId, isOwner, 
                     );
                   })
                 ) : (
-                  <p className="text-sm text-gray-500 px-2">No users found.</p>
+                  <p className="text-sm text-gray-500 px-1 pt-2">No users found.</p>
                 )}
               </div>
             )}

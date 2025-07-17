@@ -19,8 +19,7 @@ export default function MainNavigation() {
             toast.success("Trip created!", { id: "create-trip" });
             navigate(`/trips/${tripId}`);
         },
-        onError: (error) => {
-            console.log(error);
+        onError: () => {
             toast.error("Failed to create trip", {
                 id: "create-trip"
             });

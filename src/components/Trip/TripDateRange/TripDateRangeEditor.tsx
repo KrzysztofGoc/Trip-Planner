@@ -35,6 +35,7 @@ export default function TripDateRangeEditor({ startDate, endDate, tripId, onClos
     const { data: events = [], isLoading: isLoadingEvents } = useQuery({
         queryKey: ["trip-events", tripId],
         queryFn: () => fetchTripEvents({ tripId }),
+        throwOnError: true,
     });
 
     // Mutation for updating trip date range

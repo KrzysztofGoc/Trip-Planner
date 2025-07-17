@@ -4,6 +4,7 @@ import { getDoc, doc, collection, serverTimestamp, getDocs, updateDoc, Timestamp
 import { httpsCallable } from "firebase/functions"
 import { functions, auth } from "../firebase"
 import { Participant } from "@/types/participant";
+import { AppError } from "@/components/AppError";
 
 // Utility to convert Firestore Timestamp to Date, handling nulls and Dates
 export const fetchTrips = async (uid: string): Promise<Trip[]> => {
@@ -62,7 +63,12 @@ export const fetchTrip = async ({ tripId }: FetchTripParams): Promise<Trip> => {
   const tripSnapshot = await getDoc(tripRef);
 
   if (!tripSnapshot.exists()) {
-    throw new Error(`Trip with ID "${tripId}" not found.`);
+    throw new AppError({
+      message: `Trip with ID "${tripId}" not found.`,
+      status: 404,
+      title: "Trip Not Found",
+      description: "The trip you're looking for doesn't exist or may have been deleted."
+    });
   }
 
   const data = tripSnapshot.data();

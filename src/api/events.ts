@@ -2,6 +2,7 @@ import { TripEvent } from "@/types/tripEvent";
 import { db } from "@/firebase";
 import { collection, getDocs, doc, getDoc, DocumentData, deleteDoc, updateDoc, addDoc } from "firebase/firestore";
 import dayjs from "dayjs";
+import { AppError } from "@/components/AppError";
 
 interface FetchTripEventParams {
   tripId: string | undefined;
@@ -34,8 +35,13 @@ export const fetchTripEvent = async ({ tripId, eventId }: FetchTripEventParams):
   const eventSnap = await getDoc(eventRef);
 
   if (!eventSnap.exists()) {
-    throw new Error(`Event with id ${eventId} not found`);
-  }
+        throw new AppError({
+            message: `Event with id ${eventId} not found.`,
+            status: 404,
+            title: "Event Not Found",
+            description: "The event you are looking for does not exist or could not be loaded."
+        });
+    }
 
   return parseTripEvent(eventSnap.id, eventSnap.data());
 };
