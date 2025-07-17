@@ -11,7 +11,7 @@ type TripParticipantsOwnerProps = {
 export default function TripParticipantsOwner({ ownerId }: TripParticipantsOwnerProps) {
     const currentUser = useAuthStore((state) => state.user);
 
-    const { data: owner, isLoading, isError } = useQuery({
+    const { data: owner, isLoading } = useQuery({
         queryKey: ["user", ownerId],
         queryFn: () => fetchUserById({ uid: ownerId }),
     });
@@ -24,8 +24,7 @@ export default function TripParticipantsOwner({ ownerId }: TripParticipantsOwner
         enabled: !!currentUser?.uid && !!ownerId && currentUser.uid !== ownerId,
     });
 
-    if (isLoading) return <p>Loading owner details...</p>;
-    if (isError) return <p>Error loading owner details</p>;
+    if (isLoading || loadingTripsTogether) return <p>Loading owner details...</p>;
 
     return (
         <div className="flex items-center gap-4">
@@ -41,10 +40,8 @@ export default function TripParticipantsOwner({ ownerId }: TripParticipantsOwner
                         {currentUser?.uid === ownerId ? " (you)" : ""}
                     </span>
                 </p>
-                {currentUser?.uid !== ownerId && (
-                    loadingTripsTogether ? (
-                        <p className="text-sm text-gray-400">Loading trips together…</p>
-                    ) : errorTripsTogether ? (
+                {(currentUser?.uid !== ownerId && tripsTogether !== undefined) && (
+                    errorTripsTogether ? (
                         <p className="text-sm text-red-400">Could not load trips together</p>
                     ) : (
                         <p className="text-sm text-gray-400">

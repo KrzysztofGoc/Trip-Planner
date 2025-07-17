@@ -55,10 +55,8 @@ export default function TripDestinationEditor({ destination, tripId, }: TripDest
             return { previousTripData };
         },
 
-        onError: (error, _data, context) => {
+        onError: (_error, _data, context) => {
             toast.error("Failed to update destination", { id: "trip-destination-update" });
-
-            console.log(error);
 
             // Rollback cache on error
             const previousTripData = context?.previousTripData;

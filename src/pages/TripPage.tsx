@@ -15,20 +15,23 @@ import MapWidget from "@/components/Map/MapWidget";
 export default function TripPage() {
     const { tripId } = useParams();
 
-    const { data: tripData, isLoading: isLoadingTrip, isError: isErrorTrip, error: tripError } = useQuery({
+    const { data: tripData, isLoading: isLoadingTrip } = useQuery({
         queryFn: () => fetchTrip({ tripId }),
         queryKey: ["trips", { tripId }],
+        throwOnError: true,
     });
 
-    const { data: participants, isLoading: isLoadingParticipants, isError: isErrorParticipants, error: participantsError } = useQuery({
+    const { data: participants, isLoading: isLoadingParticipants } = useQuery({
         queryFn: () => fetchParticipants({ tripId }),
         queryKey: ["trips", { tripId }, "participants"],
+        throwOnError: true,
     });
 
-    const { data: events, isLoading: isLoadingEvents, isError: isErrorEvents, error: eventsError } = useQuery({
+    const { data: events, isLoading: isLoadingEvents } = useQuery({
         queryFn: () => fetchTripEvents({ tripId }),
         queryKey: ["events", { tripId }],
         staleTime: 10000,
+        throwOnError: true,
     });
 
     // Get current user from global store
@@ -39,9 +42,6 @@ export default function TripPage() {
         ? tripData.ownerId === currentUser.uid
         : false;
 
-    if (isErrorTrip || isErrorParticipants || isErrorEvents) return (
-        <p>{tripError?.message || participantsError?.message || eventsError?.message}</p>
-    );
     if (isLoadingTrip || isLoadingParticipants || isLoadingEvents) return (
         <p>Loading trip...</p>
     );

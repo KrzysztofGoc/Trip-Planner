@@ -14,6 +14,7 @@ export default function TripsGrid({ search }: TripsGridProps) {
     const { data: trips, isLoading, isError, error } = useQuery({
         queryFn: () => fetchTrips(user?.uid || ""),
         queryKey: ["trips", user?.uid],
+        throwOnError: true,
     });
 
     let filteredTrips: Trip[] | undefined = undefined;

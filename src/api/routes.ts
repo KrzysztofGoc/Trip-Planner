@@ -6,7 +6,7 @@ export const fetchDayDirections = async (events: TripEvent[]): Promise<google.ma
     if (events.length < 2) {
       throw new Error("At least two events are required to calculate directions.");
     }
-  
+
     const origin = { lat: events[0].lat, lng: events[0].lng };
     const destination = { lat: events[events.length - 1].lat, lng: events[events.length - 1].lng };
     const waypoints = events.slice(1, -1).map((event) => ({
