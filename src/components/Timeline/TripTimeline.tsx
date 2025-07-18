@@ -27,9 +27,13 @@ export default function TripTimeline({ tripId, events, startDate, endDate, isOwn
         for (let i = 0; i < numberOfDays; i++) {
             const dayNumber = i + 1;
             const dayDate = start.add(i, "days");
-            const dayEvents = events.filter(event =>
+            // 1. Filter for this day
+            let dayEvents = events.filter(event =>
                 dayjs(event.from).isSame(dayDate, "day")
             );
+            // 2. Sort by event.from (earliest first)
+            dayEvents = dayEvents.sort((a, b) => dayjs(a.from).diff(dayjs(b.from)));
+            // 3. Add to map
             map.set(dayNumber, dayEvents);
         }
         return map;
