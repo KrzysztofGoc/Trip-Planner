@@ -3,6 +3,7 @@ import { fetchUserById } from "@/api/users";
 import { useAuthStore } from "@/state/useAuthStore";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { fetchTripsTogetherCount } from "@/api/trips";
+import UniversalLoader from "../LoadingSpinner";
 
 type TripParticipantsOwnerProps = {
     ownerId: string;
@@ -24,7 +25,7 @@ export default function TripParticipantsOwner({ ownerId }: TripParticipantsOwner
         enabled: !!currentUser?.uid && !!ownerId && currentUser.uid !== ownerId,
     });
 
-    if (isLoading || loadingTripsTogether) return <p>Loading owner details...</p>;
+    if (isLoading || loadingTripsTogether) return <UniversalLoader label="Loading owner details..."/>;
 
     return (
         <div className="flex items-center gap-4">

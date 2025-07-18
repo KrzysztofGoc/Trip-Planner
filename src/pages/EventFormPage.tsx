@@ -19,6 +19,7 @@ import dayjs from "dayjs";
 import { toast } from "sonner";
 import { TripEvent } from "@/types/tripEvent";
 import { useAuthStore } from "@/state/useAuthStore";
+import UniversalLoader from "@/components/LoadingSpinner";
 
 function getTripDayDateObj(startDate: Date, day: number) {
     return dayjs(startDate).add(day - 1, "day").toDate();
@@ -168,7 +169,9 @@ export default function EventFormPage() {
     }, [eventData, tripData, placeData, isAdding, isEditing, dayNumber]);
 
     // --- Handle loading/errors
-    if (isTripLoading || isPlaceLoading || isEventLoading) return <p>Loading...</p>;
+    if (isTripLoading || isPlaceLoading || isEventLoading) {
+        return <UniversalLoader label="Loading event..." fullscreen />;
+    }
     if (isTripError || isPlaceError || isEventError) return <p>{tripError?.message || placeError?.message || eventError?.message}</p>;
 
     if (!tripData) throw new Error("No trip found.");
@@ -227,7 +230,7 @@ export default function EventFormPage() {
 
         return (
             <div className="size-auto flex flex-col pb-12">
-                <TripNavigation mode="event" showShareButton={true}/>
+                <TripNavigation mode="event" showShareButton={true} />
                 <TripImage mode="event" imageUrl={eventData.img} />
                 <div className="size-auto h-2/3 flex flex-col px-6 pt-6 gap-6">
                     <TripHeader
@@ -268,7 +271,7 @@ export default function EventFormPage() {
 
         return (
             <div className="size-auto flex flex-col pb-12">
-                <TripNavigation mode="event" showShareButton={false}/>
+                <TripNavigation mode="event" showShareButton={false} />
                 <TripImage mode="event" imageUrl={placeData.img} />
                 <div className="size-auto h-2/3 flex flex-col px-6 pt-6 gap-6">
                     <TripHeader

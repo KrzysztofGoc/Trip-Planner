@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Loader2, Trash2, Users, Pencil, ChevronRight } from "lucide-react";
+import { Trash2, Users, Pencil, ChevronRight } from "lucide-react";
 import { Participant } from "@/types/participant";
 import { searchUsers } from "@/api/users";
 import { removeParticipantFromTrip, addParticipantToTrip } from "@/api/trips";
@@ -11,6 +11,7 @@ import { Input } from "../ui/input";
 import { queryClient } from "@/api/queryClient";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
+import UniversalLoader from "../LoadingSpinner";
 
 interface TripParticipantsGridProps {
   participants: Participant[];
@@ -192,10 +193,7 @@ export default function TripParticipantsDialog({ participants, tripId, isOwner, 
               placeholder="Search users to add..."
             />
             {isSearching && (
-              <p className="flex items-center gap-2">
-                <Loader2 className="w-6 h-6 animate-spin text-red-400" />
-                Searching...
-              </p>
+              <UniversalLoader label="Searching for users..."/>
             )}
             {!isSearching && debouncedSearch.length > 0 && (
               <div className="max-h-40 overflow-y-auto flex flex-col gap-1">
