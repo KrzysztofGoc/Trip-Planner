@@ -11,6 +11,7 @@ import { fetchTrip } from "@/api/trips";
 import { fetchParticipants } from "@/api/participants";
 import { fetchTripEvents } from "@/api/events";
 import MapWidget from "@/components/Map/MapWidget";
+import UniversalLoader from "@/components/LoadingSpinner";
 
 export default function TripPage() {
     const { tripId } = useParams();
@@ -42,9 +43,9 @@ export default function TripPage() {
         ? tripData.ownerId === currentUser.uid
         : false;
 
-    if (isLoadingTrip || isLoadingParticipants || isLoadingEvents) return (
-        <p>Loading trip...</p>
-    );
+    if (isLoadingTrip || isLoadingParticipants || isLoadingEvents) {
+        return <UniversalLoader label="Loading trip..." fullscreen />;
+    }
     if (!tripData) throw new Error("No trip found");
     if (!participants) throw new Error("No participants found");
     if (!events) throw new Error("No events found");

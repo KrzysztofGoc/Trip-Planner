@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchPlaces } from "@/api/places";
 import { fetchTrip } from "@/api/trips";
 import { useParams, useNavigate } from "react-router-dom";
+import UniversalLoader from "../LoadingSpinner";
 
 interface PlacesGridProps {
     category: string | undefined;
@@ -14,7 +15,7 @@ export default function PlacesGrid({ search, category }: PlacesGridProps) {
     const { tripId, dayNumber } = useParams();
 
     // Fetch trip data to get destination location
-    const { data: tripData, isLoading: isTripLoading} = useQuery({
+    const { data: tripData, isLoading: isTripLoading } = useQuery({
         queryKey: ["trip", tripId],
         queryFn: () => fetchTrip({ tripId }),
         throwOnError: true,
@@ -42,7 +43,7 @@ export default function PlacesGrid({ search, category }: PlacesGridProps) {
 
     /// Handle trip loading and error
     if (isTripLoading) {
-        return <div className="p-6">Loading trip info…</div>;
+        return <UniversalLoader label="Loading trip info…" />;
     }
     if (!location) {
         return (
@@ -54,7 +55,7 @@ export default function PlacesGrid({ search, category }: PlacesGridProps) {
 
     // Handle places loading and error
     if (isPlacesLoading) {
-        return <div className="p-6">Loading places…</div>;
+        return <UniversalLoader label="Loading places…" />;
     }
 
     return (

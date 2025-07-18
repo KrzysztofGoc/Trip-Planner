@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/command";
 import { Pencil } from "lucide-react";
 import { useDebounce } from "use-debounce";
+import UniversalLoader from "@/components/LoadingSpinner";
 
 interface TripDestinationEditorProps {
     destination: string | null;
@@ -130,7 +131,7 @@ export default function TripDestinationEditor({ destination, tripId, }: TripDest
                         <div className="p-2 text-sm text-muted-foreground">No locations found</div>
                     )}
                     {isLoading && (
-                        <div className="p-2 text-sm text-muted-foreground">Loading locations...</div>
+                        <UniversalLoader label="Loading locations..."/>
                     )}
                     {isError && (
                         <div className="p-2 text-sm font-semibold text-red-400">Error loading locations</div>

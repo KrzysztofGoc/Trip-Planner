@@ -5,11 +5,11 @@ import { toast } from "sonner";
 import { updateTripDateRange } from "@/api/trips";
 import { queryClient } from "@/api/queryClient";
 import { useState } from "react";
-import { LoaderCircle } from "lucide-react";
 import { fetchTripEvents } from "@/api/events";
 import { TripEvent } from "@/types/tripEvent";
 import { TripDateRangeDestructiveDialog } from "./TripDateRangeDestructiveDialog";
 import dayjs from "dayjs";
+import UniversalLoader from "@/components/LoadingSpinner";
 
 function getOrphanedEvents(events: TripEvent[], newFrom: Date, newTo: Date): TripEvent[] {
     const from = dayjs(newFrom).startOf("day");
@@ -120,10 +120,7 @@ export default function TripDateRangeEditor({ startDate, endDate, tripId, onClos
             />
 
             {isLoadingEvents ? (
-                <div className="w-full flex flex-col gap-6 items-center py-12">
-                    <LoaderCircle className="size-10 text-red-400 animate-spin" />
-                    <span className="text-gray-500 text-sm">Loading available dates...</span>
-                </div>
+                <UniversalLoader label="Loading available dates..."/>
             ) : (
                 <>
                     <DayPicker
