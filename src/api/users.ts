@@ -97,5 +97,5 @@ export async function sendUserPasswordResetEmail({ email }: SendUserPasswordRese
 }
 
 export async function logoutUser() {
-  await signOut(auth);
+    await signOut(auth);
 }

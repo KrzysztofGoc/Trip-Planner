@@ -3,10 +3,11 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchTripEventsForDay } from "@/api/events";
 import { TripEvent } from "@/types/tripEvent";
 import TripDateRangePreview from "../Trip/TripDateRange/TripDateRangePreview";
-import { ChevronDown, LoaderCircle, MoveRight } from "lucide-react";
+import { ChevronDown, MoveRight } from "lucide-react";
 import { TimePickerWheel } from "./TimePicker/TimePickerWheel";
 import { Button } from "../ui/button";
 import { RangeState, RangeAction } from "@/state/eventRangeReducer";
+import UniversalLoader from "../LoadingSpinner";
 
 // --- Utility ---
 function getHM(date: Date) {
@@ -132,10 +133,7 @@ export default function EventTimeRange(props: EventTimeRangeProps) {
 
             {state.mode === "editing" ? (
                 isLoadingEvents ? (
-                    <div className="w-full flex flex-col gap-6 items-center py-12">
-                        <LoaderCircle className="size-10 text-red-400 animate-spin" />
-                        <span className="text-gray-500 text-sm">Loading available times...</span>
-                    </div>
+                    <UniversalLoader label="Loading available times..." />
                 ) : (
                     <div className="flex flex-col items-center w-full">
                         <div className="flex items-center gap-6 justify-center w-full">

@@ -3,6 +3,7 @@ import { fetchTrips } from "@/api/trips";
 import TripCard from "./TripCard";
 import { useAuthStore } from "@/state/useAuthStore";
 import { Trip } from "@/types/trip";
+import UniversalLoader from "../LoadingSpinner";
 
 interface TripsGridProps {
     search: string;
@@ -11,7 +12,7 @@ interface TripsGridProps {
 export default function TripsGrid({ search }: TripsGridProps) {
     const user = useAuthStore(s => s.user);
 
-    const { data: trips, isLoading, isError, error } = useQuery({
+    const { data: trips, isLoading } = useQuery({
         queryFn: () => fetchTrips(user?.uid || ""),
         queryKey: ["trips", user?.uid],
         throwOnError: true,
@@ -32,8 +33,7 @@ export default function TripsGrid({ search }: TripsGridProps) {
 
     return (
         <>
-            {isError && <p>{error.message}</p>}
-            {isLoading && <p>Loading trips...</p>}
+            {isLoading && <UniversalLoader label="Loading trips..."/>}
             {filteredTrips && (
                 <div className="w-auto h-auto p-6">
                     <div className="w-auto h-auto grid grid-cols-1 gap-6 content-start">
