@@ -8,7 +8,7 @@ interface ActionButtonProps {
 
 export default function EventFormActionButton({ onClick, label, disabled }: ActionButtonProps) {
     return (
-        <Button onClick={onClick} className="w-auto h-14 bg-red-400 text-white rounded-lg" disabled={disabled}>
+        <Button onClick={onClick} className="w-auto h-14 bg-red-400 hover:bg-red-500 transition text-white rounded-lg" disabled={disabled}>
             {label}
         </Button>
     );

@@ -16,10 +16,10 @@ export function TimePickerColumn({ name, values, disabled = [] }: TimePickerColu
             <div
               className={
                 disabled.includes(val)
-                  ? "font-light text-sm w-12 text-center text-gray-300 cursor-not-allowed pointer-events-none"
+                  ? "font-light text-sm w-12 md:w-24 text-center text-gray-300 cursor-not-allowed pointer-events-none"
                   : selected
-                    ? "font-semibold text-lg w-12 text-center"
-                    : "font-light text-sm w-12 text-center"
+                    ? "font-semibold text-lg w-12 md:w-24 text-center"
+                    : "font-light text-sm w-12 md:w-24 text-center"
               }
             >
               {val}

@@ -84,11 +84,11 @@ export default function TripLeaveDialog({ tripId }: TripLeaveDialogProps) {
                 </AlertDialogHeader>
 
                 <AlertDialogFooter>
-                    <AlertDialogCancel className="h-12 bg-transparent shadow-none border-none text-black rounded-lg">
+                    <AlertDialogCancel className="h-12 bg-transparent shadow-none transition border-none text-black rounded-lg">
                         Cancel
                     </AlertDialogCancel>
                     <AlertDialogAction
-                        className="h-12 bg-red-500 text-white"
+                        className="h-12 bg-red-500 hover:bg-red-600 transition text-white"
                         onClick={() => leaveTrip()}
                         disabled={isPending}
                     >

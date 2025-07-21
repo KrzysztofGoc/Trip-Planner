@@ -9,7 +9,7 @@ interface PlaceCategoryFilterProps {
 
 export default function PlaceCategoryFilter({ value, onChange }: PlaceCategoryFilterProps) {
   return (
-    <div className="size-auto px-2 flex justify-stretch gap-2 overflow-x-auto scrollbar-hide relative">
+    <div className="size-auto px-2 flex justify-stretch xl:justify-center gap-2 overflow-x-auto scrollbar-hide relative">
       {EVENT_CATEGORIES.map((category) => (
         <PlaceCategoryItem
           key={category.id}
