@@ -40,7 +40,7 @@ export default function PlaceCard({ event, onClick }: PlaceCardProps) {
                             (e.target as HTMLImageElement).src = "/place_default_thumbnail_image.png";
                         }}
                     />
-                    <div className="flex flex-col pl-4 pr-4 justify-center grow min-w-0 gap-1">
+                    <div className="flex flex-col pl-4 pr-8 md:pr-8 justify-center grow min-w-0 gap-1">
                         {/* Truncated Event Name */}
                         <p className="text-md font-bold select-none line-clamp-2">
                             {event.name}
