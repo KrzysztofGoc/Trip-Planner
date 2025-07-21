@@ -33,6 +33,7 @@ export function TimePickerWheel({
                         onChange({ ...value, hour: obj.hour });
                     }}
                     itemHeight={itemHeight}
+                    wheelMode="natural"
                 >
                     <TimePickerColumn name="hour" values={hours} disabled={[...blockedHours]} />
                 </Picker>
@@ -45,6 +46,7 @@ export function TimePickerWheel({
                         onChange({ ...value, minute: obj.minute });
                     }}
                     itemHeight={itemHeight}
+                    wheelMode="natural"
                 >
                     <TimePickerColumn name="minute" values={minutes} disabled={[...blockedMinutes]} />
                 </Picker>

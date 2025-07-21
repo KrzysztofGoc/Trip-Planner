@@ -47,7 +47,7 @@ export default function PlacesGrid({ search, category }: PlacesGridProps) {
     }
     if (!location) {
         return (
-            <div className="p-6 text-red-500">
+            <div className="text-center p-6 text-red-500">
                 Trip does not have a destination location. Go back and set a destination first.
             </div>
         );

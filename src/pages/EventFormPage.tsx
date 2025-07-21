@@ -98,9 +98,8 @@ export default function EventFormPage() {
             const filtered = events.filter(ev => ev.id !== context.tempId);
             queryClient.setQueryData(["events", { tripId }], [
                 ...filtered,
-                { ...event, id: docId } // Add real event, no optimistic flag
+                { ...event, id: docId }
             ]);
-
         },
         onSettled: (_data, _error, { tripId }) => {
             queryClient.invalidateQueries({ queryKey: ["events", { tripId }] });
@@ -140,11 +139,8 @@ export default function EventFormPage() {
         },
     });
 
-
-    // --- Unconditionally sync reducer when data loads/changes
     useEffect(() => {
         if (isEditing && eventData) {
-            // Editing mode
             rangeDispatch({
                 type: "RESET",
                 state: {
@@ -154,8 +150,6 @@ export default function EventFormPage() {
             });
         } else if (isAdding && tripData && placeData) {
             if (!tripData.startDate) return;
-
-            // Adding mode
             const addingDate = getTripDayDateObj(tripData.startDate, Number(dayNumber));
             rangeDispatch({
                 type: "RESET",
@@ -168,16 +162,15 @@ export default function EventFormPage() {
         }
     }, [eventData, tripData, placeData, isAdding, isEditing, dayNumber]);
 
-    // --- Handle loading/errors
     if (isTripLoading || isPlaceLoading || isEventLoading) {
         return <UniversalLoader label="Loading event..." fullscreen />;
     }
-    if (isTripError || isPlaceError || isEventError) return <p>{tripError?.message || placeError?.message || eventError?.message}</p>;
+    if (isTripError || isPlaceError || isEventError)
+        return <p>{tripError?.message || placeError?.message || eventError?.message}</p>;
 
     if (!tripData) throw new Error("No trip found.");
     if (!tripData.startDate || !tripData.endDate) throw new Error("Trip date range not set.")
 
-    // --- Add/Edit Handler
     function handleSaveOrAdd() {
         const { from, to } = rangeState.range;
         if (!from || !to) {
@@ -185,7 +178,6 @@ export default function EventFormPage() {
             return;
         }
 
-        // Add event
         if (placeId && placeData && tripData) {
             addMutation.mutate({
                 tripId,
@@ -195,9 +187,7 @@ export default function EventFormPage() {
                     to: to,
                 }
             });
-
         }
-        // Edit event
         else if (eventId && eventData) {
             editMutation.mutate({
                 tripId,
@@ -211,93 +201,106 @@ export default function EventFormPage() {
         }
     }
 
-    // --- Render: Editing
-    if (eventId && eventData) {
-        const eventDate = dayjs(eventData.from);
-        const eventDay = eventDate.diff(tripData.startDate, "days") + 1;
-        const formattedEventDate = eventDate.format("MMM D, YYYY");
-        const formattedDate = `Day ${eventDay}, ${formattedEventDate}`;
+    // Shared page layout: max-w, centered, paddings
+    return (
+        <div className="min-h-screen bg-white w-full mx-auto max-w-screen-xl flex flex-col items-center md:px-10 md:pt-6 lg:px-20">
+            {/* Main content is centered, not full width on desktop */}
+            <div className="relative w-full flex flex-col">
+                {/* Top nav */}
+                <TripNavigation mode="event" showShareButton={!!eventId} />
 
-        const placeForMap = {
-            id: eventData.id,
-            name: eventData.name,
-            category: eventData.category,
-            img: eventData.img,
-            address: eventData.address,
-            lat: eventData.lat,
-            lng: eventData.lng
-        };
+                {/* Image */}
+                {isEditing && eventData && (
+                    <TripImage mode="event" imageUrl={eventData.img} />
+                )}
+                {isAdding && placeData && (
+                    <TripImage mode="event" imageUrl={placeData.img} />
+                )}
 
-        return (
-            <div className="size-auto flex flex-col pb-12">
-                <TripNavigation mode="event" showShareButton={true} />
-                <TripImage mode="event" imageUrl={eventData.img} />
-                <div className="size-auto h-2/3 flex flex-col px-6 pt-6 gap-6">
-                    <TripHeader
-                        mode="event"
-                        name={eventData.name}
-                        destination={eventData.address}
-                        formattedDate={formattedDate}
-                    />
-                    <EventTimeRange
-                        mode="edit"
-                        tripId={tripId}
-                        eventId={eventId}
-                        from={eventData.from}
-                        to={eventData.to}
-                        state={rangeState}
-                        dispatch={rangeDispatch}
-                        isOwner={isOwner}
-                    />
-                    {isOwner && (
-                        <EventFormActionButton
-                            onClick={handleSaveOrAdd}
-                            label="Save"
-                            disabled={!(rangeState.range.from && rangeState.range.to)}
-                        />
-                    )}
-                    <MapWidget mode="place" place={placeForMap} />
+                {/* Main content */}
+                <div className="flex flex-col gap-6 py-6 w-full px-6 md:px-0">
+                    {/* Header */}
+                    {isEditing && eventData && (() => {
+                        const eventDate = dayjs(eventData.from);
+                        const eventDay = eventDate.diff(tripData.startDate, "days") + 1;
+                        const formattedEventDate = eventDate.format("MMM D, YYYY");
+                        const formattedDate = `Day ${eventDay}, ${formattedEventDate}`;
+
+                        const placeForMap = {
+                            id: eventData.id,
+                            name: eventData.name,
+                            category: eventData.category,
+                            img: eventData.img,
+                            address: eventData.address,
+                            lat: eventData.lat,
+                            lng: eventData.lng
+                        };
+
+                        return (
+                            <>
+                                <TripHeader
+                                    mode="event"
+                                    name={eventData.name}
+                                    destination={eventData.address}
+                                    formattedDate={formattedDate}
+                                />
+                                <EventTimeRange
+                                    mode="edit"
+                                    tripId={tripId}
+                                    eventId={eventId}
+                                    from={eventData.from}
+                                    to={eventData.to}
+                                    state={rangeState}
+                                    dispatch={rangeDispatch}
+                                    isOwner={isOwner}
+                                />
+                                {isOwner && (
+                                    <EventFormActionButton
+                                        onClick={handleSaveOrAdd}
+                                        label="Save"
+                                        disabled={!(rangeState.range.from && rangeState.range.to)}
+                                    />
+                                )}
+                                <MapWidget mode="place" place={placeForMap} />
+                            </>
+                        );
+                    })()}
+
+                    {isAdding && placeData && tripData && (() => {
+                        const day = Number(dayNumber);
+                        const addingDate = getTripDayDateObj(tripData.startDate, day);
+                        const formattedDate = dayjs(addingDate).format("MMM D");
+                        const formattedDayDate = `Day ${day}, ${formattedDate}`;
+
+                        return (
+                            <>
+                                <TripHeader
+                                    mode="event"
+                                    name={placeData.name}
+                                    destination={placeData.address}
+                                    formattedDate={formattedDayDate}
+                                />
+                                <EventTimeRange
+                                    mode="add"
+                                    tripId={tripId}
+                                    addingDate={addingDate}
+                                    state={rangeState}
+                                    dispatch={rangeDispatch}
+                                    isOwner={isOwner}
+                                />
+                                {isOwner && (
+                                    <EventFormActionButton
+                                        onClick={handleSaveOrAdd}
+                                        label="Add"
+                                        disabled={!(rangeState.range.from && rangeState.range.to)}
+                                    />
+                                )}
+                                <MapWidget mode="place" place={placeData} />
+                            </>
+                        );
+                    })()}
                 </div>
             </div>
-        );
-    }
-
-    // --- Render: Adding
-    if (placeId && dayNumber && placeData && tripData) {
-        const day = Number(dayNumber);
-        const addingDate = getTripDayDateObj(tripData.startDate, day);
-        const formattedDate = dayjs(addingDate).format("MMM D");
-        const formattedDayDate = `Day ${day}, ${formattedDate}`;
-
-        return (
-            <div className="size-auto flex flex-col pb-12">
-                <TripNavigation mode="event" showShareButton={false} />
-                <TripImage mode="event" imageUrl={placeData.img} />
-                <div className="size-auto h-2/3 flex flex-col px-6 pt-6 gap-6">
-                    <TripHeader
-                        mode="event"
-                        name={placeData.name}
-                        destination={placeData.address}
-                        formattedDate={formattedDayDate}
-                    />
-                    <EventTimeRange
-                        mode="add"
-                        tripId={tripId}
-                        addingDate={addingDate}
-                        state={rangeState}
-                        dispatch={rangeDispatch}
-                        isOwner={isOwner}
-                    />
-                    {isOwner && (
-                        <EventFormActionButton
-                            onClick={handleSaveOrAdd}
-                            label="Add"
-                            disabled={!(rangeState.range.from && rangeState.range.to)}
-                        />
-                    )}
-                    <MapWidget mode="place" place={placeData} />
-                </div>
-            </div>
-        );
-    }
+        </div>
+    );
 }
