@@ -129,13 +129,13 @@ export default function EventTimeRange(props: EventTimeRangeProps) {
             : "Not selected";
 
     return (
-        <div className={`flex flex-col items-center justify-center border-1 border-gray-200 gap-2 px-6 pt-6 rounded-lg shadow-md ${state.mode === "editing" && "pb-6"} ${!props.isOwner && "pb-8"}`}>
+        <div className={` flex flex-col items-center justify-center border-1 border-gray-200 gap-2 px-6 pt-6 rounded-lg shadow-md ${state.mode === "editing" && "pb-6"} ${!props.isOwner && "pb-8"}`}>
 
             {state.mode === "editing" ? (
                 isLoadingEvents ? (
                     <UniversalLoader label="Loading available times..." />
                 ) : (
-                    <div className="flex flex-col items-center w-full">
+                    <div className="flex flex-col items-center w-auto">
                         <div className="flex items-center gap-6 justify-center w-full">
                             <TimePickerWheel
                                 label="From"
@@ -169,15 +169,16 @@ export default function EventTimeRange(props: EventTimeRangeProps) {
                         )}
                         <div className="flex gap-2 w-full mt-4">
                             <Button
+                                variant="secondary"
                                 onClick={() => dispatch({ type: "CANCEL" })}
-                                className="flex-1 h-12 bg-transparent shadow-none text-black rounded-lg"
+                                className="flex-1 h-12 bg-transparent shadow-none transition border-none text-black rounded-lg"
                             >
                                 Cancel
                             </Button>
                             <Button
                                 onClick={() => dispatch({ type: "SAVE" })}
                                 disabled={!isValidRange || hasOverlap}
-                                className="flex-1 h-12 bg-red-400 text-white shadow-md rounded-lg"
+                                className="flex-1 h-12 bg-red-400 hover:bg-red-500 transition text-white shadow-md rounded-lg"
                             >
                                 Save
                             </Button>

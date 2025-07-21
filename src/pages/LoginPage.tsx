@@ -136,7 +136,7 @@ export default function LoginPage() {
 
               <Button
                 type="submit"
-                className="w-full h-12 rounded-lg bg-red-400 text-white text-lg font-semibold"
+                className="w-full h-12 rounded-lg bg-red-400 hover:bg-red-500 transition text-white text-lg font-semibold"
                 disabled={isPending}
               >
                 {isPending ? (
@@ -151,7 +151,7 @@ export default function LoginPage() {
           </Form>
 
           <div className="mt-6 text-center">
-            <Link to="/register" className="text-red-400 font-semibold hover:underline">
+            <Link to="/register" className="text-red-400 font-semibold hover:underline transition">
               Don't have an account? Register
             </Link>
           </div>

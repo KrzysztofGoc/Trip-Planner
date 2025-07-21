@@ -144,7 +144,7 @@ export default function RegisterPage() {
               />
               <Button
                 type="submit"
-                className="w-full h-12 rounded-lg bg-red-400 text-white text-lg font-semibold"
+                className="w-full h-12 rounded-lg bg-red-400 hover:bg-red-500 transition text-white text-lg font-semibold"
                 disabled={isPending}
               >
                 {isPending ? (
