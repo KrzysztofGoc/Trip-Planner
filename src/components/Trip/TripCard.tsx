@@ -20,6 +20,11 @@ export default function TripCard({ trip }: TripCardProps) {
         navigate(`/trips/${trip.id}`)
     }
 
+    // Check if date is valid
+    const dateStr = trip.startDate && dayjs(trip.startDate).isValid()
+        ? dayjs(trip.startDate).format("MMMM D, YYYY")
+        : "(No date set)";
+
     return (
         <Card onClick={handleCardClick} className="border-none shadow-none p-0 cursor-pointer gap-4">
             <CardHeader className="p-0">
@@ -27,11 +32,11 @@ export default function TripCard({ trip }: TripCardProps) {
             </CardHeader>
             <CardContent className="p-0 flex flex-col gap-1">
                 <CardTitle>
-                    {trip.destination}
+                    {trip.destination || "(No destination set)"}
                 </CardTitle>
                 <CardDescription className="flex flex-col gap-3">
-                    {dayjs(trip.startDate).format("MMMM D, YYYY")}
-                    <p>{trip.name}</p>
+                    {dateStr}
+                    <p>{trip.name || "(No name set)"}</p>
                 </CardDescription>
             </CardContent>
         </Card>
