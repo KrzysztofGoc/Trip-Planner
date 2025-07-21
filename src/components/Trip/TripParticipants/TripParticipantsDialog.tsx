@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import UniversalLoader from "@/components/LoadingSpinner";
 import TripParticipantsAvatarRow from "./TripParticipantsAvatarRow";
 import { useResizeObserver } from "usehooks-ts";
+import { motion } from "motion/react";
 
 interface TripParticipantsGridProps {
   participants: Participant[];
@@ -21,6 +22,26 @@ interface TripParticipantsGridProps {
   isOwner: boolean;
   ownerId: string;
 }
+
+const pencilVariants = {
+  initial: { scale: 1, rotate: 0 },
+  hover: { scale: 1.22, rotate: -14, transition: { type: "spring", stiffness: 400, damping: 12 } },
+  tap: { scale: 0.9, transition: { type: "tween", duration: 0.2 } },
+};
+
+const chevronVariants = {
+  initial: { scale: 1, x: 0 },
+  hover: {
+    scale: 1.22,
+    x: 12,
+    transition: { type: "spring", stiffness: 340, damping: 15 }
+  },
+  tap: {
+    scale: 0.92,
+    x: 16,
+    transition: { type: "tween", duration: 0.18 }
+  }
+};
 
 export default function TripParticipantsDialog({ participants, tripId, isOwner, ownerId }: TripParticipantsGridProps) {
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -77,10 +98,16 @@ export default function TripParticipantsDialog({ participants, tripId, isOwner, 
       // Snapshot previous
       const previousParticipants = queryClient.getQueryData<Participant[]>(["trips", { tripId }, "participants"]);
       if (previousParticipants) {
-        queryClient.setQueryData(["trips", { tripId }, "participants"], [
-          ...previousParticipants,
-          participant,
-        ]);
+        // If owner should always be first
+        const owner = previousParticipants.find(p => p.uid === ownerId);
+        const others = previousParticipants.filter(p => p.uid !== ownerId);
+
+        // Add the new participant to the end of the "others"
+        const newOthers = [...others, participant];
+
+        const updatedList = owner ? [...newOthers, owner] : newOthers;
+
+        queryClient.setQueryData(["trips", { tripId }, "participants"], updatedList);
       }
       return { previousParticipants };
     },
@@ -105,17 +132,31 @@ export default function TripParticipantsDialog({ participants, tripId, isOwner, 
       <DialogTrigger asChild>
         <div ref={triggerRef} className="flex flex-col gap-4 transition rounded-xl px-2 py-2 w-full">
           {/* Participants label */}
-          <div className="flex flex-col gap-4 group w-fit cursor-pointer">
+          <motion.div
+            className="flex flex-col gap-4 w-fit cursor-pointer group"
+            whileHover="hover"
+            whileTap="tap"
+            initial="initial"
+          >
             <div className="flex items-center gap-5.5">
               <Users className="size-6 w-12" />
-              <p className="text-lg font-semibold">Participants</p>
-              {isOwner && <Pencil className="w-5 h-5 text-red-400 -ml-2 group-hover:scale-120 transition" />}
-              {!isOwner && <ChevronRight className="size-5 text-red-400 -ml-2 group-hover:scale-130 transition" />}
+              <p className="text-lg font-semibold select-none">Participants</p>
+              {isOwner && (
+                <motion.div variants={pencilVariants} className="shrink-0 -ml-2">
+                  <Pencil className="size-5 text-red-400" />
+                </motion.div>
+              )}
+              {!isOwner && (
+                <motion.div
+                  variants={chevronVariants}
+                  className="shrink-0 -ml-2"
+                >
+                  <ChevronRight className="size-6 text-red-400" />
+                </motion.div>
+              )}
             </div>
-
-            {/* Responsive Participants list */}
-            <TripParticipantsAvatarRow participants={participants} containerWidth={triggerWidth}/>
-          </div>
+            <TripParticipantsAvatarRow participants={participants} containerWidth={triggerWidth} />
+          </motion.div>
         </div>
       </DialogTrigger>
 

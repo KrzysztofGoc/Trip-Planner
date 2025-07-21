@@ -5,6 +5,7 @@ import TimelineHeader from "./TimelineHeader";
 import dayjs from "dayjs";
 import { useState, useMemo } from "react";
 import { useMediaQuery } from "usehooks-ts";
+import { AnimatePresence, LayoutGroup, motion } from 'motion/react'
 
 interface TrimTimelineProps {
     tripId: string | undefined,
@@ -55,14 +56,14 @@ export default function TripTimeline({ tripId, events, startDate, endDate, isOwn
 
     const handleToggleDay = (dayNumber: number) => {
         setExpandedDay(current =>
-        isDesktop
-            ? (current === dayNumber ? current : dayNumber) // Desktop: always keep one open
-            : (current === dayNumber ? null : dayNumber)    // Mobile: allow close
-    );
+            isDesktop
+                ? (current === dayNumber ? current : dayNumber) // Desktop: always keep one open
+                : (current === dayNumber ? null : dayNumber)    // Mobile: allow close
+        );
     };
 
     if (isNaN(numberOfDays) || numberOfDays <= 0) {
-        return null; // Or a placeholder message if you prefer
+        return null;
     }
 
     // Generate day components
@@ -75,48 +76,105 @@ export default function TripTimeline({ tripId, events, startDate, endDate, isOwn
         const isExpanded = expandedDay === dayNumber;
 
         timelineDays.push(
-            <TimelineDay key={dayDateLabel}>
-                <TimelineHeader
-                    dayNumber={dayNumber}
-                    dayDate={dayDateLabel}
-                    isExpanded={isExpanded}
-                    onClick={() => handleToggleDay(dayNumber)}
-                    hasEvents={dayEvents.length > 0}
-                />
-                {isExpanded && (
-                    <TimelineContent
+            <motion.div>
+                <TimelineDay key={dayDateLabel}>
+                    <TimelineHeader
                         dayNumber={dayNumber}
-                        events={dayEvents}
-                        tripId={tripId}
-                        isOwner={isOwner}
+                        dayDate={dayDateLabel}
+                        isExpanded={isExpanded}
+                        onClick={() => handleToggleDay(dayNumber)}
+                        hasEvents={dayEvents.length > 0}
                     />
-                )}
-            </TimelineDay>
+                    <AnimatePresence>
+                        {isExpanded && (
+                            <motion.div
+                                key={`timeline-content-${dayNumber}`}
+                                initial={{ opacity: 0, y: -16, height: 0, }}
+                                animate={{
+                                    opacity: 1, y: 0, height: "auto",
+                                    transition: {
+                                        height: { duration: 0.3 },
+
+                                        y: { delay: (isDesktop ? 0.6 : 0.2), duration: 0.3 },
+                                        opacity: { delay: (isDesktop ? 0.6 : 0.2), duration: 0.3 },
+                                    }
+                                }}
+                                exit={{
+                                    opacity: 0, y: 16, height: 0,
+                                    transition: {
+                                        y: { duration: 0.3 },
+                                        opacity: { duration: 0.3 },
+
+                                        height: { delay: 0.15, duration: 0.3 },
+                                    }
+                                }}
+                            >
+                                <TimelineContent
+                                    dayNumber={dayNumber}
+                                    events={dayEvents}
+                                    tripId={tripId}
+                                    isOwner={isOwner}
+                                />
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </TimelineDay>
+            </motion.div>
         );
     }
 
     // Split into expanded/collapsed for layout
     const expandedDayIndex = timelineDays.findIndex((_, i) => expandedDay === i + 1);
-    const expandedDayComponent = expandedDayIndex !== -1 ? timelineDays[expandedDayIndex] : null;
-    const collapsedDayComponents = timelineDays.filter((_, i) => expandedDay !== i + 1);
-
 
     return (
-        <div className="w-full flex flex-col md:flex-row gap-2 md:gap-12 px-2 md:px-4">
+        <div className="w-full px-2 md:px-4">
             {isDesktop ? (
-                <>
-                    <div className="w-2/3 flex-1 sticky top-6 h-fit">
-                        {expandedDayComponent}
+                <div className="grid grid-cols-3 gap-8 w-full h-full">
+                    {/* Left: Expanded day */}
+                    <div className="col-span-2 row-start-1 relative">
+                        <AnimatePresence initial={false}>
+                            {expandedDayIndex !== -1 && (
+                                <motion.div
+                                    layout
+                                    className="absolute left-0 top-0 w-full"
+                                    key={`timeline-expanded-${expandedDayIndex}`}
+                                    layoutId={`timeline-day-${expandedDayIndex}`}
+                                    transition={{ layout: { duration: 0.44 } }}
+                                >
+                                    {timelineDays[expandedDayIndex]}
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
                     </div>
-                    <div className="w-1/3 flex flex-col gap-2 sticky top-6 h-fit">
-                        {collapsedDayComponents}
+                    {/* Right: Collapsed days */}
+                    <div className="col-start-3 row-start-1 flex flex-col gap-2">
+                        <AnimatePresence initial={false}>
+                            <LayoutGroup>
+                                {timelineDays.map((day, i) => {
+                                    if (i === expandedDayIndex) return null;
+                                    return (
+                                        <motion.div
+                                            layout="position"
+                                            key={`timeline-collapsed-${i}`}
+                                            layoutId={`timeline-day-${i}`}
+                                            transition={{ layout: { duration: 0.44 } }}
+                                        >
+                                            {day}
+                                        </motion.div>
+                                    );
+                                })}
+                            </LayoutGroup>
+                        </AnimatePresence>
+
                     </div>
-                </>
+                </div>
             ) : (
-                // Mobile: just a flat list, no columns
-                <>
-                    {timelineDays}
-                </>
+                // Mobile: just a flat list
+                <div className="flex flex-col gap-2">
+                    <LayoutGroup>
+                        {timelineDays}
+                    </LayoutGroup>
+                </div>
             )}
         </div>
     );
