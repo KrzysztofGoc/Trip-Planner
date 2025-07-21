@@ -42,12 +42,12 @@ export function TripDateRangeDestructiveDialog({ open, orphans, onCancel, onConf
                 <AlertDialogFooter>
                     <AlertDialogCancel
                         onClick={onCancel}
-                        className="h-12 bg-transparent shadow-none border-none text-black rounded-lg"
+                        className="h-12 bg-transparent shadow-none border-none text-black rounded-lg transition"
                     >
                         Cancel
                     </AlertDialogCancel>
                     <AlertDialogAction
-                        className="h-12 bg-red-500 text-white"
+                        className="h-12 bg-red-500 text-white transition hover:bg-red-600"
                         onClick={onConfirm}
                     >
                         Delete and Save
