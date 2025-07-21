@@ -4,7 +4,7 @@ import { Button } from "../ui/button";
 import TripImageChangeDialog from "./TripImageChangeDialog";
 
 type TripImageProps =
-  | { mode: 'event'; imageUrl: string | null | undefined }  // Display mode
+  | { mode: 'event'; imageUrl: string | null | undefined }
   | { mode: 'trip'; imageUrl: string | null; tripId: string | undefined, isOwner: boolean };
 
 export default function TripImage(props: TripImageProps) {
@@ -23,28 +23,48 @@ export default function TripImage(props: TripImageProps) {
   };
 
   return (
-    <div className="relative w-auto">
-      <img
-        className="object-cover size-full max-h-96"
-        src={getImageSrc()}
-        alt={props.imageUrl ? "Trip Cover" : "No trip image set"}
-        onError={() => setImageError(true)}
-      />
+    <div
+      className="
+      relative w-full
+      aspect-[16/9]
+      min-h-[260px]
+      max-h-[410px]
+      rounded-none 
+      shadow-none
 
+      md:max-h-[500px]
+      md:rounded-3xl
+      md:shadow-xl
+
+      overflow-hidden
+    "
+    >
+      <img
+        className="object-cover w-full h-full select-none pointer-events-none"
+        src={getImageSrc()}
+        alt={props.imageUrl ? 'Trip Cover' : 'No trip image set'}
+        onError={() => setImageError(true)}
+        draggable={false}
+      />
       {isEditable && (
         <>
           <Button
             size={null}
-            className="absolute bottom-3 right-3 text-white shadow-none bg-black/30 backdrop-blur-md rounded-lg flex gap-2 items-center px-4 py-2"
+            className="
+          absolute bottom-4 right-4 z-10
+          flex gap-2 items-center px-4 py-2
+          bg-black/40 hover:bg-black/70 backdrop-blur-[2px] transition
+          rounded-lg shadow-none
+        "
             onClick={() => setDialogOpen(true)}
           >
-            <Camera className="size-6 text-inherit" />
-            <span className="text-sm font-medium">Change photo</span>
+            <Camera className="size-6" />
+            <span>Change photo</span>
           </Button>
-
           <TripImageChangeDialog open={dialogOpen} onClose={() => setDialogOpen(false)} tripId={props.tripId} />
         </>
       )}
     </div>
+
   );
 }

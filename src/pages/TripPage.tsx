@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import TripParticipantsList from "@/components/Trip/TripParticipantsList";
+import TripParticipantsList from "@/components/Trip/TripParticipants/TripParticipantsList";
 import TripTimeline from "@/components/Timeline/TripTimeline";
 import TripNavigation from "@/components/Trip/TripNavigation/TripNavigation";
 import TripImage from "@/components/Trip/TripImage";
@@ -38,7 +38,7 @@ export default function TripPage() {
     // Get current user from global store
     const currentUser = useAuthStore((state) => state.user);
 
-    // Single source of truth for if current use is the owner
+    // Single source of truth for if current user is the owner
     const isOwner = tripData && currentUser
         ? tripData.ownerId === currentUser.uid
         : false;
@@ -51,18 +51,31 @@ export default function TripPage() {
     if (!events) throw new Error("No events found");
 
     return (
-        <>
-            <div className="size-auto flex flex-col pb-16">
-                {/* Trip Top Navigation */}
-                <TripNavigation mode="trip" isOwner={isOwner} tripId={tripId} participants={participants} ownerId={tripData.ownerId} />
+        // Set background to white for the whole page
+        <div 
+        className="min-h-screen bg-white w-full mx-auto max-w-screen-xl flex flex-col items-center md:px-10 md:pt-6 lg:px-20"
+        >
+            {/* Main content is centered, not full width on desktop */}
+            <div className="relative w-full flex flex-col">
+                {/* Top nav */}
+                <TripNavigation
+                    mode="trip"
+                    isOwner={isOwner}
+                    tripId={tripId}
+                    participants={participants}
+                    ownerId={tripData.ownerId}
+                />
 
-                {/* Image Container */}
-                <TripImage mode="trip" imageUrl={tripData.image} tripId={tripId} isOwner={isOwner} />
+                {/* Image */}
+                <TripImage
+                    mode="trip"
+                    imageUrl={tripData.image}
+                    tripId={tripId}
+                    isOwner={isOwner}
+                />
 
-                {/* Trip Data Container */}
-                <div className="size-auto h-2/3 flex flex-col px-6 pt-6 gap-6">
-
-                    {/* Trip Header */}
+                {/* Main content */}
+                <div className="flex flex-col gap-6 py-6 w-full px-6 md:px-0">
                     <TripHeader
                         mode="trip"
                         name={tripData.name}
@@ -73,7 +86,6 @@ export default function TripPage() {
                         isOwner={isOwner}
                     />
 
-                    {/* Date Range */}
                     <TripDateRange
                         startDate={tripData.startDate}
                         endDate={tripData.endDate}
@@ -81,7 +93,6 @@ export default function TripPage() {
                         isOwner={isOwner}
                     />
 
-                    {/* Participants and Hosted By */}
                     <TripParticipantsList
                         participants={participants}
                         ownerId={tripData.ownerId}
@@ -89,13 +100,15 @@ export default function TripPage() {
                         isOwner={isOwner}
                     />
 
-                    {/* Guard: Show map and timeline only if date range is set */}
                     {(!!tripData.startDate && !!tripData.endDate) ? (
                         <>
-                            {/* Trip Map */}
-                            <MapWidget mode="route" events={events} startDate={tripData.startDate} endDate={tripData.endDate} />
+                            <MapWidget
+                                mode="route"
+                                events={events}
+                                startDate={tripData.startDate}
+                                endDate={tripData.endDate}
+                            />
 
-                            {/* Trip Timeline */}
                             <TripTimeline
                                 startDate={tripData.startDate}
                                 endDate={tripData.endDate}
@@ -112,6 +125,6 @@ export default function TripPage() {
                     )}
                 </div>
             </div>
-        </>
+        </div>
     );
 }

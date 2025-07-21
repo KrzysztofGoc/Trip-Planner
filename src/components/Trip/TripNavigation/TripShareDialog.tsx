@@ -67,14 +67,14 @@ export function TripShareDialog({ open, mode, onOpenChange }: TripShareDialogPro
                         <Button
                             type="button"
                             variant="secondary"
-                            className="h-12 bg-transparent shadow-none border-none text-black rounded-lg"
+                            className="h-12 bg-transparent shadow-none border-none text-black rounded-lg transition"
                         >
                             Close
                         </Button>
                     </DialogClose>
                     <Button
                         onClick={handleCopy}
-                        className="h-12 bg-red-400 text-white flex gap-2 items-center rounded-lg hover:bg-red-500 transition"
+                        className="h-12 bg-red-400 text-white rounded-lg hover:bg-red-500 transition"
                     >
                         <Copy className="size-5" />
                         {copied ? "Copied!" : "Copy link"}

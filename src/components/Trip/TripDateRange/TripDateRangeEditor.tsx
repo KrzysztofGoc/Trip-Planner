@@ -10,6 +10,7 @@ import { TripEvent } from "@/types/tripEvent";
 import { TripDateRangeDestructiveDialog } from "./TripDateRangeDestructiveDialog";
 import dayjs from "dayjs";
 import UniversalLoader from "@/components/LoadingSpinner";
+import { useMediaQuery } from 'usehooks-ts';
 
 function getOrphanedEvents(events: TripEvent[], newFrom: Date, newTo: Date): TripEvent[] {
     const from = dayjs(newFrom).startOf("day");
@@ -31,6 +32,8 @@ interface TripDateRangeEditorProps {
 export default function TripDateRangeEditor({ startDate, endDate, tripId, onClose, range, setRange }: TripDateRangeEditorProps) {
     const [pendingDialog, setPendingDialog] = useState(false);
     const [orphans, setOrphans] = useState<TripEvent[]>([]);
+    const isMdUp = useMediaQuery('(min-width: 794px)');
+    const numberOfMonths = isMdUp ? 2 : 1;
 
     const { data: events = [], isLoading: isLoadingEvents } = useQuery({
         queryKey: ["trip-events", tripId],
@@ -120,33 +123,37 @@ export default function TripDateRangeEditor({ startDate, endDate, tripId, onClos
             />
 
             {isLoadingEvents ? (
-                <UniversalLoader label="Loading available dates..."/>
+                <UniversalLoader label="Loading available dates..." />
             ) : (
-                <>
+                <div className="w-auto flex flex-col items-center gap-3 "
+                >
                     <DayPicker
                         mode="range"
                         selected={range}
                         onSelect={setRange}
                         defaultMonth={range?.from}
                         navLayout="around"
+                        animate={true}
+                        numberOfMonths={numberOfMonths}
                     />
 
                     <div className="flex gap-2 w-full">
                         <Button
+                            variant="secondary"
                             onClick={handleCancel}
-                            className="flex-1 h-12 bg-transparent shadow-none text-black rounded-lg"
+                            className="flex-1 h-12 bg-transparent shadow-none text-black rounded-lg transition"
                         >
                             Cancel
                         </Button>
                         <Button
                             onClick={handleSave}
                             disabled={!range?.from || !range?.to}
-                            className="flex-1 h-12 bg-red-400 text-white shadow-md rounded-lg"
+                            className="flex-1 h-12 bg-red-400 hover:bg-red-500 transition text-white shadow-md rounded-lg"
                         >
                             Save
                         </Button>
                     </div>
-                </>
+                </div>
             )}
         </>
     );

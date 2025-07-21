@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { fetchUserById } from "@/api/users";
 import { useAuthStore } from "@/state/useAuthStore";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { fetchTripsTogetherCount } from "@/api/trips";
-import UniversalLoader from "../LoadingSpinner";
+import UniversalLoader from "@/components/LoadingSpinner";
 
 type TripParticipantsOwnerProps = {
     ownerId: string;

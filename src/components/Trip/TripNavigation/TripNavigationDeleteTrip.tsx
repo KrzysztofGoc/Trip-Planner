@@ -61,8 +61,7 @@ export default function TripNavigationDeleteTrip({ tripId }: TripNavigationDelet
     return (
         <>
             <Button
-                variant="destructive"
-                className="w-full h-12 flex items-center gap-2 justify-start"
+                className="w-full h-12 flex items-center gap-2 justify-start transition bg-red-500 hover:bg-red-600"
                 onClick={() => setOpen(true)}
                 disabled={isPending}
             >
@@ -79,11 +78,11 @@ export default function TripNavigationDeleteTrip({ tripId }: TripNavigationDelet
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                        <AlertDialogCancel className="h-12 bg-transparent shadow-none border-none text-black rounded-lg">
+                        <AlertDialogCancel className="h-12 bg-transparent shadow-none border-none text-black rounded-lg transition">
                             Cancel
                         </AlertDialogCancel>
                         <AlertDialogAction
-                            className="h-12 bg-red-500 text-white"
+                            className="h-12 transition bg-red-500 text-white hover:bg-red-600"
                             onClick={() => mutate({ tripId })}
                             disabled={isPending}
                         >
