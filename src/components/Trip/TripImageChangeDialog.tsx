@@ -93,7 +93,7 @@ export default function TripImageChangeDialog({ open, onClose, tripId }: TripIma
             variant="secondary"
             onClick={handleCancel}
             disabled={isPending}
-            className="h-12 bg-transparent shadow-none border-none text-black rounded-lg"
+            className="h-12 bg-transparent shadow-none transition border-none text-black rounded-lg"
           >
             Cancel
           </Button>
