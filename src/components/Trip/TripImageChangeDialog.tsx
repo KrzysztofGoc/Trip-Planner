@@ -100,7 +100,7 @@ export default function TripImageChangeDialog({ open, onClose, tripId }: TripIma
           <Button
             onClick={handleUpdateImage}
             disabled={!selectedUrl || isPending}
-            className="w-auto h-12 bg-red-400 text-white rounded-lg"
+            className="w-auto h-12 bg-red-400 hover:bg-red-500 transition text-white rounded-lg"
           >
             Confirm
           </Button>

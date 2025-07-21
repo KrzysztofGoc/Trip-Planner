@@ -106,9 +106,9 @@ export default function TripDestinationEditor({ destination, tripId, }: TripDest
     return (
         <Popover open={open} onOpenChange={(open) => handleOpenChange(open)}>
             <PopoverTrigger asChild>
-                <div className="group flex items-center gap-2 cursor-pointer">
+                <div className="group flex items-center gap-2 md:gap-4 cursor-pointer w-fit">
                     <p className="-ml-[1px] text-base text-gray-500 py-1">{displayDestination}</p>
-                    <Pencil className="size-4 text-red-400 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <Pencil className={`size-4 text-red-400 transition-all ${!open && "group-hover:scale-130"}`} />
                 </div>
             </PopoverTrigger>
             <PopoverContent

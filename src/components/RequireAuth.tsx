@@ -7,7 +7,7 @@ export function RequireAuth() {
     const loading = useAuthStore(s => s.loading);
 
     // Optionally show spinner while loading
-    if (loading) return <UniversalLoader label=">Loading account..."/>;
+    if (loading) return <UniversalLoader label="Loading account..." fullscreen />;
 
     if (!user) {
         // Not logged in: redirect to login (preserve intended URL)

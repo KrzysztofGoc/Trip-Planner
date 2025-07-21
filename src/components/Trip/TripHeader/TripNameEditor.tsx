@@ -82,7 +82,7 @@ export default function TripNameEditor({ name, tripId }: TripNameEditorProps) {
   }
 
   return (
-    <div className="group flex items-center gap-2" onClick={() => setEditing(true)}>
+    <div className="flex" >
       {editing ? (
         <Input
           value={inputValue || undefined}
@@ -90,7 +90,7 @@ export default function TripNameEditor({ name, tripId }: TripNameEditorProps) {
           onChange={e => setInputValue(e.target.value)}
           onBlur={commitChange}
           autoFocus
-          className="-ml-[15px] text-3xl font-bold h-auto border-1 border-gray-300 focus-within:border-ring focus-within:ring-3"
+          className="-ml-[15px] text-3xl md:text-3xl font-bold h-auto border-1 border-gray-300 focus-within:border-ring focus-within:ring-3"
           onKeyDown={e => {
             if (e.key === "Enter") {
               commitChange();
@@ -101,12 +101,18 @@ export default function TripNameEditor({ name, tripId }: TripNameEditorProps) {
           }}
         />
       ) : (
-        <>
+        <div
+          className="group flex items-center gap-2 md:gap-4 cursor-pointer"
+          onClick={() => setEditing(true)}
+          tabIndex={0}
+          role="button"
+          aria-label="Edit trip name"
+        >
           <h1 className="-ml-[3px] text-3xl font-bold py-1 border-1 border-transparent break-all">
             {inputValue || "Click to name your trip!"}
           </h1>
-          <Pencil className="shrink-0 size-5 text-red-400 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity" />
-        </>
+          <Pencil className="shrink-0 size-5 text-red-400 transition-all group-hover:scale-130" />
+        </div>
       )}
     </div>
   );

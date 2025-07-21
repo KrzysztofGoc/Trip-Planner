@@ -118,11 +118,11 @@ export default function TripNavigationChangeOwner({ tripId, participants, ownerI
                         )}
                     </div>
                     <AlertDialogFooter>
-                        <AlertDialogCancel className="h-12 bg-transparent shadow-none border-none text-black rounded-lg">
+                        <AlertDialogCancel className="h-12 bg-transparent shadow-none border-none text-black rounded-lg transition">
                             Cancel
                         </AlertDialogCancel>
                         <AlertDialogAction
-                            className="h-12 bg-red-500 text-white"
+                            className="h-12 bg-red-400 hover:bg-red-500 transition text-white"
                             disabled={!selectedUserId || isPending}
                             onClick={() => mutateOwnership({ tripId: tripId, selectedUserId: selectedUserId })}
                         >

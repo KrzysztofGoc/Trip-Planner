@@ -4,6 +4,7 @@ import TimelineDay from "./TimelineDay";
 import TimelineHeader from "./TimelineHeader";
 import dayjs from "dayjs";
 import { useState, useMemo } from "react";
+import { useMediaQuery } from "usehooks-ts";
 
 interface TrimTimelineProps {
     tripId: string | undefined,
@@ -17,6 +18,7 @@ export default function TripTimeline({ tripId, events, startDate, endDate, isOwn
     const normalizedStart = dayjs(startDate).startOf("day");
     const normalizedEnd = dayjs(endDate).endOf("day");
     const numberOfDays = normalizedEnd.diff(normalizedStart, "days") + 1;
+    const isDesktop = useMediaQuery("(min-width: 768px)");
 
     // Pre-calculate events per day for efficient access
     const eventsByDay = useMemo(() => {
@@ -52,13 +54,18 @@ export default function TripTimeline({ tripId, events, startDate, endDate, isOwn
     const [expandedDay, setExpandedDay] = useState<number | null>(firstDayWithEvents);
 
     const handleToggleDay = (dayNumber: number) => {
-        setExpandedDay(current => (current === dayNumber ? null : dayNumber));
+        setExpandedDay(current =>
+        isDesktop
+            ? (current === dayNumber ? current : dayNumber) // Desktop: always keep one open
+            : (current === dayNumber ? null : dayNumber)    // Mobile: allow close
+    );
     };
 
     if (isNaN(numberOfDays) || numberOfDays <= 0) {
         return null; // Or a placeholder message if you prefer
     }
 
+    // Generate day components
     const timelineDays = [];
     for (let i = 0; i < numberOfDays; i++) {
         const dayNumber = i + 1;
@@ -88,11 +95,29 @@ export default function TripTimeline({ tripId, events, startDate, endDate, isOwn
         );
     }
 
+    // Split into expanded/collapsed for layout
+    const expandedDayIndex = timelineDays.findIndex((_, i) => expandedDay === i + 1);
+    const expandedDayComponent = expandedDayIndex !== -1 ? timelineDays[expandedDayIndex] : null;
+    const collapsedDayComponents = timelineDays.filter((_, i) => expandedDay !== i + 1);
+
+
     return (
-        <div className="size-auto">
-            <div className="flex flex-col gap-2">
-                {timelineDays}
-            </div>
+        <div className="w-full flex flex-col md:flex-row gap-2 md:gap-12 px-2 md:px-4">
+            {isDesktop ? (
+                <>
+                    <div className="w-2/3 flex-1 sticky top-6 h-fit">
+                        {expandedDayComponent}
+                    </div>
+                    <div className="w-1/3 flex flex-col gap-2 sticky top-6 h-fit">
+                        {collapsedDayComponents}
+                    </div>
+                </>
+            ) : (
+                // Mobile: just a flat list, no columns
+                <>
+                    {timelineDays}
+                </>
+            )}
         </div>
     );
 }

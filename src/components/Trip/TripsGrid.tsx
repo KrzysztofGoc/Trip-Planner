@@ -35,8 +35,8 @@ export default function TripsGrid({ search }: TripsGridProps) {
         <>
             {isLoading && <UniversalLoader label="Loading trips..."/>}
             {filteredTrips && (
-                <div className="w-auto h-auto p-6">
-                    <div className="w-auto h-auto grid grid-cols-1 gap-6 content-start">
+                <div className="w-auto h-auto p-6 md:px-0">
+                    <div className="w-auto h-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 content-start">
                         {filteredTrips.length > 0 ? (
                             filteredTrips.map(trip => (
                                 <TripCard key={trip.id} trip={trip} />
