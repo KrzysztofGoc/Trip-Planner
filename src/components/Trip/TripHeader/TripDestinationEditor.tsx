@@ -19,6 +19,8 @@ import {
 import { Pencil } from "lucide-react";
 import { useDebounce } from "use-debounce";
 import UniversalLoader from "@/components/LoadingSpinner";
+import { motion } from 'motion/react'
+import { useMediaQuery } from "usehooks-ts";
 
 interface TripDestinationEditorProps {
     destination: string | null;
@@ -29,6 +31,7 @@ export default function TripDestinationEditor({ destination, tripId, }: TripDest
     const [open, setOpen] = useState(false);
     const [query, setQuery] = useState("");
     const [debouncedQuery] = useDebounce(query, 300);
+    const isDesktop = useMediaQuery("(min-width: 768px)");
 
     // Destination update mutation with optimistic UI
     const { mutate: mutateDestination } = useMutation({
@@ -102,14 +105,26 @@ export default function TripDestinationEditor({ destination, tripId, }: TripDest
             ? <span className="text-gray-400 italic">Click to set a destination!</span>
             : destination;
 
+    const pencilVariants = {
+        initial: { scale: 1, rotate: 0 },
+        hover: { scale: 1.22, rotate: -14, transition: { type: "spring", stiffness: 400, damping: 12 } },
+        tap: { scale: (isDesktop ? 0.9 : 0.8), transition: { type: "tween", duration: 0.2 } },
+    };
 
     return (
         <Popover open={open} onOpenChange={(open) => handleOpenChange(open)}>
             <PopoverTrigger asChild>
-                <div className="group flex items-center gap-2 md:gap-4 cursor-pointer w-fit">
+                <motion.div
+                    className="group flex items-center gap-2 md:gap-4 cursor-pointer w-fit"
+                    whileHover={`${open ? "" : "hover"}`}
+                    whileTap="tap"
+                    initial="initial"
+                >
                     <p className="-ml-[1px] text-base text-gray-500 py-1">{displayDestination}</p>
-                    <Pencil className={`size-4 text-red-400 transition-all ${!open && "group-hover:scale-130"}`} />
-                </div>
+                    <motion.div variants={pencilVariants} className="shrink-0">
+                        <Pencil className="size-5 text-red-400" />
+                    </motion.div>
+                </motion.div>
             </PopoverTrigger>
             <PopoverContent
                 className="w-[300px] max-h-256 overflow-y-auto p-0"
@@ -131,7 +146,7 @@ export default function TripDestinationEditor({ destination, tripId, }: TripDest
                         <div className="p-2 text-sm text-muted-foreground">No locations found</div>
                     )}
                     {isLoading && (
-                        <UniversalLoader label="Loading locations..."/>
+                        <UniversalLoader label="Loading locations..." />
                     )}
                     {isError && (
                         <div className="p-2 text-sm font-semibold text-red-400">Error loading locations</div>

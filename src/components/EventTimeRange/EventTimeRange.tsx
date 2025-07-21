@@ -8,6 +8,23 @@ import { TimePickerWheel } from "./TimePicker/TimePickerWheel";
 import { Button } from "../ui/button";
 import { RangeState, RangeAction } from "@/state/eventRangeReducer";
 import UniversalLoader from "../LoadingSpinner";
+import { motion, AnimatePresence } from "motion/react"
+
+const buttonVariants = {
+    initial: { opacity: 0, y: 16 },
+    animate: { opacity: 1, y: 0, transition: { duration: 0.2, delay: 0.65 } },
+    exit: { opacity: 0, y: 16, transition: { duration: 0.2 } },
+};
+const chevronHover = {
+    scale: 1.18,
+    y: 8,
+    transition: { type: "spring", stiffness: 340, damping: 13 }
+};
+const chevronTap = {
+    scale: 0.93,
+    y: 10,
+    transition: { type: "tween", duration: 0.16 }
+};
 
 // --- Utility ---
 function getHM(date: Date) {
@@ -129,81 +146,134 @@ export default function EventTimeRange(props: EventTimeRangeProps) {
             : "Not selected";
 
     return (
-        <div className={` flex flex-col items-center justify-center border-1 border-gray-200 gap-2 px-6 pt-6 rounded-lg shadow-md ${state.mode === "editing" && "pb-6"} ${!props.isOwner && "pb-8"}`}>
+        <div className={`flex flex-col items-center justify-center border-1 border-gray-200 gap-2 px-6 pt-6 rounded-lg shadow-md ${!props.isOwner && "pb-8"}`}>
+            <AnimatePresence initial={false}>
+                {state.mode === "editing" && (
+                    <motion.div
+                        key="time-picker"
+                        initial={{ opacity: 0, y: -32, height: 0 }}
+                        animate={{
+                            opacity: 1,
+                            y: 0,
+                            height: "auto",
+                            paddingBottom: 24,
+                            transition: {
+                                height: { duration: 0.3 },
+                                paddingBottom: { duration: 0.3 },
 
-            {state.mode === "editing" ? (
-                isLoadingEvents ? (
-                    <UniversalLoader label="Loading available times..." />
-                ) : (
-                    <div className="flex flex-col items-center w-auto">
-                        <div className="flex items-center gap-6 justify-center w-full">
-                            <TimePickerWheel
-                                label="From"
-                                value={getHM(state.draft.from)}
-                                onChange={val => dispatch({ type: "UPDATE_FROM", value: val })}
-                                hours={hours}
-                                minutes={minutes}
-                                blockedHours={fromHourBlock.blockedHours}
-                                blockedMinutes={fromHourBlock.blockedMinutesByHour[getHM(state.draft.from).hour] || new Set()}
-                            />
-                            <MoveRight className="size-6 min-w-6 min-h-6 text-red-400 stroke-2 mt-5" />
-                            <TimePickerWheel
-                                label="To"
-                                value={getHM(state.draft.to)}
-                                onChange={val => dispatch({ type: "UPDATE_TO", value: val })}
-                                hours={hours}
-                                minutes={minutes}
-                                blockedHours={toHourBlock.blockedHours}
-                                blockedMinutes={toHourBlock.blockedMinutesByHour[getHM(state.draft.to).hour] || new Set()}
-                            />
-                        </div>
-                        {!isValidRange && (
-                            <div className="text-sm font-semibold text-red-500 mt-2">
-                                End time must be after start time.
-                            </div>
-                        )}
-                        {hasOverlap && (
-                            <div className="text-sm font-semibold text-red-500 mt-2">
-                                This time range overlaps with another event.
-                            </div>
-                        )}
-                        <div className="flex gap-2 w-full mt-4">
-                            <Button
-                                variant="secondary"
-                                onClick={() => dispatch({ type: "CANCEL" })}
-                                className="flex-1 h-12 bg-transparent shadow-none transition border-none text-black rounded-lg"
-                            >
-                                Cancel
-                            </Button>
-                            <Button
-                                onClick={() => dispatch({ type: "SAVE" })}
-                                disabled={!isValidRange || hasOverlap}
-                                className="flex-1 h-12 bg-red-400 hover:bg-red-500 transition text-white shadow-md rounded-lg"
-                            >
-                                Save
-                            </Button>
-                        </div>
-                    </div>
-                )
-            ) : (
-                <>
-                    <TripDateRangePreview formattedStart={formattedStart} formattedEnd={formattedEnd} />
-                    {props.isOwner && (
-                        <button
-                            aria-label="Open time picker"
-                            className="w-full h-12 flex justify-center items-center"
-                            onClick={() =>
-                                dispatch({
-                                    type: "START_EDIT",
-                                    range: state.range,
-                                })
+                                y: { delay: 0.35, duration: 0.3 },
+                                opacity: { delay: 0.35, duration: 0.3 },
                             }
+                        }}
+                        exit={{
+                            opacity: 0, y: -32, height: 0, paddingBottom: 0,
+                            transition: {
+                                y: { duration: 0.3 },
+                                opacity: { duration: 0.2 },
+
+                                paddingBottom: { delay: 0.35, duration: 0.3 },
+                                height: { delay: 0.35, duration: 0.3 }
+                            }
+                        }}
+                        className="w-fit"
+                    >
+                        {isLoadingEvents ? (
+                            <UniversalLoader label="Loading available times..." />
+                        ) : (
+                            <div className="flex flex-col items-center w-auto">
+                                <div className="flex items-center gap-6 justify-center w-full">
+                                    <TimePickerWheel
+                                        label="From"
+                                        value={getHM(state.draft.from)}
+                                        onChange={val => dispatch({ type: "UPDATE_FROM", value: val })}
+                                        hours={hours}
+                                        minutes={minutes}
+                                        blockedHours={fromHourBlock.blockedHours}
+                                        blockedMinutes={fromHourBlock.blockedMinutesByHour[getHM(state.draft.from).hour] || new Set()}
+                                    />
+                                    <MoveRight className="size-6 min-w-6 min-h-6 text-red-400 stroke-2 mt-5" />
+                                    <TimePickerWheel
+                                        label="To"
+                                        value={getHM(state.draft.to)}
+                                        onChange={val => dispatch({ type: "UPDATE_TO", value: val })}
+                                        hours={hours}
+                                        minutes={minutes}
+                                        blockedHours={toHourBlock.blockedHours}
+                                        blockedMinutes={toHourBlock.blockedMinutesByHour[getHM(state.draft.to).hour] || new Set()}
+                                    />
+                                </div>
+                                {!isValidRange && (
+                                    <div className="text-sm font-semibold text-red-500 mt-2">
+                                        End time must be after start time.
+                                    </div>
+                                )}
+                                {hasOverlap && (
+                                    <div className="text-sm font-semibold text-red-500 mt-2">
+                                        This time range overlaps with another event.
+                                    </div>
+                                )}
+                                <div className="flex gap-2 w-full mt-4">
+                                    <Button
+                                        variant="secondary"
+                                        onClick={() => dispatch({ type: "CANCEL" })}
+                                        className="flex-1 h-12 bg-transparent shadow-none transition border-none text-black rounded-lg"
+                                    >
+                                        Cancel
+                                    </Button>
+                                    <Button
+                                        onClick={() => dispatch({ type: "SAVE" })}
+                                        disabled={!isValidRange || hasOverlap}
+                                        className="flex-1 h-12 bg-red-400 hover:bg-red-500 transition text-white shadow-md rounded-lg"
+                                    >
+                                        Save
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            <AnimatePresence initial={false}>
+                {state.mode === "idle" && (
+                    <>
+                        <motion.div
+                            key="preview"
+                            initial="initial"
+                            animate="animate"
+                            exit="exit"
+                            variants={buttonVariants}
                         >
-                            <ChevronDown className={"text-red-400"} />
-                        </button>
-                    )}
-                </>
-            )}
+                            <TripDateRangePreview formattedStart={formattedStart} formattedEnd={formattedEnd} />
+                        </motion.div>
+                        {props.isOwner && (
+                            <motion.button
+                                key="chevron-button"
+                                aria-label="Open time picker"
+                                className="w-full h-12 flex justify-center items-center cursor-pointer"
+                                onClick={() =>
+                                    dispatch({
+                                        type: "START_EDIT",
+                                        range: state.range,
+                                    })
+                                }
+                                initial="initial"
+                                animate="animate"
+                                exit="exit"
+                                variants={buttonVariants}
+                            >
+                                <motion.span
+                                    whileHover={chevronHover}
+                                    whileTap={chevronTap}
+                                    className="size-full flex items-center justify-center"
+                                >
+                                    <ChevronDown className="text-red-400" />
+                                </motion.span>
+                            </motion.button>
+                        )}
+                    </>
+                )}
+            </AnimatePresence>
         </div>
     );
 }

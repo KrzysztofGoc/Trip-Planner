@@ -7,6 +7,9 @@ import { isValidTripName } from "@/lib/validations/trip";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Pencil } from "lucide-react";
+import { motion } from 'motion/react'
+import { useMediaQuery } from "usehooks-ts";
+
 
 interface TripNameEditorProps {
   name: string | null;
@@ -16,6 +19,7 @@ interface TripNameEditorProps {
 export default function TripNameEditor({ name, tripId }: TripNameEditorProps) {
   const [editing, setEditing] = useState(false);
   const [inputValue, setInputValue] = useState(name);
+  const isDesktop = useMediaQuery("(min-width: 768px)");
 
   // Keep inputValue in sync if prop changes while not editing
   useEffect(() => {
@@ -81,6 +85,12 @@ export default function TripNameEditor({ name, tripId }: TripNameEditorProps) {
     }
   }
 
+  const pencilVariants = {
+    initial: { scale: 1, rotate: 0 },
+    hover: { scale: 1.22, rotate: -14, transition: { type: "spring", stiffness: 400, damping: 12 } },
+    tap: { scale: (isDesktop ? 0.9 : 0.8), transition: { type: "tween", duration: 0.2 } },
+  };
+
   return (
     <div className="flex" >
       {editing ? (
@@ -101,18 +111,23 @@ export default function TripNameEditor({ name, tripId }: TripNameEditorProps) {
           }}
         />
       ) : (
-        <div
+        <motion.div
           className="group flex items-center gap-2 md:gap-4 cursor-pointer"
           onClick={() => setEditing(true)}
           tabIndex={0}
           role="button"
           aria-label="Edit trip name"
+          whileHover="hover"
+          whileTap="tap"
+          initial="initial"
         >
-          <h1 className="-ml-[3px] text-3xl font-bold py-1 border-1 border-transparent break-all">
+          <h1 className="-ml-[3px] text-3xl font-bold py-1 border-1 border-transparent break-all select-none">
             {inputValue || "Click to name your trip!"}
           </h1>
-          <Pencil className="shrink-0 size-5 text-red-400 transition-all group-hover:scale-130" />
-        </div>
+          <motion.div variants={pencilVariants} className="shrink-0">
+            <Pencil className="size-6 text-red-400" />
+          </motion.div>
+        </motion.div>
       )}
     </div>
   );
