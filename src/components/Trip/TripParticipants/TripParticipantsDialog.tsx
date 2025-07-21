@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -7,11 +7,13 @@ import { Participant } from "@/types/participant";
 import { searchUsers } from "@/api/users";
 import { removeParticipantFromTrip, addParticipantToTrip } from "@/api/trips";
 import { useDebounce } from "use-debounce";
-import { Input } from "../ui/input";
+import { Input } from "@/components/ui/input";
 import { queryClient } from "@/api/queryClient";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
-import UniversalLoader from "../LoadingSpinner";
+import UniversalLoader from "@/components/LoadingSpinner";
+import TripParticipantsAvatarRow from "./TripParticipantsAvatarRow";
+import { useResizeObserver } from "usehooks-ts";
 
 interface TripParticipantsGridProps {
   participants: Participant[];
@@ -24,6 +26,8 @@ export default function TripParticipantsDialog({ participants, tripId, isOwner, 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [debouncedSearch] = useDebounce(search, 300);
+  const triggerRef = useRef<HTMLDivElement>(null);
+  const { width: triggerWidth = 0 } = useResizeObserver({ ref: triggerRef, box: "border-box" });
 
   // Only needed for owner, but doesn't harm to include always (simplifies conditional)
   const { data: searchResults, isLoading: isSearching } = useQuery({
@@ -99,34 +103,18 @@ export default function TripParticipantsDialog({ participants, tripId, isOwner, 
   return (
     <Dialog open={dialogOpen} onOpenChange={handleDialogOpenChange}>
       <DialogTrigger asChild>
-        <div className="flex flex-col gap-4 cursor-pointer transition hover:bg-gray-50 rounded-xl px-2 py-2">
+        <div ref={triggerRef} className="flex flex-col gap-4 transition rounded-xl px-2 py-2 w-full">
           {/* Participants label */}
-          <div className="flex items-center gap-5.5">
-            <Users className="size-6 w-12" />
-            <p className="text-lg font-semibold">Participants</p>
-            {isOwner && <Pencil className="w-5 h-5 text-red-400 -ml-2" />}
-            {!isOwner && <ChevronRight className="size-5 text-red-400 -ml-2" />}
-          </div>
+          <div className="flex flex-col gap-4 group w-fit cursor-pointer">
+            <div className="flex items-center gap-5.5">
+              <Users className="size-6 w-12" />
+              <p className="text-lg font-semibold">Participants</p>
+              {isOwner && <Pencil className="w-5 h-5 text-red-400 -ml-2 group-hover:scale-120 transition" />}
+              {!isOwner && <ChevronRight className="size-5 text-red-400 -ml-2 group-hover:scale-130 transition" />}
+            </div>
 
-          {/* Participants list */}
-          <div className="flex items-center gap-3 justify-evenly">
-            {participants.length === 0 && (
-              <span className="text-xs text-gray-400">No participants yet</span>
-            )}
-            {participants.slice(0, 4).map((participant) => (
-              <Avatar
-                key={participant.uid}
-                className="size-12 border-2 border-gray-300 shadow-md"
-              >
-                <AvatarImage src={participant.photoURL || undefined} alt={participant.displayName} />
-                <AvatarFallback>{participant.displayName.charAt(0)}</AvatarFallback>
-              </Avatar>
-            ))}
-            {participants.length > 4 && (
-              <div className="size-12 aspect-square flex items-center justify-center bg-gray-300 text-gray-700 text-sm font-semibold rounded-full border-2 border-gray-300 shadow-md">
-                +{participants.length - 4}
-              </div>
-            )}
+            {/* Responsive Participants list */}
+            <TripParticipantsAvatarRow participants={participants} containerWidth={triggerWidth}/>
           </div>
         </div>
       </DialogTrigger>
@@ -193,7 +181,7 @@ export default function TripParticipantsDialog({ participants, tripId, isOwner, 
               placeholder="Search users to add..."
             />
             {isSearching && (
-              <UniversalLoader label="Searching for users..."/>
+              <UniversalLoader label="Searching for users..." />
             )}
             {!isSearching && debouncedSearch.length > 0 && (
               <div className="max-h-40 overflow-y-auto flex flex-col gap-1">

@@ -31,13 +31,13 @@ export function TimelineEventDestructiveDialog({ open, eventName, onCancel, onCo
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                     <AlertDialogCancel
-                        className="h-12 bg-transparent shadow-none border-none text-black rounded-lg"
+                        className="h-12 bg-transparent shadow-none border-none text-black rounded-lg transition"
                         onClick={onCancel}
                     >
                         Cancel
                     </AlertDialogCancel>
                     <AlertDialogAction
-                        className="h-12 bg-red-500 text-white"
+                        className="h-12 transition bg-red-500 text-white hover:bg-red-600"
                         onClick={onConfirm}
                     >
                         Delete

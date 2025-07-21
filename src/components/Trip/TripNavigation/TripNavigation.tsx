@@ -52,10 +52,12 @@ export default function TripNavigation(props: TripNavigationProps) {
     const showShareButton = props.showShareButton !== false; // default true unless explicitly false
 
     return (
-        <div className="absolute z-50 top-4 left-0 w-full flex justify-between">
+        <div className="absolute z-50 w-full pt-4 md:pt-6 md:px-4 lg:px-6 flex justify-between">
             {/* Back Button */}
             <Link to={backLink} className="size-12 flex justify-center items-center pl-3">
-                <div className="size-10 aspect-square flex justify-center items-center bg-black/30 backdrop-blur-md rounded-full">
+                <div className="size-10 aspect-square flex justify-center items-center 
+                bg-black/40 hover:bg-black/70 backdrop-blur-[2px] 
+                rounded-full">
                     <ChevronLeft className="size-6 text-white" />
                 </div>
             </Link>
@@ -65,10 +67,10 @@ export default function TripNavigation(props: TripNavigationProps) {
                 {showShareButton && (
                     <>
                         <Button
-                            className="size-12 flex justify-center items-center bg-transparent shadow-none"
+                            className="size-12 flex justify-center items-center bg-transparent shadow-none hover:bg-transparent"
                             onClick={() => setShareOpen(true)}
                         >
-                            <div className="size-10 aspect-square flex justify-center items-center bg-black/30 backdrop-blur-md rounded-full"> {/* Darker backdrop for contrast */}
+                            <div className="size-10 aspect-square flex justify-center items-center bg-black/40 hover:bg-black/70 backdrop-blur-[2px] rounded-full"> {/* Darker backdrop for contrast */}
                                 <Share2 className="size-5.5 -ml-0.5 text-white" />
                             </div>
                         </Button>

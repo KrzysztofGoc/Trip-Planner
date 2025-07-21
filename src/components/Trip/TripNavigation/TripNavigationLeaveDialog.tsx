@@ -66,8 +66,8 @@ export default function TripLeaveDialog({ tripId }: TripLeaveDialogProps) {
     return (
         <AlertDialog open={open} onOpenChange={setOpen}>
             <AlertDialogTrigger asChild>
-                <Button variant="destructive" className="size-12 flex justify-center items-center bg-transparent shadow-none">
-                    <div className="size-10 aspect-square flex justify-center items-center bg-black/30 backdrop-blur-md rounded-full">
+                <Button className="size-12 flex justify-center items-center bg-transparent shadow-none hover:bg-transparent">
+                    <div className="size-10 aspect-square flex justify-center items-center bg-black/40 hover:bg-black/70 backdrop-blur-[2px] rounded-full">
                         <LogOut className="size-6 text-white" />
                     </div>
                 </Button>

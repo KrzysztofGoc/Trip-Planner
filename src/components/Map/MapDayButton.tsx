@@ -12,10 +12,10 @@ export default function MapDayButton({ selected, children, onClick }: MapDayButt
                 px-4 py-1.5 rounded-lg
                 text-sm font-semibold transition
                 shadow-sm border
+                cursor-pointer
                 ${selected
                     ? "bg-red-400 text-white border-red-400 shadow-md"
-                    : "bg-white text-gray-700 border-gray-300"}
-                focus:outline-none focus:ring-2 focus:ring-red-400
+                    : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100 hover:border-gray-400"}
             `}
         >
             {children}
