@@ -29,7 +29,14 @@ const WarningMessage = () => {
       {/* Show the dialog when state is 'dialog' */}
       {status === "dialog" && (
         <div
-          className="fixed bottom-35 w-auto right-4 left-4 bg-white text-black border-g-500 border-1 rounded-lg text-center p-4 z-50 shadow-lg flex flex-col gap-4 justify-center items-center"
+          className="
+      fixed z-50
+      left-4 right-4 bottom-8
+      md:left-1/2 md:-translate-x-1/2 md:right-auto md:bottom-12
+      md:w-full md:max-w-md
+      bg-white text-black border-g-500 border-1 rounded-lg text-center p-4 shadow-lg
+      flex flex-col gap-4 justify-center items-center
+    "
         >
           <div className="flex items-center justify-center gap-4">
             <CloudAlert className="shrink-0 size-12 text-red-400" />
@@ -38,8 +45,9 @@ const WarningMessage = () => {
             </p>
           </div>
           <Button
+            variant="secondary"
             onClick={handleShowIcon}
-            className="w-24 h-12 bg-red-400 text-white rounded-lg"
+            className="w-24 h-12 bg-red-400 hover:bg-red-500 transition text-white rounded-lg"
           >
             Got it
           </Button>

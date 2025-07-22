@@ -16,7 +16,7 @@ export default function TripPopoverMenu({ tripId, participants, ownerId }: TripP
         <Popover>
             <PopoverTrigger asChild>
                 <Button className="size-12 flex justify-center items-center bg-transparent shadow-none hover:bg-transparent">
-                    <div className="size-10 aspect-square flex justify-center items-center bg-black/40 hover:bg-black/70 backdrop-blur-[2px] rounded-full">
+                    <div className="size-10 aspect-square flex justify-center items-center bg-black/40 hover:bg-black/70 backdrop-blur-[2px] rounded-full transition">
                         <Ellipsis className="size-6 text-white" />
                     </div>
                 </Button>
