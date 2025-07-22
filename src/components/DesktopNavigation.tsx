@@ -28,7 +28,7 @@ export default function DesktopNavigation() {
 
   // Handler for "Create a trip"
   function onCreateTrip() {
-    if (!user || user.isAnonymous) {
+    if (!user) {
       toast.error("You must be logged in to add a trip.")
       navigate("/login")
       return
