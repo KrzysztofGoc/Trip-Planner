@@ -2,6 +2,7 @@ import { useState } from 'react';
 import LazyLoad from 'react-lazyload';
 import { Place } from "@/types/place";
 import { Star, ChevronDown, ChevronUp } from "lucide-react";
+import { motion, AnimatePresence } from 'motion/react'
 
 interface PlaceCardProps {
     event: Place;
@@ -30,7 +31,7 @@ export default function PlaceCard({ event, onClick }: PlaceCardProps) {
                 className="border-l-4 border-red-400 bg-gray-50 flex shadow-md rounded-lg h-fit flex-col"
             >
                 {/* Main content row */}
-                <div className="flex">
+                <div className={`flex ${expanded && "border-b border-gray-200"}`}>
                     {/* Image */}
                     <img
                         src={event.img || "/place_default_thumbnail_image.png"}
@@ -79,19 +80,41 @@ export default function PlaceCard({ event, onClick }: PlaceCardProps) {
                     {hasReviews && (
                         <button
                             onClick={toggleExpand}
-                            className="p-2 mr-2 text-red-400 hover:text-gray-700"
+                            className="group p-2 mr-2 text-red-400"
                             aria-label={expanded ? "Collapse reviews" : "Expand reviews"}
                         >
-                            {expanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                            {expanded ? <ChevronUp size={20} className="group-hover:text-red-400 group-hover:scale-120 transition"/> : <ChevronDown size={20} className="group-hover:text-red-400 group-hover:scale-120 transition"/>}
                         </button>
                     )}
                 </div>
 
                 {/* Reviews section (shown when expanded) */}
-                {expanded && (
-                    <div className="p-4 border-t border-gray-200">
-                        <h4 className="font-medium text-sm mb-2">Recent Reviews</h4>
-                        <div className="space-y-3">
+                <AnimatePresence initial={false}>
+                    {expanded && (
+                        <motion.div
+                            key="reviews"
+                            initial={{ opacity: 0, y: -32, height: 0 }}
+                            animate={{
+                                opacity: 1,
+                                y: 0,
+                                height: "auto",
+                                transition: {
+                                    height: { delay: 0.07, duration: 0.3 },
+                                    y: { delay: 0.35, duration: 0.3 },
+                                    opacity: { delay: 0.35, duration: 0.3 }
+                                }
+                            }}
+                            exit={{
+                                opacity: 0, y: 32, height: 0,
+                                transition: {
+                                    y: { duration: 0.3 },
+                                    opacity: { duration: 0.3 },
+                                    height: { delay: 0.35, duration: 0.3 }
+                                }
+                            }}
+                            className="p-4 overflow-hidden flex flex-col gap-3"
+                        >
+                            <h4 className="font-medium text-sm mb-2">Recent Reviews</h4>
                             {event.reviews ? (
                                 event.reviews.slice(0, 5).map((review, index) => (
                                     <div key={index} className="bg-white p-3 rounded shadow-sm">
@@ -127,9 +150,9 @@ export default function PlaceCard({ event, onClick }: PlaceCardProps) {
                                     No reviews available for this location
                                 </div>
                             )}
-                        </div>
-                    </div>
-                )}
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </div>
         </LazyLoad>
     );
