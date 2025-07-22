@@ -1,4 +1,5 @@
 import { EventCategory } from "@/types/eventCategory";
+import { motion, AnimatePresence } from 'motion/react'
 
 interface PlaceCategoryItemProps {
   category: EventCategory;
@@ -17,13 +18,14 @@ export default function PlaceCategoryItem({ category, selected, onClick }: Place
       <Icon className={`size-6 stroke-current transition ${selected ? "text-red-400" : "text-gray-500"}`} />
       <span className={`text-base ${selected ? "text-red-400" : "text-gray-500"} break-`}>{category.name}</span>
       {/* Bottom underline */}
-      <span
-        className={`
-          absolute left-1 right-1 bottom-0 h-1 rounded-full
-          transition-all ${selected ? "bg-red-400 opacity-100" : "bg-transparent opacity-0"}
-        `}
-        aria-hidden="true"
-      />
+      <AnimatePresence>
+        {selected && (
+          <motion.span
+            layoutId="filter-underline"
+            className={"absolute left-1 right-1 bottom-0 h-1 rounded-full bg-red-400"}
+          />
+        )}
+      </AnimatePresence>
     </button>
   );
 }
