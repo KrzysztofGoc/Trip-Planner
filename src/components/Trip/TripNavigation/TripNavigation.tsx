@@ -57,7 +57,7 @@ export default function TripNavigation(props: TripNavigationProps) {
             <Link to={backLink} className="size-12 flex justify-center items-center pl-3">
                 <div className="size-10 aspect-square flex justify-center items-center 
                 bg-black/40 hover:bg-black/70 backdrop-blur-[2px] 
-                rounded-full">
+                rounded-full transition">
                     <ChevronLeft className="size-6 text-white" />
                 </div>
             </Link>
@@ -70,7 +70,7 @@ export default function TripNavigation(props: TripNavigationProps) {
                             className="size-12 flex justify-center items-center bg-transparent shadow-none hover:bg-transparent"
                             onClick={() => setShareOpen(true)}
                         >
-                            <div className="size-10 aspect-square flex justify-center items-center bg-black/40 hover:bg-black/70 backdrop-blur-[2px] rounded-full"> {/* Darker backdrop for contrast */}
+                            <div className="size-10 aspect-square flex justify-center items-center bg-black/40 hover:bg-black/70 backdrop-blur-[2px] rounded-full transition"> {/* Darker backdrop for contrast */}
                                 <Share2 className="size-5.5 -ml-0.5 text-white" />
                             </div>
                         </Button>

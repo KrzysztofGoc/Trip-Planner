@@ -33,7 +33,7 @@ export default function TripsGrid({ search }: TripsGridProps) {
 
     return (
         <>
-            {isLoading && <UniversalLoader label="Loading trips..."/>}
+            {isLoading && <UniversalLoader label="Loading trips..." />}
             {filteredTrips && (
                 <div className="w-auto h-auto p-6 md:px-0">
                     <div className="w-auto h-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 content-start">
@@ -42,7 +42,10 @@ export default function TripsGrid({ search }: TripsGridProps) {
                                 <TripCard key={trip.id} trip={trip} />
                             ))
                         ) : (
-                            <p>No trips found.</p>
+                            <div className="col-span-full flex flex-col items-center">
+                                <span className="text-gray-500">No trips found.</span>
+                            </div>
+                            
                         )}
                     </div>
                 </div>
