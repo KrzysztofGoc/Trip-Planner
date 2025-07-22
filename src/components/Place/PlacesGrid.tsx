@@ -72,7 +72,7 @@ export default function PlacesGrid({ search, category }: PlacesGridProps) {
                 ) :
                     // Case 2: Places are truthy but empty
                     places && places.length === 0 ? (
-                        <p className="text-center text-gray-500">No places found for this category. Try adjusting the category or search term.</p>
+                        <p className="text-center text-gray-500">No places found for this category and search term. Try adjusting the category or search term.</p>
                     ) :
                         // Case 3: Places are falsy (query is not enabled)
                         (

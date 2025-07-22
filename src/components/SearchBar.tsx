@@ -27,8 +27,8 @@ export default function SearchBar({ value, onChange, placeholder = "Search..." }
                 />
                 <Button
                     type="submit"
-                    variant="ghost"
-                    className="rounded-full text-white bg-red-400 size-12 aspect-square"
+                    variant="secondary"
+                    className="rounded-full text-white bg-red-400 hover:bg-red-400 size-12 aspect-square"
                     aria-label="Search"
                     onClick={handleSubmit}
                 >
