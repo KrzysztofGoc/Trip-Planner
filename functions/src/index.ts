@@ -11,10 +11,7 @@ export const updateTripDateRange = onCall(async (request) => {
     throw new HttpsError("permission-denied", "Only the trip owner can update the trip date range.");
   }
 
-
   const { tripId, startDate, endDate } = request.data || {};
-
-  // TODO: Add auth validation later
 
   // Validate input
   if (!tripId || !startDate || !endDate) {
@@ -90,7 +87,7 @@ exports.getUserData = onCall(async (request) => {
     throw new HttpsError("unauthenticated", "You must be logged in.");
   }
 
-  const { uid } = request.data || {};
+  const { uid } = request.data;
 
   if (!uid) {
     throw new HttpsError("invalid-argument", "Missing data: uid.");
@@ -107,7 +104,6 @@ exports.getUserData = onCall(async (request) => {
     };
   } catch (error) {
     // Handle any errors
-    console.error('Error fetching user data:', error);
     throw new HttpsError('internal', 'Unable to fetch user data');
   }
 });
@@ -222,11 +218,11 @@ export const onParticipantRemoved = onDocumentDeleted(
 export const getTripsTogether = onCall(async (request) => {
   const { currentUserUid, otherUserUid } = request.data;
 
-  if (!request.auth || request.auth.uid !== currentUserUid) {
-    throw new HttpsError("permission-denied", "You can only fetch your own shared trips.");
-  }
   if (!currentUserUid || !otherUserUid) {
     throw new HttpsError("invalid-argument", "Missing required data");
+  }
+  if (!request.auth || request.auth.uid !== currentUserUid) {
+    throw new HttpsError("permission-denied", "You can only fetch your own shared trips.");
   }
 
   const currentUserTripsRef = admin.firestore().collection(`userTrips/${currentUserUid}/trips`);
