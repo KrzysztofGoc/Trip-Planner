@@ -74,9 +74,11 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 to-white px-4">
       <Card className="w-full max-w-md shadow-xl rounded-2xl">
         <CardHeader className="flex flex-col gap-3 items-center pt-8">
-          <div className="w-16 h-16 rounded-full bg-red-200 flex items-center justify-center mb-2">
-            <span className="text-3xl font-bold">✈️</span>
-          </div>
+          <Link to="/trips" className="flex items-center gap-3 group transition">
+            <div className="w-16 h-16 rounded-full bg-red-200 flex items-center justify-center mb-2">
+              <span className="text-3xl font-bold text-red-500">✈️</span>
+            </div>
+          </Link>
           <CardTitle className="text-2xl font-bold">Welcome back</CardTitle>
           <p className="text-gray-500 text-sm text-center">Sign in to your account</p>
         </CardHeader>
