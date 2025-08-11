@@ -15,16 +15,6 @@ const buttonVariants = {
     animate: { opacity: 1, y: 0, transition: { duration: 0.2, delay: 0.65 } },
     exit: { opacity: 0, y: 16, transition: { duration: 0.2 } },
 };
-const chevronHover = {
-    scale: 1.18,
-    y: 8,
-    transition: { type: "spring", stiffness: 340, damping: 13 }
-};
-const chevronTap = {
-    scale: 0.93,
-    y: 10,
-    transition: { type: "tween", duration: 0.16 }
-};
 
 // --- Utility ---
 function getHM(date: Date) {
@@ -257,14 +247,19 @@ export default function EventTimeRange(props: EventTimeRangeProps) {
                                         range: state.range,
                                     })
                                 }
-                                initial="initial"
-                                animate="animate"
-                                exit="exit"
                                 variants={buttonVariants}
                             >
                                 <motion.span
-                                    whileHover={chevronHover}
-                                    whileTap={chevronTap}
+                                    whileHover={{
+                                        scale: 1.18,
+                                        y: 8,
+                                        transition: { type: "spring", stiffness: 340, damping: 13 }
+                                    }}
+                                    whileTap={{
+                                        scale: 0.93,
+                                        y: 10,
+                                        transition: { type: "tween", duration: 0.16 }
+                                    }}
                                     className="size-full flex items-center justify-center"
                                 >
                                     <ChevronDown className="text-red-400" />

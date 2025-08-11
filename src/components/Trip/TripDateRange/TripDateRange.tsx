@@ -19,17 +19,6 @@ const buttonVariants = {
     exit: { opacity: 0, y: 16, transition: { duration: 0.2 } },
 };
 
-const chevronHover = {
-    scale: 1.18,
-    y: 8,
-    transition: { type: "spring", stiffness: 340, damping: 13 }
-};
-const chevronTap = {
-    scale: 0.93,
-    y: 10,
-    transition: { type: "tween", duration: 0.16 }
-};
-
 export default function TripDateRange({ startDate, endDate, tripId, isOwner }: TripDateRangeProps) {
     const [editing, setEditing] = useState(false);
     const [range, setRange] = useState<DateRange | undefined>(startDate && endDate ? { from: startDate, to: endDate } : undefined);
@@ -101,8 +90,16 @@ export default function TripDateRange({ startDate, endDate, tripId, isOwner }: T
                         style={{ background: "none", border: "none" }}
                     >
                         <motion.span
-                            whileHover={chevronHover}
-                            whileTap={chevronTap}
+                            whileHover={{
+                                scale: 1.18,
+                                y: 8,
+                                transition: { type: "spring", stiffness: 340, damping: 13 }
+                            }}
+                            whileTap={{
+                                scale: 0.93,
+                                y: 10,
+                                transition: { type: "tween", duration: 0.16 }
+                            }}
                             className="size-full flex items-center justify-center"
                         >
                             <ChevronDown className="text-red-400" />

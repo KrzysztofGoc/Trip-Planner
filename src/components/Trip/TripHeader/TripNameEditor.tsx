@@ -36,7 +36,7 @@ export default function TripNameEditor({ name, tripId }: TripNameEditorProps) {
       // Cancel any ongoing trip queries to avoid race conditions
       await queryClient.cancelQueries({ queryKey: ["trips", { tripId }] });
 
-      // Snapshot previous trip data for rollback if needed
+      // Snapshot previous trip data for rollback
       const previousTripData = queryClient.getQueryData<Trip>(["trips", { tripId }]);
 
       // Cancel mutation if trip data not in cache
@@ -85,12 +85,6 @@ export default function TripNameEditor({ name, tripId }: TripNameEditorProps) {
     }
   }
 
-  const pencilVariants = {
-    initial: { scale: 1, rotate: 0 },
-    hover: { scale: 1.22, rotate: -14, transition: { type: "spring", stiffness: 400, damping: 12 } },
-    tap: { scale: (isDesktop ? 0.9 : 0.8), transition: { type: "tween", duration: 0.2 } },
-  };
-
   return (
     <div className="flex" >
       {editing ? (
@@ -124,7 +118,11 @@ export default function TripNameEditor({ name, tripId }: TripNameEditorProps) {
           <h1 className="-ml-[3px] text-3xl font-bold py-1 border-1 border-transparent break-all select-none">
             {inputValue || "Click to name your trip!"}
           </h1>
-          <motion.div variants={pencilVariants} className="shrink-0">
+          <motion.div variants={{
+            initial: { scale: 1, rotate: 0 },
+            hover: { scale: 1.22, rotate: -14, transition: { type: "spring", stiffness: 400, damping: 12 } },
+            tap: { scale: (isDesktop ? 0.9 : 0.8), transition: { type: "tween", duration: 0.2 } },
+          }} className="shrink-0">
             <Pencil className="size-6 text-red-400" />
           </motion.div>
         </motion.div>
