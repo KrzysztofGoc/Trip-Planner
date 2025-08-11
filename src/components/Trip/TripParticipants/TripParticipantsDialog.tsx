@@ -23,31 +23,11 @@ interface TripParticipantsGridProps {
   ownerId: string;
 }
 
-const pencilVariants = {
-  initial: { scale: 1, rotate: 0 },
-  hover: { scale: 1.22, rotate: -14, transition: { type: "spring", stiffness: 400, damping: 12 } },
-  tap: { scale: 0.9, transition: { type: "tween", duration: 0.2 } },
-};
-
-const chevronVariants = {
-  initial: { scale: 1, x: 0 },
-  hover: {
-    scale: 1.22,
-    x: 12,
-    transition: { type: "spring", stiffness: 340, damping: 15 }
-  },
-  tap: {
-    scale: 0.92,
-    x: 16,
-    transition: { type: "tween", duration: 0.18 }
-  }
-};
-
 export default function TripParticipantsDialog({ participants, tripId, isOwner, ownerId }: TripParticipantsGridProps) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [debouncedSearch] = useDebounce(search, 300);
-  const triggerRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLDivElement>(null!);
   const { width: triggerWidth = 0 } = useResizeObserver({ ref: triggerRef, box: "border-box" });
 
   // Only needed for owner, but doesn't harm to include always (simplifies conditional)
@@ -142,13 +122,29 @@ export default function TripParticipantsDialog({ participants, tripId, isOwner, 
               <Users className="size-6 w-12" />
               <p className="text-lg font-semibold select-none">Participants</p>
               {isOwner && (
-                <motion.div variants={pencilVariants} className="shrink-0 -ml-2">
+                <motion.div variants={{
+                  initial: { scale: 1, rotate: 0 },
+                  hover: { scale: 1.22, rotate: -14, transition: { type: "spring", stiffness: 400, damping: 12 } },
+                  tap: { scale: 0.9, transition: { type: "tween", duration: 0.2 } },
+                }} className="shrink-0 -ml-2">
                   <Pencil className="size-5 text-red-400" />
                 </motion.div>
               )}
               {!isOwner && (
                 <motion.div
-                  variants={chevronVariants}
+                  variants={{
+                    initial: { scale: 1, x: 0 },
+                    hover: {
+                      scale: 1.22,
+                      x: 12,
+                      transition: { type: "spring", stiffness: 340, damping: 15 }
+                    },
+                    tap: {
+                      scale: 0.92,
+                      x: 16,
+                      transition: { type: "tween", duration: 0.18 }
+                    }
+                  }}
                   className="shrink-0 -ml-2"
                 >
                   <ChevronRight className="size-6 text-red-400" />
@@ -241,7 +237,7 @@ export default function TripParticipantsDialog({ participants, tripId, isOwner, 
                         <span>{user.displayName}</span>
                         <Button
                           size="sm"
-                          className="ml-auto bg-red-400 text-white rounded-lg"
+                          className="ml-auto bg-red-400 hover:bg-red-500 text-white rounded-lg"
                           disabled={alreadyParticipant}
                           onClick={() => addUser({ tripId: tripId, participant: user })}
                         >

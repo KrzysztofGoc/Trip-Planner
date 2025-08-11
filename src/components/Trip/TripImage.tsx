@@ -69,7 +69,7 @@ export default function TripImage(props: TripImageProps) {
             <Camera className="size-6" />
             <span>Change photo</span>
           </Button>
-          <TripImageChangeDialog open={dialogOpen} onClose={() => setDialogOpen(false)} tripId={(props as any).tripId} />
+          <TripImageChangeDialog open={dialogOpen} onClose={() => setDialogOpen(false)} tripId={props.tripId} />
         </>
       )}
     </div>

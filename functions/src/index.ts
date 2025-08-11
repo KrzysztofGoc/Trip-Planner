@@ -1,7 +1,7 @@
-import { onCall, HttpsError } from "firebase-functions/v2/https";
-import { onDocumentDeleted, onDocumentCreated } from "firebase-functions/v2/firestore";
+import {onCall, HttpsError} from "firebase-functions/v2/https";
+import {onDocumentDeleted, onDocumentCreated} from "firebase-functions/v2/firestore";
 import * as admin from "firebase-admin";
-import { Timestamp, FieldValue } from "firebase-admin/firestore";
+import {Timestamp, FieldValue} from "firebase-admin/firestore";
 import dayjs from "dayjs";
 
 admin.initializeApp();
@@ -60,8 +60,8 @@ export const updateTripDateRange = onCall(async (request) => {
     if (!data.from || !data.to) return;
 
     // Always handle Firestore Timestamp
-    let fromDate = data.from instanceof Timestamp ? dayjs(data.from.toDate()) : dayjs(data.from);
-    let toDate = data.to instanceof Timestamp ? dayjs(data.to.toDate()) : dayjs(data.to);
+    const fromDate = data.from instanceof Timestamp ? dayjs(data.from.toDate()) : dayjs(data.from);
+    const toDate = data.to instanceof Timestamp ? dayjs(data.to.toDate()) : dayjs(data.to);
 
     if (!fromDate.isValid() || !toDate.isValid()) return;
 
@@ -157,7 +157,7 @@ export const onTripDeleted = onDocumentDeleted("trips/{tripId}", async (event) =
   const db = admin.firestore();
 
   // (2) If you don’t have a participant array, fetch participants from subcollection
-  let allParticipantUids: string[] = [];
+  const allParticipantUids: string[] = [];
   const participantsSnap = await db.collection(`trips/${tripId}/participants`).get();
 
   participantsSnap.forEach(doc => {

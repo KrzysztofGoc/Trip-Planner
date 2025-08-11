@@ -10,12 +10,6 @@ type TripParticipantsAvatarRowProps = {
 const AVATAR_SIZE = 48;
 const AVATAR_GAP = 24;
 
-const avatarAnim = {
-    initial: { opacity: 0, y: -24 },
-    animate: { opacity: 1, y: 0, transition: { duration: 0.32, type: "spring", bounce: 0.13 } },
-    exit: { opacity: 0, y: -24, transition: { duration: 0.32 } },
-};
-
 export default function TripParticipantsAvatarRow({ participants, containerWidth }: TripParticipantsAvatarRowProps) {
     const maxVisible = Math.max(
         1,
@@ -34,7 +28,11 @@ export default function TripParticipantsAvatarRow({ participants, containerWidth
                 {visibleParticipants.map((participant) => (
                     <motion.div
                         key={participant.uid}
-                        variants={avatarAnim}
+                        variants={{
+                            initial: { opacity: 0, y: -24 },
+                            animate: { opacity: 1, y: 0, transition: { duration: 0.32, type: "spring", bounce: 0.13 } },
+                            exit: { opacity: 0, y: -24, transition: { duration: 0.32 } },
+                        }}
                         initial="initial"
                         animate="animate"
                         exit="exit"
@@ -50,7 +48,11 @@ export default function TripParticipantsAvatarRow({ participants, containerWidth
                 {overflow > 0 && (
                     <motion.div
                         key="overflow"
-                        variants={avatarAnim}
+                        variants={{
+                            initial: { opacity: 0, y: -24 },
+                            animate: { opacity: 1, y: 0, transition: { duration: 0.32, type: "spring", bounce: 0.13 } },
+                            exit: { opacity: 0, y: -24, transition: { duration: 0.32 } },
+                        }}
                         initial="initial"
                         animate="animate"
                         exit="exit"

@@ -6,7 +6,6 @@ import TripPage from "./pages/TripPage";
 import ProfilePage from "./pages/Profile";
 import PlacesListPage from "./pages/PlacesListPage";
 import EventFormPage from "./pages/EventFormPage";
-import FullMapPage from "./pages/FullMapPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 
@@ -35,7 +34,6 @@ const router = createBrowserRouter([
         children: [
           { index: true, element: <Navigate to="trips" replace /> },
           { path: 'trips/:tripId', element: <TripPage /> },
-          { path: 'trips/:tripId/map', element: <FullMapPage /> },
           { path: 'trips/:tripId/:dayNumber/add', element: <PlacesListPage /> },
           { path: 'trips/:tripId/:dayNumber/add/:placeId', element: <EventFormPage /> },
           { path: 'trips/:tripId/edit/:eventId', element: <EventFormPage /> },

@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
-import { registerUser } from "@/api/users"; // <- the function from above
+import { registerUser } from "@/api/users";
 
 const registerSchema = z.object({
   email: z.string().email({ message: "Invalid email" }),

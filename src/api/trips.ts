@@ -102,10 +102,10 @@ export const createTrip = async (): Promise<string> => {
     ownerId: user.uid,
   };
 
-  // Create trip first
+  // 3. Create trip first
   await setDoc(tripRef, tripData);
 
-  // Now, create the participant doc for the owner
+  // 4. Create the participant doc for the owner
   const participantDoc = {
     uid: user.uid,
     displayName: user.displayName || "Trip owner",
