@@ -105,12 +105,6 @@ export default function TripDestinationEditor({ destination, tripId, }: TripDest
             ? <span className="text-gray-400 italic">Click to set a destination!</span>
             : destination;
 
-    const pencilVariants = {
-        initial: { scale: 1, rotate: 0 },
-        hover: { scale: 1.22, rotate: -14, transition: { type: "spring", stiffness: 400, damping: 12 } },
-        tap: { scale: (isDesktop ? 0.9 : 0.8), transition: { type: "tween", duration: 0.2 } },
-    };
-
     return (
         <Popover open={open} onOpenChange={(open) => handleOpenChange(open)}>
             <PopoverTrigger asChild>
@@ -121,7 +115,11 @@ export default function TripDestinationEditor({ destination, tripId, }: TripDest
                     initial="initial"
                 >
                     <p className="-ml-[1px] text-base text-gray-500 py-1">{displayDestination}</p>
-                    <motion.div variants={pencilVariants} className="shrink-0">
+                    <motion.div variants={{
+                        initial: { scale: 1, rotate: 0 },
+                        hover: { scale: 1.22, rotate: -14, transition: { type: "spring", stiffness: 400, damping: 12 } },
+                        tap: { scale: (isDesktop ? 0.9 : 0.8), transition: { type: "tween", duration: 0.2 } },
+                    }} className="shrink-0">
                         <Pencil className="size-5 text-red-400" />
                     </motion.div>
                 </motion.div>

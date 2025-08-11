@@ -7,8 +7,25 @@ import { AVATAR_PRESETS } from "@/constants/userImages"
 import { auth } from "@/firebase"
 import { LogOut } from "lucide-react"
 
+type DesktopProfileLayoutProps = {
+    user: { displayName?: string | null; email?: string | null } | null;
+    editingName: boolean;
+    displayName: string;
+    setDisplayName: (name: string) => void;
+    avatarOpen: boolean;
+    selectedAvatar: string | undefined;
+    nameMutation: { isPending: boolean };
+    avatarMutation: { isPending: boolean };
+    resetMutation: { isPending: boolean; mutate: (params: { email: string | null | undefined }) => void };
+    logoutMutation: { isPending: boolean; mutate: () => void };
+    handleDisplayNameBlur: () => void;
+    handleAvatarMutation: (data: { url: string }) => void;
+    handlePopoverOpenChange: (open: boolean) => void;
+    handleStartEdit: () => void;
+}
+
 // Props passed in as before (just spread them down from ProfilePage)
-export default function DesktopProfileLayout(props) {
+export default function DesktopProfileLayout(props: DesktopProfileLayoutProps) {
     const {
         user, editingName, displayName, setDisplayName,
         avatarOpen, selectedAvatar, nameMutation, avatarMutation,
@@ -126,7 +143,7 @@ export default function DesktopProfileLayout(props) {
                                     </>
                                 ) : (
                                     <>
-                                        <LogOut className="size-5"/> Log out
+                                        <LogOut className="size-5" /> Log out
                                     </>
                                 )}
                             </Button>
